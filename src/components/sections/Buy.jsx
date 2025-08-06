@@ -12,11 +12,13 @@ const Buy = () => {
             <OutlineButton />
             <GradientHeading text={"Popular Owner Properties"} />
             <div className="my-8 md:my-16">
-            <PropertyCarousel />
+                <PropertyCarousel />
             </div>
             <OutlineButton />
             <GradientHeading text={"Upcoming Projects"} />
-            <PropertySlider2 />
+            <div className="my-8 md:my-16">
+                <PropertySlider2 />
+            </div>
             <OutlineButton />
         </>
     )
