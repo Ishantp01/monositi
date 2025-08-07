@@ -2,21 +2,28 @@ import GradientHeading from "../GradientHeading";
 import PropertySlider5 from "../Carousel/PropertiesSlider5";
 import PropertySlider8 from "../Carousel/PropertiesSlider8";
 import PropertySlider9 from "../Carousel/PropertiesSlider9";
+import { Link } from "react-router-dom";
 
 const Commercial = () => {
   return (
     <>
       <GradientHeading text={"One Stop Destination For Commercial Properties"} />
       <div className="my-8 md:my-16">
+        <Link to={"/commercial"}>
         <PropertySlider5 properties={properties} id={2} />
+        </Link>
+      </div>
+      <div className="w-full h-16">
       </div>
       <GradientHeading text={"Properties by Owners"} />
       <div className="my-8 md:my-16">
-        <PropertySlider8 properties={officeSpaces} id={1} />
+        <PropertySlider8 properties={officeSpaces} id={1} link={"/details"} />
+      </div>
+      <div className="w-full h-16">
       </div>
       <GradientHeading text={"Shops and Showrooms By Owners"} />
       <div className="my-8 md:my-16">
-        <PropertySlider9 properties={showrooms} id={2} />
+        <PropertySlider9 properties={showrooms} id={2} link={"/details"} />
       </div>
 
 

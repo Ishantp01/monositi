@@ -5,9 +5,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import "swiper/css";
 import "swiper/css/navigation";
 import OfficeSpaceCard from "../OfficeSpaceCard";
+import { Link } from "react-router-dom";
 
-
-const PropertySlider8 = ({ properties, id }) => {
+const PropertySlider8 = ({ properties, id, link }) => {
     return (
         <div className="relative mx-auto max-w-[90%]">
             {/* Custom Navigation Arrows */}
@@ -42,7 +42,7 @@ const PropertySlider8 = ({ properties, id }) => {
                 }} >
                 {properties.map((property, index) => (
                     <SwiperSlide key={index}>
-                        <OfficeSpaceCard property={property} />
+                        <OfficeSpaceCard property={property} link={link} />
                     </SwiperSlide>
                 ))}
 

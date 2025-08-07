@@ -52,7 +52,7 @@ const properties = [
 ];;
 
 
-const PropertySlider4 = () => {
+const PropertySlider4 = ({link}) => {
     return (
         <div className="relative mx-auto max-w-[90%]">
             {/* Custom Navigation Arrows */}
@@ -90,7 +90,7 @@ const PropertySlider4 = () => {
                 }} >
                 {properties.map((property, index) => (
                     <SwiperSlide key={index}>
-                        <PropertyCard3 data={property} />
+                        <PropertyCard3 data={property} link={link} />
                     </SwiperSlide>
                 ))}
 

@@ -7,7 +7,7 @@ import "swiper/css/navigation";
 import ShowroomCard from "../ShowroomCard";
 
 
-const PropertySlider9 = ({ properties,id }) => {
+const PropertySlider9 = ({ properties,id,link }) => {
     return (
         <div className="relative mx-auto max-w-[90%]">
             {/* Custom Navigation Arrows */}
@@ -45,7 +45,7 @@ const PropertySlider9 = ({ properties,id }) => {
                 }} >
                 {properties.map((property, index) => (
                     <SwiperSlide key={index}>
-                        <ShowroomCard property={property} />
+                        <ShowroomCard property={property} link={link} />
                     </SwiperSlide>
                 ))}
 

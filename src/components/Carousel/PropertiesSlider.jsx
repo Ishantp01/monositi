@@ -89,7 +89,7 @@ const PropertyCarousel = () => {
                 }} >
                 {properties.map((property, index) => (
                     <SwiperSlide key={index}>
-                        <PropertyCard data={property} />
+                        <PropertyCard data={property} link={"/details"} />
                     </SwiperSlide>
                 ))}
 
