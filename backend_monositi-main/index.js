@@ -1,15 +1,24 @@
-require("dotenv").config();
 const express = require("express");
+const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-const userRoutes = require("./routers/user.routes");
-const propertyRoutes = require("./routers/property.routes")
+const cors = require("cors");
+const morgan = require("morgan");
 
+dotenv.config();
+
+// Initialize app
 const app = express();
-app.use(express.json());
 
-// routes
-app.use("/api/users", userRoutes);
-app.use("/api/properties", propertyRoutes)
+// Middlewares
+app.use(express.json());
+app.use(cors());
+app.use(morgan("dev"));
+
+const mainRoutes = require("./routes/index");
+
+app.use("/api", mainRoutes);
+
+
 
 // db connect
 mongoose
