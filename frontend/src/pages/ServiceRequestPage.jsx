@@ -1,142 +1,117 @@
 import React, { useState } from "react";
+import apiRequest from "../utils/api"; // import universal API
 
-const ServiceRequestPage = () => {
-  // Dummy service providers data (simulating your backend model)
-  const dummyProviders = [
-    {
-      _id: "1",
-      category: "Plumbing",
-      description: "Fix leaking taps, install pipes, and more.",
-      tags: ["leak", "pipe", "bathroom"],
-      photo: "https://via.placeholder.com/100",
-      verified: true,
-      isPremium: false,
-      completedJobsCount: 25,
-      ratings: [4, 5, 5, 3, 4],
-    },
-    {
-      _id: "2",
-      category: "Electrician",
-      description: "Home wiring, lighting, and appliance repair.",
-      tags: ["wiring", "fan", "switch"],
-      photo: "https://via.placeholder.com/100",
-      verified: true,
-      isPremium: true,
-      completedJobsCount: 40,
-      ratings: [5, 5, 4, 5, 5],
-    },
-  ];
-
-  // Form state
-  const [selectedService, setSelectedService] = useState(null);
+const SimpleServiceRequestForm = () => {
+  const [serviceCategory, setServiceCategory] = useState("");
   const [description, setDescription] = useState("");
-  const [photo, setPhoto] = useState(null);
+  const [photos, setPhotos] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // Handle form submit
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!selectedService) {
-      alert("Please select a service provider");
-      return;
-    }
+  // Handle photo upload
+  const handlePhotoUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const previewURLs = files.map((file) => URL.createObjectURL(file));
+    setPhotos(previewURLs);
+  };
 
-    // Mock request object (as per backend model)
-    const mockRequest = {
-      tenant: "dummyTenantId123",
-      serviceProvider: selectedService._id,
-      serviceCategory: selectedService.category,
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!serviceCategory || !description) return alert("Please fill all fields");
+
+    const payload = {
+      serviceCategory,
       description,
-      photosBefore: photo ? [photo.name] : [],
-      status: "Requested",
+      photosBefore: photos,
     };
 
-    console.log("📦 Mock Request Submitted:", mockRequest);
-    setSubmitted(true);
+    try {
+      setLoading(true);
+      // Call universal apiRequest directly
+      const data = await apiRequest("/services/services/requests", "POST", payload);
+      if (data.success) setSubmitted(true);
+      else alert("Request failed: " + (data.message || ""));
+    } catch (err) {
+      console.error(err);
+      alert("Error submitting request");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex flex-col items-center">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-        🏠 Tenant Service Request Portal
-      </h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-blue-100 p-6">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+          🧰 Service Request Form
+        </h1>
 
-      {/* SERVICE PROVIDER SELECTION */}
-      <div className="w-full max-w-3xl bg-white shadow-lg rounded-lg p-5 mb-8">
-        <h2 className="text-xl font-semibold mb-4">Browse Service Providers</h2>
-        <div className="grid sm:grid-cols-2 gap-4">
-          {dummyProviders.map((sp) => (
-            <div
-              key={sp._id}
-              onClick={() => setSelectedService(sp)}
-              className={`cursor-pointer border rounded-lg p-4 flex items-center gap-3 hover:bg-blue-50 transition ${
-                selectedService?._id === sp._id
-                  ? "border-blue-500 bg-blue-100"
-                  : "border-gray-300"
-              }`}
-            >
-              <img
-                src={sp.photo}
-                alt={sp.category}
-                className="w-16 h-16 rounded-full object-cover"
+        {!submitted ? (
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div>
+              <label className="block font-medium mb-1">Service Category</label>
+              <input
+                type="text"
+                placeholder="e.g., Plumbing"
+                value={serviceCategory}
+                onChange={(e) => setServiceCategory(e.target.value)}
+                className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
               />
-              <div>
-                <h3 className="font-semibold text-lg">{sp.category}</h3>
-                <p className="text-sm text-gray-600">{sp.description}</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  ✅ {sp.completedJobsCount} jobs done
-                </p>
-              </div>
             </div>
-          ))}
-        </div>
+
+            <div>
+              <label className="block font-medium mb-1">Description</label>
+              <textarea
+                rows="4"
+                placeholder="Describe your issue..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Upload Photos</label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handlePhotoUpload}
+                className="w-full"
+              />
+            </div>
+
+            {photos.length > 0 && (
+              <div className="flex gap-3 mb-2 flex-wrap">
+                {photos.map((p, i) => (
+                  <img
+                    key={i}
+                    src={p}
+                    alt="preview"
+                    className="w-20 h-20 rounded-md object-cover border"
+                  />
+                ))}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+            >
+              {loading ? "Submitting..." : "Submit Request"}
+            </button>
+          </form>
+        ) : (
+          <div className="bg-green-100 border border-green-400 text-green-800 p-4 rounded-md text-center">
+            🎉 Your request has been submitted successfully!
+          </div>
+        )}
       </div>
-
-      {/* SERVICE REQUEST FORM */}
-      {selectedService && !submitted && (
-        <form
-          onSubmit={handleSubmit}
-          className="w-full max-w-3xl bg-white shadow-lg rounded-lg p-5"
-        >
-          <h2 className="text-xl font-semibold mb-4">
-            Submit Service Request — {selectedService.category}
-          </h2>
-
-          <label className="block mb-2 font-medium">Job Description</label>
-          <textarea
-            className="w-full border border-gray-300 rounded-md p-2 mb-4 focus:outline-blue-500"
-            rows="3"
-            placeholder="Describe your issue or requirement..."
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-          ></textarea>
-
-          <label className="block mb-2 font-medium">Upload Photo (optional)</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setPhoto(e.target.files[0])}
-            className="mb-4"
-          />
-
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition"
-          >
-            Submit Request
-          </button>
-        </form>
-      )}
-
-      {/* SUCCESS MESSAGE */}
-      {submitted && (
-        <div className="w-full max-w-3xl bg-green-100 border border-green-400 text-green-800 p-4 rounded-md text-center">
-          🎉 Your service request has been submitted successfully!
-        </div>
-      )}
     </div>
   );
 };
 
-export default ServiceRequestPage;
+export default SimpleServiceRequestForm;
