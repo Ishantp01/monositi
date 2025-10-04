@@ -1,6 +1,8 @@
 // src/controllers/property.controller.js
 const Property = require("./property.model");
 const asyncHandler = require("express-async-handler");
+const cloudinary = require("../../config/cloudinary");
+const fs = require("fs");
 
 /**
  * @desc    Landlord creates a new property listing (status defaults to Pending)
