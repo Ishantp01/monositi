@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/NavBar";
 
@@ -7,20 +9,33 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({});
 
-  const mockUserData = {
-    name: "John Doe",
-    email: "john@example.com",
-    role: "tenant",
-    photo: "https://i.pravatar.cc/200?img=12",
+  const token = localStorage.getItem("token"); // JWT stored in localStorage
+
+  // Fetch user profile
+  const fetchUserProfile = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/users/me", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setUser(data.user);
+        setEditedUser(data.user);
+      } else {
+        console.error("Failed to fetch user:", data.message);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setUser(mockUserData);
-      setEditedUser({ ...mockUserData });
-      setLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
+    fetchUserProfile();
   }, []);
 
   const handleEdit = () => setIsEditing(true);
@@ -28,14 +43,35 @@ export default function Profile() {
     setEditedUser(user);
     setIsEditing(false);
   };
-  const handleSave = () => {
-    setUser(editedUser);
-    setIsEditing(false);
+
+  const handleSave = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/users/me", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(editedUser),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setUser(data.user);
+        setIsEditing(false);
+      } else {
+        console.error("Failed to update profile:", data.message);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditedUser((prev) => ({ ...prev, [name]: value }));
   };
+
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -65,7 +101,6 @@ export default function Profile() {
         <div className="max-w-4xl mx-auto">
           {/* Main Profile Card */}
           <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden -mt-20 relative z-10 hover:shadow-red-300 transition-shadow duration-300">
-            {/* Profile Header */}
             <div className="px-8 pt-20 pb-8 bg-white">
               <div className="flex flex-col lg:flex-row items-center lg:items-start lg:space-x-10">
                 {/* Profile Photo */}
@@ -83,7 +118,7 @@ export default function Profile() {
                     {user.name}
                   </h1>
                   <p className="text-red-600 text-lg mb-3 font-medium">
-                    {user.role.toUpperCase()}
+                    {user.role?.toUpperCase()}
                   </p>
                   <div className="flex items-center space-x-3 justify-center lg:justify-start text-gray-700">
                     <svg
@@ -105,7 +140,7 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Edit Button */}
             <div className="px-8 pb-8 flex justify-center">
               <button
                 onClick={handleEdit}
@@ -130,13 +165,10 @@ export default function Profile() {
                 <div className="flex justify-center mb-4">
                   <div className="relative">
                     <img
-                      src={
-                        editedUser.photo || "https://via.placeholder.com/150"
-                      }
+                      src={editedUser.photo || "https://via.placeholder.com/150"}
                       alt="Preview"
                       className="w-32 h-32 rounded-full border-4 border-red-600 object-cover shadow-lg"
                     />
-                    {/* Camera Icon Overlay */}
                     <div className="absolute bottom-0 right-0 bg-red-600 w-10 h-10 rounded-full flex justify-center items-center shadow-lg cursor-pointer hover:bg-red-700 transition-colors">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -148,7 +180,6 @@ export default function Profile() {
                         <circle cx="12" cy="12" r="3" fill="white" />
                       </svg>
                     </div>
-                    {/* Hidden file input */}
                     <input
                       type="file"
                       accept="image/*"
@@ -158,7 +189,7 @@ export default function Profile() {
                   </div>
                 </div>
 
-                {/* Name with floating label */}
+                {/* Name */}
                 <div className="relative">
                   <input
                     type="text"
@@ -173,7 +204,7 @@ export default function Profile() {
                   </label>
                 </div>
 
-                {/* Email with floating label */}
+                {/* Email */}
                 <div className="relative">
                   <input
                     type="email"

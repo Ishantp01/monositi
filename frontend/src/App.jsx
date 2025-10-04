@@ -9,12 +9,24 @@ import CommercialList from "./pages/Commercial";
 import PgHostelList from "./pages/PgHostelList";
 import PropertyPage from "./components/PropertyDetails/PropertyPage";
 import ScrollToTop from "./components/ScrollToTop";
+
+
+
+import AdminPanel from "./components/Admin/AdminPanel";
+import Selling_Properties_Residental from "./components/Admin/Selling_Properties_Residental";
+import Renting_Properties from "./components/Admin/Renting_Properties";
+import PG_Hostel_Renting from "./components/Admin/PG_Hostel_Renting";
+import Selling_Properties__PGHostel from "./components/Admin/Selling_Properties__PGHostel";
+import Leaseable_Properties from "./components/Admin/Leaseable_Properties";
+
+
+import Rent from "./pages/Rent"
 import Profile from "./pages/Profile";
 
 export default function App() {
   return (
     <BrowserRouter>
-      <ScrollToTop /> 
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/salelist" element={<SaleList />} />
@@ -23,10 +35,29 @@ export default function App() {
         <Route path="/pghostel" element={<PgHostelList />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Profile />} />
+        
         <Route path="/verify" element={<VerifyOtp />} />
         <Route path="/details" element={<PropertyPage />} />
-        <Route path="/profile" element={<Profile/>} />
+        <Route path="/property-details/:id" element={<Rent />} />
+        <Route path="/pg-details/:id" element={<PgHostelList />} />
+        <Route path="/commercial-details/:id" element={<CommercialList />} />
+
+        <Route path="/rent-details" element={<Rent />} />
         
+
+        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/renting-properties" element={<Renting_Properties />} />
+        <Route
+          path="/selling-residential"
+          element={<Selling_Properties_Residental />}
+        />
+        <Route path="/pg-hostel" element={<PG_Hostel_Renting />} />
+        <Route path="/leaseable" element={<Leaseable_Properties />} />
+        <Route
+          path="/selling-pg-hostel"
+          element={<Selling_Properties__PGHostel />}
+        />
       </Routes>
     </BrowserRouter>
   );
