@@ -39,6 +39,7 @@ export default function Login() {
         console.log("Login Response:", data);
 
         localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user.role));
 
         setFormData({ email: "", password: "" });
 
