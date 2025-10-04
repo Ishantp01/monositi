@@ -23,12 +23,6 @@ router.get("/services/requests/admin", protect, adminOnly, serviceController.lis
 // Admin assigns provider to a request
 router.patch("/services/requests/:id/assign", protect, adminOnly, serviceController.assignProviderToRequest);
 
-// Provider updates status
-router.patch("/services/requests/:id/status", protect, serviceProviderOnly, serviceController.updateRequestStatus);
-
-// Provider uploads completed work photos
-router.post("/services/requests/:id/photos", protect, serviceProviderOnly, serviceController.uploadCompletedWorkPhotos);
-
 // Tenant gives review and rating
 router.post("/services/requests/:id/review", protect, tenantOnly, serviceController.tenantRateService);
 
@@ -37,5 +31,18 @@ router.get("/services/requests/provider", protect, serviceProviderOnly, serviceC
 
 // Provider fetches completed services
 router.get("/services/requests/provider/completed", protect, serviceProviderOnly, serviceController.getCompletedServicesForProvider);
+
+// Provider updates status
+router.patch("/services/requests/:id/status", protect, serviceProviderOnly, serviceController.updateRequestStatus);
+
+// Provider uploads completed work photos
+router.post("/services/requests/:id/photos", protect, serviceProviderOnly, serviceController.uploadCompletedWorkPhotos);
+
+// common 
+router.get(
+  "/services/requests/:id",
+  protect,
+  serviceController.getServiceRequestById
+);
 
 module.exports = router;

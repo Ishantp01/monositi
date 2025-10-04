@@ -285,3 +285,47 @@ exports.getCompletedServicesForProvider = asyncHandler(async (req, res) => {
 
   res.json({ success: true, count: completedRequests.length, data: completedRequests });
 });
+
+exports.getServiceRequestById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // ✅ Validate MongoDB ID
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid service request ID" });
+  }
+
+  // Fetch request with populated tenant and provider details
+  const serviceRequest = await ServiceRequest.findById(id)
+    .populate("tenant", "name email role")
+    .populate({
+      path: "serviceProvider",
+      populate: { path: "user", select: "name email role" },
+    });
+
+  if (!serviceRequest) {
+    return res.status(404).json({ success: false, message: "Service request not found" });
+  }
+
+  // ✅ Authorization check based on role
+  if (req.user.role === "tenant") {
+    // Tenant can only view their own requests
+    if (serviceRequest.tenant._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+  }
+
+  if (req.user.role === "serviceProvider") {
+    // Provider can only view requests assigned to them
+    const provider = await ServiceProvider.findOne({ user: req.user._id });
+    if (
+      !serviceRequest.serviceProvider ||
+      serviceRequest.serviceProvider._id.toString() !== provider._id.toString()
+    ) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+  }
+
+  // Admin can view any request (no extra check needed)
+
+  res.json({ success: true, data: serviceRequest });
+});
