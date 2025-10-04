@@ -45,7 +45,7 @@ exports.createPropertyListing = async (req, res) => {
       state,
       price,
       photos: photoUrls,
-      tags: tags ? tags.split(",").map(tag => tag.trim()) : [],
+      tags:  Array.isArray(req.body.tags) ? req.body.tags: typeof req.body.tags === 'string' ? req.body.tags.split(',').map(tag => tag.trim()) : [],
       genderPreference,
       contactNumber
     });
@@ -80,8 +80,17 @@ exports.getAllProperties = asyncHandler(async (req, res) => {
   if (isFeatured) filters.isFeatured = isFeatured === "true";
 
   if (tags) {
-    filters.tags = { $in: tags.split(",") };
+  const tagList = Array.isArray(tags)
+    ? tags
+    : typeof tags === 'string'
+      ? tags.split(',').map(tag => tag.trim())
+      : [];
+
+  if (tagList.length > 0) {
+    filters.tags = { $in: tagList };
   }
+}
+
 
   if (minPrice || maxPrice) {
     filters.price = {};
