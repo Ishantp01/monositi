@@ -31,7 +31,7 @@ export const propertyApi = {
   },
 
   createProperty: async (formData) => {
-    const response = await fetch(`${API_BASE_URL}/properties`, {
+    const response = await fetch(`${API_BASE_URL}/properties/properties`, {
       method: 'POST',
       body: formData,
       headers: {
