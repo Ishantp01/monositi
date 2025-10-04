@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const userRoutes = require("./routers/user.routes");
 const propertyRoutes = require("./routers/property.routes")
+const reviewRoutes = require("./routers/review.routes");
 
 const app = express();
 app.use(express.json());
@@ -10,6 +11,7 @@ app.use(express.json());
 // routes
 app.use("/api/users", userRoutes);
 app.use("/api/properties", propertyRoutes)
+app.use("/api/reviews", reviewRoutes);
 
 // db connect
 mongoose
