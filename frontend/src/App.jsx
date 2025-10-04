@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import SignUp from "./components/SignUp";
-import Login from "./components/Login";
+import SignUp from "./pages/Signup";
+import Login from "./pages/Login";
 import VerifyOtp from "./components/VerifyOtp";
 import Home from "./pages/Home";
 import SaleList from "./pages/SaleList";
@@ -21,6 +21,8 @@ import Leaseable_Properties from "./components/Admin/Leaseable_Properties";
 
 
 import Rent from "./pages/Rent"
+
+import Profile from "./pages/Profile";
 import PG from "./pages/PG";
 import ServiceRequestPage from "./pages/ServiceRequestPage";
 
@@ -36,6 +38,8 @@ export default function App() {
         <Route path="/pghostel" element={<PgHostelList />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Profile />} />
+        
         <Route path="/verify" element={<VerifyOtp />} />
         <Route path="/details" element={<PropertyPage />} />
         <Route path="/property-details/:id" element={<Rent />} />
@@ -62,6 +66,3 @@ export default function App() {
     </BrowserRouter>
   );
 }
-
-
-
