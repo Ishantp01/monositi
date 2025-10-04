@@ -107,7 +107,7 @@ const AddProperty = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary"
                 >
                   <option value="">Select Property Type</option>
-                  <option value="PG">PG/Hostel</option>
+                  <option value="PG/Hostel">PG/Hostel</option>
                   <option value="Apartment">Apartment</option>
                   <option value="House">House</option>
                   <option value="Commercial">Commercial</option>
