@@ -21,6 +21,9 @@ import Leaseable_Properties from "./components/Admin/Leaseable_Properties";
 
 
 import Rent from "./pages/Rent"
+import AddProperty from "./pages/AddProperty";
+import MyProperties from "./pages/MyProperties";
+import EditProperty from "./pages/EditProperty";
 
 import Profile from "./pages/Profile";
 import PG from "./pages/PG";
@@ -49,6 +52,11 @@ export default function App() {
 
         <Route path="/rent-details" element={<Rent />} />
         <Route path="/service-request" element={<ServiceRequestPage />} />
+        
+        {/* Property Management Routes */}
+        <Route path="/add-property" element={<AddProperty />} />
+        <Route path="/my-properties" element={<MyProperties />} />
+        <Route path="/edit-property/:id" element={<EditProperty />} />
         
 
         <Route path="/admin" element={<AdminPanel />} />
