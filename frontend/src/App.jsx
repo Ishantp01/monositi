@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import SignUp from "./components/SignUp";
-import Login from "./components/Login";
+import SignUp from "./pages/Signup";
+import Login from "./pages/Login";
 import VerifyOtp from "./components/VerifyOtp";
 import Home from "./pages/Home";
 import SaleList from "./pages/SaleList";
@@ -9,6 +9,7 @@ import CommercialList from "./pages/Commercial";
 import PgHostelList from "./pages/PgHostelList";
 import PropertyPage from "./components/PropertyDetails/PropertyPage";
 import ScrollToTop from "./components/ScrollToTop";
+import Profile from "./pages/Profile";
 
 export default function App() {
   return (
@@ -24,6 +25,8 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/verify" element={<VerifyOtp />} />
         <Route path="/details" element={<PropertyPage />} />
+        <Route path="/profile" element={<Profile/>} />
+        
       </Routes>
     </BrowserRouter>
   );
