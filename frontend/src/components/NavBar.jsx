@@ -132,7 +132,7 @@ const Navbar = ({ bgColor = 'bg-theme-primary', avatarUrl }) => {
       break;
     case 'tenant':
       buttonText = 'Request Service';
-      buttonLink = '/request-service';
+      buttonLink = '/service-request';
       break;
     default:
       buttonText = 'Dashboard';
@@ -189,7 +189,7 @@ const Navbar = ({ bgColor = 'bg-theme-primary', avatarUrl }) => {
                   {role === 'serviceProvider' && (
                     <>
                       <Link
-                        to="/service-form"
+                        to="/service-request"
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setShowDropdown(false)}
                       >
