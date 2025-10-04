@@ -1,6 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const PgHostelLongCard = ({
+  id,
   price = 0,
   title = "",
   location = "",
@@ -10,26 +12,29 @@ const PgHostelLongCard = ({
   sharingOptions = {},
   image = "",
 }) => {
+  // Create dynamic link based on property ID
+  const propertyLink = `/pg-details/${id}`;
   return (
-    <div className="bg-[#FEFAB9]/30 border border-yellow-300 rounded-xl p-4 md:p-6 flex flex-col md:flex-row gap-4 md:gap-6 w-full font-inter relative">
-      {/* Type Tag */}
-      <span className="absolute bg-[#FFFDD5] px-2 py-1 rounded-full top-2 right-3 text-yellow-600 font-medium text-sm">
-        {type}
-      </span>
+    <Link to={propertyLink} className="block">
+      <div className="bg-[#FEFAB9]/30 border border-yellow-300 rounded-xl p-4 md:p-6 flex flex-col md:flex-row gap-4 md:gap-6 w-full font-inter relative hover:shadow-lg transition-shadow duration-300">
+        {/* Type Tag */}
+        <span className="absolute bg-[#FFFDD5] px-2 py-1 rounded-full top-2 right-3 text-yellow-600 font-medium text-sm">
+          {type}
+        </span>
 
-      {/* Image Box */}
-      <div className="w-full md:w-1/3 min-h-[200px] bg-white border rounded-md flex-shrink-0 overflow-hidden">
-        {image ? (
-          <img
-            src={image}
-            alt={title}
-            className="w-full h-full object-cover rounded-md"
-          />
-        ) : null}
-      </div>
+        {/* Image Box */}
+        <div className="w-full md:w-1/3 min-h-[200px] bg-white border rounded-md flex-shrink-0 overflow-hidden">
+          {image ? (
+            <img
+              src={image}
+              alt={title}
+              className="w-full h-full object-cover rounded-md"
+            />
+          ) : null}
+        </div>
 
-      {/* Content */}
-      <div className="flex flex-col w-full md:w-2/3">
+        {/* Content */}
+        <div className="flex flex-col w-full md:w-2/3">
         {/* Price + Title */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
           <div className="text-red-600 text-lg font-bold">
@@ -89,6 +94,7 @@ const PgHostelLongCard = ({
         </div>
       </div>
     </div>
+    </Link>
   );
 };
 
