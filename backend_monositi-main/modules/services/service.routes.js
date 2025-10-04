@@ -45,4 +45,10 @@ router.get(
   serviceController.getServiceRequestById
 );
 
+router.get(
+  "/services/requests/tenant/:tenantId",
+  protect,
+  serviceController.getServiceRequestsByTenantId
+);
+
 module.exports = router;
