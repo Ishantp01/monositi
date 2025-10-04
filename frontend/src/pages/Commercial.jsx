@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import CommercialCard from "../components/CommercailCard";
 import Navbar from "../components/NavBar";
 import avatar from "../assets/images/avatar2.jpg";
 import Footer from "../components/Footer";
+
+// Import property data from sliders
+import { properties as slider3Properties } from '../components/Carousel/PropertiesSlider3';
+import { properties as slider4Properties } from '../components/Carousel/PropertiesSlider4';
 
 
 const commercialRentData = [
@@ -191,14 +196,47 @@ const commercialRentData = [
 
 
 export default function CommercialList() {
+    const { id } = useParams();
+    const [property, setProperty] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (id) {
+            // If ID is provided, find the specific property
+            setLoading(true);
+            const allProperties = [...slider3Properties, ...slider4Properties];
+            const foundProperty = allProperties.find(prop => prop.id === parseInt(id));
+            
+            if (foundProperty) {
+                setProperty(foundProperty);
+            }
+            setLoading(false);
+        }
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-theme-primary"></div>
+                    <p className="mt-4 text-gray-600">Loading property details...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <>
             <Navbar bgColor="light" avatarUrl={avatar} />
             <Header />
             <div className="max-w-6xl mx-auto p-4 space-y-8 font-inter">
-                {commercialRentData.map((item, index) => (
+                {property ? (
+                    <CommercialCard {...property} />
+                ) : (
+                    commercialRentData.map((item, index) => (
                         <CommercialCard key={index} {...item} />
-                ))}
+                    ))
+                )}
             </div>
             <Footer />
         </>

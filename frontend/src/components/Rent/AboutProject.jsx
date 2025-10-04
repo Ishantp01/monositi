@@ -16,6 +16,7 @@ const svgIcons = {
 };
 
 export const AboutProject = ({
+  property,
   projectName = "Embassy Lake Terraces",
   developer = "Embassy Developments Limited",
   priceRange = "₹6.64 Cr - ₹17.41 Cr",
@@ -28,6 +29,20 @@ export const AboutProject = ({
   bhkOptions = ["3 BHK", "4 BHK", "5 BHK"],
   themeColor = "#E34F4F",
 }) => {
+  const formatINR = (n) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(n);
+
+  // Use property data if available, otherwise use default values
+  const dynamicProjectName = property ? property.title || projectName : projectName;
+  const dynamicDeveloper = property ? property.owner || developer : developer;
+  const dynamicPriceRange = property ? formatINR(property.price) : priceRange;
+  const dynamicPricePerSqft = property ? `₹${Math.round(property.price / property.area)}/sqft` : pricePerSqft;
+  const dynamicConfiguration = property ? property.bhk : configuration;
+  const dynamicImageSrc = property ? property.image : imageSrc;
   return (
     <div
       className="bg-red-50 rounded-lg p-4 sm:p-6 mx-auto shadow-md mb-8 max-w-[90%] border"
@@ -37,23 +52,23 @@ export const AboutProject = ({
         {/* Left Side */}
         <div className="flex flex-col xs:flex-row gap-4 w-full sm:w-auto">
           <img
-            src={imageSrc}
-            alt={projectName}
+            src={dynamicImageSrc}
+            alt={dynamicProjectName}
             className="w-20 h-20 object-cover rounded-md"
           />
 
           <div className="flex flex-col">
             <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4">
               <h2 className="text-lg md:text-xl font-semibold text-gray-900">
-                {projectName}
+                {dynamicProjectName}
               </h2>
               <div className="hidden xs:block w-px h-6 bg-gray-300"></div>
               <p className="text-base font-semibold text-gray-800">
-                {priceRange}
+                {dynamicPriceRange}
               </p>
             </div>
 
-            <p className="text-sm text-gray-600 mt-1">{developer}</p>
+            <p className="text-sm text-gray-600 mt-1">{dynamicDeveloper}</p>
 
             {/* Ratings */}
             <div className="flex items-center mt-2">
@@ -68,11 +83,11 @@ export const AboutProject = ({
             <div className="mt-3 flex flex-wrap gap-4 xs:gap-6 text-sm text-gray-700">
               <p>
                 <span className="font-medium">Price per sqft:</span>{" "}
-                {pricePerSqft}
+                {dynamicPricePerSqft}
               </p>
               <p>
                 <span className="font-medium">Configuration:</span>{" "}
-                {configuration}
+                {dynamicConfiguration}
               </p>
               <p>
                 <span className="font-medium">Tower & Unit:</span>{" "}

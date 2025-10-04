@@ -1,17 +1,30 @@
 import { Share2 } from "lucide-react";
 
-export default function HeroCard() {
+export default function HeroCard({ property }) {
+  const formatINR = (n) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(n);
+
+  // Use property data if available, otherwise use default values
+  const price = property ? formatINR(property.price) : "₹55,000";
+  const title = property ? `${property.bhk} ${property.area} ${property.unit || 'sqft'} Flat/Apartment For Rent in` : "2 BHK 1210 Sq-ft Flat/Apartment For Rent in";
+  const projectName = property ? property.title || "Prestige Housing" : "Prestige Housing";
+  const location = property ? property.location : "Jalpari Road , Jabalpur";
+  const image = property ? property.image : null;
   return (
     <div className="border rounded-lg p-4 sm:p-6 mx-auto shadow-md bg-red-50 max-w-[90%] mb-6">
       {/* Price + Title Row */}
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-black">₹55,000</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-black">{price}</h2>
           <p className="text-gray-700 text-sm sm:text-base font-medium mt-1">
-            2 BHK 1210 Sq-ft Flat/Apartment For Rent in{" "}
-            <span className="font-semibold text-black">Prestige Housing</span>
+            {title}{" "}
+            <span className="font-semibold text-black">{projectName}</span>
           </p>
-          <p className="text-gray-500 text-sm mt-1">Jalpari Road , Jabalpur</p>
+          <p className="text-gray-500 text-sm mt-1">{location}</p>
         </div>
         {/* Share icon */}
         <button className="text-gray-600 hover:text-gray-800">
@@ -23,7 +36,15 @@ export default function HeroCard() {
       <div className="flex flex-col md:flex-row gap-6 mt-4">
         {/* Left Section - Images */}
         <div className="flex flex-col gap-2 flex-1">
-          <div className="bg-gray-300 rounded-lg h-44 sm:h-56 md:h-64"></div>
+          {image ? (
+            <img 
+              src={image} 
+              alt={title}
+              className="rounded-lg h-44 sm:h-56 md:h-64 w-full object-cover"
+            />
+          ) : (
+            <div className="bg-gray-300 rounded-lg h-44 sm:h-56 md:h-64"></div>
+          )}
           <div className="flex gap-2 sm:gap-3 flex-wrap">
             <div className="bg-gray-300 rounded-lg w-20 h-14 sm:w-24 sm:h-16"></div>
             <div className="bg-gray-300 rounded-lg w-20 h-14 sm:w-24 sm:h-16"></div>
@@ -36,10 +57,10 @@ export default function HeroCard() {
         {/* Right Section - Property Highlights */}
         <div className="flex-1">
           <div className="flex flex-wrap gap-3 bg-gray-100 rounded-md p-3 text-xs sm:text-sm text-gray-700">
-            <span>2 Beds</span>
-            <span>2 Baths</span>
-            <span>1 Balcony</span>
-            <span>Furnished</span>
+            <span>{property?.bhk || "2 Beds"}</span>
+            <span>{property?.furnished || "Furnished"}</span>
+            <span>{property?.status || "Ready To Move"}</span>
+            <span>{property?.propertyType || "Apartment"}</span>
           </div>
 
           {/* Info Grid */}
@@ -47,35 +68,35 @@ export default function HeroCard() {
             <p>
               <span className="text-red-600 font-medium">Carpet Area</span>{" "}
               <br />
-              907 sqft <br /> ₹61/sqft
+              {property?.area || "907"} {property?.unit || "sqft"} <br /> ₹{Math.round((property?.price || 55000) / (property?.area || 907))}/sqft
             </p>
             <p>
               <span className="text-red-600 font-medium">Developer</span> <br />
-              <span className="underline">Prestige Estates Projects Ltd.</span>
+              <span className="underline">{property?.owner || "Prestige Estates Projects Ltd."}</span>
             </p>
             <p>
               <span className="text-red-600 font-medium">Floor</span> <br />
-              15 (Out of 19 Floors)
+              {property?.floor || "15"} (Out of {property?.totalFloors || "19"} Floors)
             </p>
             <p>
               <span className="text-red-600 font-medium">Status</span> <br />
-              Immediately
+              {property?.status || "Immediately"}
             </p>
             <p>
               <span className="text-red-600 font-medium">Furnished Status</span>{" "}
               <br />
-              Fully Furnished
+              {property?.furnished || "Fully Furnished"}
             </p>
             <p>
               <span className="text-red-600 font-medium">Facing</span> <br />
-              West
+              {property?.facing || "West"}
             </p>
             <p>
               <span className="text-red-600 font-medium">
                 Age of Construction
               </span>{" "}
               <br />
-              Less Than 5 Years
+              {property?.age || "Less Than 5 Years"}
             </p>
           </div>
         </div>
