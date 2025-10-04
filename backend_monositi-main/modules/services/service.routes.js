@@ -1,9 +1,19 @@
 // src/routes/service.routes.js
 const express = require("express");
 const router = express.Router();
+const upload = require("../../config/multer"); // ✅ You missed this import
 const serviceController = require("./service.controller");
 const { protect, adminOnly, serviceProviderOnly, tenantOnly } = require("../../middlewares/authMiddleware");
 
+
+router.post(
+  "/m",
+  protect, // verify JWT and attach req.user
+  upload.single("profilePhoto"), // allow image upload
+  serviceProviderOnly,
+  serviceController.createServiceProvider
+
+);
 // Tenant creates a service request
 router.post("/services/requests", protect, tenantOnly, serviceController.createServiceRequest);
 
