@@ -36,7 +36,9 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/verify" element={<VerifyOtp />} />
         <Route path="/details" element={<PropertyPage />} />
-
+        <Route path="/property-details/:id" element={<Rent />} />
+        <Route path="/pg-details/:id" element={<PgHostelList />} />
+        <Route path="/commercial-details/:id" element={<CommercialList />} />
 
         <Route path="/rent-details" element={<Rent />} />
         
