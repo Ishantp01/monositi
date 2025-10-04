@@ -1,8 +1,10 @@
-import React from 'react';
-import { Lock, MapPinned } from 'lucide-react';
+import React, { useState } from 'react';
+import { Lock, MapPinned, Plus, List, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Navbar = ({ bgColor = 'bg-theme-primary', avatarUrl }) => {
+    const [showDropdown, setShowDropdown] = useState(false);
+
     return (
         <nav className={`w-full select-none ${bgColor} flex items-center justify-between px-4 lg:px-12 py-3 relative`}>
             {/* BUILD Text */}
@@ -11,12 +13,42 @@ const Navbar = ({ bgColor = 'bg-theme-primary', avatarUrl }) => {
                 <h1 className="text-black text-base lg:text-xl font-inter font-extrabold">BUILD</h1>
             </div>
 
-            <div className="ml-auto flex items-center gap-4 lg:gap-24">
-                <button
-                    className="bg-theme-secondary text-black transition-colors duration-500 hover:bg-white flex items-center justify-center rounded-full p-2 w-10 h-10 lg:w-auto lg:h-auto lg:px-6 lg:py-2">
-                    <MapPinned className="block lg:hidden" size={18} />
-                    <span className="hidden lg:block text-sm lg:text-base">Post Property</span>
-                </button>
+            <div className="ml-auto flex items-center gap-4 lg:gap-6">
+                {/* Property Management Dropdown */}
+                <div className="relative">
+                    <button
+                        onClick={() => setShowDropdown(!showDropdown)}
+                        className="bg-theme-secondary text-black transition-colors duration-500 hover:bg-white flex items-center justify-center rounded-full p-2 w-10 h-10 lg:w-auto lg:h-auto lg:px-6 lg:py-2"
+                    >
+                        <Settings className="block lg:hidden" size={18} />
+                        <span className="hidden lg:block text-sm lg:text-base">Manage Properties</span>
+                    </button>
+
+                    {showDropdown && (
+                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                            <div className="py-1">
+                                <Link
+                                    to="/add-property"
+                                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    onClick={() => setShowDropdown(false)}
+                                >
+                                    <Plus className="mr-3 h-4 w-4" />
+                                    Add Property
+                                </Link>
+                                <Link
+                                    to="/my-properties"
+                                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    onClick={() => setShowDropdown(false)}
+                                >
+                                    <List className="mr-3 h-4 w-4" />
+                                    My Properties
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+               
 
                 {/* Avatar wrapped in Link */}
                 <Link to="/profile">
