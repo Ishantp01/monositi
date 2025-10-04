@@ -99,11 +99,10 @@
 
 // export default Navbar;
 
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Lock, Plus, List, Settings, MapPinned } from 'lucide-react';
+import { Lock, Plus, List, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Navbar = ({ bgColor = 'bg-theme-primary', avatarUrl }) => {
@@ -112,12 +111,9 @@ const Navbar = ({ bgColor = 'bg-theme-primary', avatarUrl }) => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setRole(JSON.parse(storedUser));
-    }
+    if (storedUser) setRole(JSON.parse(storedUser));
   }, []);
 
-  // Default button text & link
   let buttonText = '';
   let buttonLink = '';
 
@@ -128,24 +124,21 @@ const Navbar = ({ bgColor = 'bg-theme-primary', avatarUrl }) => {
       break;
     case 'serviceProvider':
       buttonText = 'Service Provider';
-      buttonLink = '/service-provider';
+      buttonLink = '/service-request';
       break;
     case 'tenant':
-      buttonText = 'Request Service';
-      buttonLink = '/service-request';
+      buttonText = 'Tenant Menu';
+      buttonLink = '/tenant-requests';
       break;
     default:
       buttonText = 'Dashboard';
       buttonLink = '/dashboard';
   }
 
-  // Check if role should have a dropdown
-  const hasDropdown = role === 'landlord' || role === 'serviceProvider';
+  const hasDropdown = ['landlord', 'serviceProvider', 'tenant'].includes(role);
 
   return (
-    <nav
-      className={`w-full select-none ${bgColor} flex items-center justify-between px-4 lg:px-12 py-3 relative`}
-    >
+    <nav className={`w-full select-none ${bgColor} flex items-center justify-between px-4 lg:px-12 py-3 relative`}>
       <div className="flex items-center space-x-2 md:absolute md:left-1/2 md:transform md:-translate-x-1/2 cursor-default">
         <Lock className="text-black" size={18} strokeWidth={4} />
         <h1 className="text-black text-base lg:text-xl font-inter font-extrabold">BUILD</h1>
@@ -167,42 +160,31 @@ const Navbar = ({ bgColor = 'bg-theme-primary', avatarUrl }) => {
                 <div className="py-1">
                   {role === 'landlord' && (
                     <>
-                      <Link
-                        to="/add-property"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setShowDropdown(false)}
-                      >
-                        <Plus className="mr-3 h-4 w-4" />
-                        Add Property
+                      <Link to="/add-property" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>
+                        <Plus className="mr-3 h-4 w-4" /> Add Property
                       </Link>
-                      <Link
-                        to="/my-properties"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setShowDropdown(false)}
-                      >
-                        <List className="mr-3 h-4 w-4" />
-                        My Properties
+                      <Link to="/my-properties" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>
+                        <List className="mr-3 h-4 w-4" /> My Properties
                       </Link>
                     </>
                   )}
-
                   {role === 'serviceProvider' && (
                     <>
-                      <Link
-                        to="/service-request"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setShowDropdown(false)}
-                      >
-                        <Plus className="mr-3 h-4 w-4" />
-                        Form
+                      <Link to="/service-request" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>
+                        <Plus className="mr-3 h-4 w-4" /> Form
                       </Link>
-                      <Link
-                        to="/services"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setShowDropdown(false)}
-                      >
-                        <List className="mr-3 h-4 w-4" />
-                        Services
+                      <Link to="/services" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>
+                        <List className="mr-3 h-4 w-4" /> Services
+                      </Link>
+                    </>
+                  )}
+                  {role === 'tenant' && (
+                    <>
+                      <Link to="/request-service" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>
+                        <Plus className="mr-3 h-4 w-4" /> Request Service
+                      </Link>
+                      <Link to="/service-request-list" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>
+                        <List className="mr-3 h-4 w-4" /> My Requests
                       </Link>
                     </>
                   )}
@@ -211,20 +193,13 @@ const Navbar = ({ bgColor = 'bg-theme-primary', avatarUrl }) => {
             )}
           </div>
         ) : (
-          <Link
-            to={buttonLink}
-            className="bg-theme-secondary text-black transition-colors duration-500 hover:bg-white flex items-center justify-center rounded-full p-2 w-10 h-10 lg:w-auto lg:h-auto lg:px-6 lg:py-2"
-          >
+          <Link to={buttonLink} className="bg-theme-secondary text-black transition-colors duration-500 hover:bg-white flex items-center justify-center rounded-full p-2 w-10 h-10 lg:w-auto lg:h-auto lg:px-6 lg:py-2">
             <span className="hidden lg:block text-sm lg:text-base">{buttonText}</span>
           </Link>
         )}
 
         <Link to="/profile">
-          <img
-            src={avatarUrl}
-            alt="User Avatar"
-            className="w-10 lg:w-14 h-10 lg:h-14 rounded-full object-cover backdrop-blur bg-white/10 cursor-pointer"
-          />
+          <img src={avatarUrl} alt="User Avatar" className="w-10 lg:w-14 h-10 lg:h-14 rounded-full object-cover backdrop-blur bg-white/10 cursor-pointer" />
         </Link>
       </div>
     </nav>
