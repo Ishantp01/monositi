@@ -29,6 +29,7 @@ import Profile from "./pages/Profile";
 import PG from "./pages/PG";
 import Signup from "./pages/Signup";
 import Services from "./pages/Services";
+import TenantRequestsPage from "./pages/ServiceRequestListTenant";
 
 export default function App() {
   return (
@@ -60,6 +61,7 @@ export default function App() {
 
         <Route path="/service-form" element={<ServiceProvider />} />
         <Route path="/services" element={<Services />} />
+        <Route path="/service-request-list" element={<TenantRequestsPage />} />
         
         
 
