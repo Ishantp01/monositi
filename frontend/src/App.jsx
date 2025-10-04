@@ -25,6 +25,7 @@ import Rent from "./pages/Rent"
 import Profile from "./pages/Profile";
 import PG from "./pages/PG";
 import ServiceRequestPage from "./pages/ServiceRequestPage";
+import Signup from "./pages/Signup";
 
 export default function App() {
   return (
@@ -36,7 +37,7 @@ export default function App() {
         <Route path="/rentlist" element={<RentList />} />
         <Route path="/commercial" element={<CommercialList />} />
         <Route path="/pghostel" element={<PgHostelList />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
         
