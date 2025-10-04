@@ -50,4 +50,18 @@ const adminOnly = (req, res, next) => {
   }
 };
 
-module.exports = { protect, adminOnly };
+const serviceProviderOnly = (req, res, next) => {
+  if (req.user.role !== "serviceProvider") {
+    return res.status(403).json({ message: "Access denied: Service Provider only" });
+  }
+  next();
+};
+
+const tenantOnly = (req, res, next) => {
+  if (req.user.role !== "tenant") {
+    return res.status(403).json({ message: "Access denied: Tenant only" });
+  }
+  next();
+};
+
+module.exports = { protect, adminOnly, serviceProviderOnly, tenantOnly,  };

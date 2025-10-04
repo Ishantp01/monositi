@@ -21,7 +21,10 @@ import Leaseable_Properties from "./components/Admin/Leaseable_Properties";
 
 
 import Rent from "./pages/Rent"
+
 import Profile from "./pages/Profile";
+import PG from "./pages/PG";
+import ServiceRequestPage from "./pages/ServiceRequestPage";
 
 export default function App() {
   return (
@@ -40,10 +43,11 @@ export default function App() {
         <Route path="/verify" element={<VerifyOtp />} />
         <Route path="/details" element={<PropertyPage />} />
         <Route path="/property-details/:id" element={<Rent />} />
-        <Route path="/pg-details/:id" element={<PgHostelList />} />
+        <Route path="/pg-details/:id" element={<PG />} />
         <Route path="/commercial-details/:id" element={<CommercialList />} />
 
         <Route path="/rent-details" element={<Rent />} />
+        <Route path="/service-request" element={<ServiceRequestPage />} />
         
 
         <Route path="/admin" element={<AdminPanel />} />
