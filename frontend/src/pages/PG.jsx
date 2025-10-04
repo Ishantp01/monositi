@@ -10,9 +10,8 @@ import CommonAreaAndAmenities from "../components/PG/CommonAreaAndAmenities";
 import PropertyCaraousalPG from "../components/PG/PropertyCaraousalPG";
 import avatar from '../assets/images/avatar2.jpg'
 
-// Import property data from sliders
-import { properties as slider3Properties } from '../components/Carousel/PropertiesSlider3';
-import { properties as slider4Properties } from '../components/Carousel/PropertiesSlider4';
+// Import PG property data from PgHostelList
+import { pgHostelData } from './PgHostelList';
 
 function PG() {
   const { id } = useParams();
@@ -23,13 +22,18 @@ function PG() {
     if (id) {
       // If ID is provided, find the specific property
       setLoading(true);
-      const allProperties = [...slider3Properties, ...slider4Properties];
-      const foundProperty = allProperties.find(prop => prop.id === parseInt(id));
+      console.log('Looking for PG with ID:', id);
+      console.log('Available PG data:', pgHostelData);
+      const foundProperty = pgHostelData.find(prop => prop.id === parseInt(id));
+      console.log('Found property:', foundProperty);
       
       if (foundProperty) {
         setProperty(foundProperty);
       }
       setLoading(false);
+    } else {
+      // If no ID provided, use the first property for testing
+      setProperty(pgHostelData[0]);
     }
   }, [id]);
   if (loading) {
