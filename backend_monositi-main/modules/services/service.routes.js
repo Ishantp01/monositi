@@ -17,6 +17,12 @@ router.post(
 // Tenant creates a service request
 router.post("/services/requests", protect, tenantOnly, serviceController.createServiceRequest);
 
+router.get(
+  "/services/requests/tenant",
+  protect,
+  serviceController.getServicesByTenant
+);
+
 // Admin views all service requests
 router.get("/services/requests/admin", protect, adminOnly, serviceController.listServiceRequestsForAdmin);
 
@@ -45,10 +51,6 @@ router.get(
   serviceController.getServiceRequestById
 );
 
-router.get(
-  "/services/requests/tenant/:tenantId",
-  protect,
-  serviceController.getServiceRequestsByTenantId
-);
+
 
 module.exports = router;
