@@ -38,4 +38,7 @@ router.patch(
   propertyController.adminSuspendProperty
 );
 
+router.get("/properties/search/by-tags", propertyController.getPropertiesByTags);
+
+
 module.exports = router;

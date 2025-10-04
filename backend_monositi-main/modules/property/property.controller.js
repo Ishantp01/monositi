@@ -177,3 +177,38 @@ exports.adminSuspendProperty = asyncHandler(async (req, res) => {
 
   res.json({ success: true, property });
 });
+
+exports.getPropertiesByTags = async (req, res) => {
+  try {
+    const { tags } = req.query;
+
+    if (!tags) {
+      return res.status(400).json({
+        success: false,
+        message: "Tags are required"
+      });
+    }
+
+    // Split tags by comma and trim spaces
+    const tagsArray = tags.split(",").map(tag => tag.trim());
+
+    // Find properties where any of the tags match, and status is Verified
+    const properties = await Property.find({
+      tags: { $in: tagsArray },
+      status: "Verified"
+    });
+
+    res.status(200).json({
+      success: true,
+      count: properties.length,
+      properties
+    });
+  } catch (error) {
+    console.error("Error fetching properties by tags:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message
+    });
+  }
+};
