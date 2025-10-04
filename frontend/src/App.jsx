@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import SignUp from "./pages/Signup";
 import Login from "./pages/Login";
 import VerifyOtp from "./components/VerifyOtp";
 import Home from "./pages/Home";
@@ -24,11 +23,12 @@ import Rent from "./pages/Rent"
 import AddProperty from "./pages/AddProperty";
 import MyProperties from "./pages/MyProperties";
 import EditProperty from "./pages/EditProperty";
-
+import ServiceProvider from "./pages/ServiceProviderform";
+import ServiceRequestPage from "./pages/ServiceRequestPage";
 import Profile from "./pages/Profile";
 import PG from "./pages/PG";
-import ServiceRequestPage from "./pages/ServiceRequestPage";
 import Signup from "./pages/Signup";
+import Services from "./pages/Services";
 
 export default function App() {
   return (
@@ -57,6 +57,10 @@ export default function App() {
         <Route path="/add-property" element={<AddProperty />} />
         <Route path="/my-properties" element={<MyProperties />} />
         <Route path="/edit-property/:id" element={<EditProperty />} />
+
+        <Route path="/service-form" element={<ServiceProvider />} />
+        <Route path="/services" element={<Services />} />
+        
         
 
         <Route path="/admin" element={<AdminPanel />} />
