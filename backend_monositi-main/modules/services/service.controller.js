@@ -329,3 +329,35 @@ exports.getServiceRequestById = asyncHandler(async (req, res) => {
 
   res.json({ success: true, data: serviceRequest });
 });
+
+exports.getServiceRequestsByTenantId = asyncHandler(async (req, res) => {
+  const { tenantId } = req.params;
+
+  // ✅ Validate ID
+  if (!mongoose.Types.ObjectId.isValid(tenantId)) {
+    return res.status(400).json({ success: false, message: "Invalid tenant ID" });
+  }
+
+  // ✅ Role-based access
+  if (req.user.role === "tenant" && req.user._id.toString() !== tenantId) {
+    return res.status(403).json({ success: false, message: "Access denied" });
+  }
+
+  const serviceRequests = await ServiceRequest.find({ tenant: tenantId })
+    .populate("tenant", "name email role")
+    .populate({
+      path: "serviceProvider",
+      populate: { path: "user", select: "name email role" },
+    })
+    .sort({ createdAt: -1 }); // newest first
+
+  if (!serviceRequests || serviceRequests.length === 0) {
+    return res.status(404).json({ success: false, message: "No service requests found for this tenant" });
+  }
+
+  res.json({
+    success: true,
+    count: serviceRequests.length,
+    data: serviceRequests,
+  });
+});
