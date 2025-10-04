@@ -3,10 +3,55 @@ const ServiceRequest = require("./serviceRequest.model");
 const asyncHandler = require("express-async-handler");
 const cloudinary = require("../../config/cloudinary");
 const fs = require("fs");
+const mongoose = require("mongoose");
+
+
+// exports.createServiceProvider = async (req, res) => {
+//   try {
+//     const { category, description, tags, address, city, state, pincode } = req.body;
+
+//     let profilePhotoUrl;
+//     if (req.file) {
+//       const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+//         folder: "service-providers/profile",
+//       });
+//       profilePhotoUrl = uploadResult.secure_url;
+//       fs.unlinkSync(req.file.path);
+//     }
+
+//     const serviceProvider = await ServiceProvider.create({
+//       user: req.user._id,
+//       category,
+//       description,
+//       tags: tags ? tags.split(",").map((t) => t.trim()) : [],
+//       profilePhoto: profilePhotoUrl,
+//     });
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Service provider profile created",
+//       data: serviceProvider,
+//     });
+//   } catch (err) {
+//     console.error("Error creating service provider:", err);
+//     res.status(500).json({ success: false, error: err.message });
+//   }
+// };
+
+
+
 
 
 exports.createServiceProvider = async (req, res) => {
   try {
+    // Check if user has the right role
+    if (!req.user || req.user.role !== "serviceProvider") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Only service providers can create profiles.",
+      });
+    }
+
     const { category, description, tags, address, city, state, pincode } = req.body;
 
     let profilePhotoUrl;
@@ -15,28 +60,36 @@ exports.createServiceProvider = async (req, res) => {
         folder: "service-providers/profile",
       });
       profilePhotoUrl = uploadResult.secure_url;
-      fs.unlinkSync(req.file.path);
+      fs.unlinkSync(req.file.path); // remove temp file
     }
 
+    // Create new service provider profile
     const serviceProvider = await ServiceProvider.create({
       user: req.user._id,
       category,
       description,
+      address,
+      city,
+      state,
+      pincode,
       tags: tags ? tags.split(",").map((t) => t.trim()) : [],
       profilePhoto: profilePhotoUrl,
     });
 
     res.status(201).json({
       success: true,
-      message: "Service provider profile created",
+      message: "Service provider profile created successfully",
       data: serviceProvider,
     });
   } catch (err) {
     console.error("Error creating service provider:", err);
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: err.message,
+    });
   }
 };
-
 // Upload gallery photos for service provider
 exports.uploadServicePhotos = async (req, res) => {
   try {
@@ -124,9 +177,20 @@ exports.listServiceRequestsForAdmin = asyncHandler(async (req, res) => {
  * @route PATCH /services/requests/:id/assign
  * @access Admin only
  */
+
 exports.assignProviderToRequest = asyncHandler(async (req, res) => {
   const { providerId } = req.body;
-  const request = await ServiceRequest.findById(req.params.id);
+  const { id } = req.params;
+
+  // ✅ Validate ObjectIds before using them
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid request ID" });
+  }
+  if (!mongoose.Types.ObjectId.isValid(providerId)) {
+    return res.status(400).json({ success: false, message: "Invalid provider ID" });
+  }
+
+  const request = await ServiceRequest.findById(id);
   if (!request) return res.status(404).json({ message: "Request not found" });
 
   request.serviceProvider = providerId;
