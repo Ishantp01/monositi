@@ -74,22 +74,17 @@ const propertyData = [
   },
 ];
 
-// Property Card Component
+// Property Card (unchanged)
 const PropertyCard = ({ property }) => (
-  <div className="py-4 w-full">
-    <div
-      key={property.id}
-      className="flex flex-col md:flex-row border border-red-500 rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 w-full max-w-6xl mx-auto"
-    >
+  <div className="w-full">
+    <div className="flex flex-col md:flex-row border border-red-500 rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 w-full max-w-6xl mx-auto">
       <img
         src={property.image}
         alt={property.name}
         className="w-full md:w-2/5 h-52 sm:h-60 md:h-72 lg:h-80 xl:h-[22rem] object-cover"
       />
       <div className="p-4 md:p-6 w-full md:w-3/5 flex flex-col justify-center gap-1 md:gap-2">
-        <h3 className="font-semibold text-base sm:text-lg md:text-xl text-gray-800">
-          {property.name}
-        </h3>
+        <h3 className="font-semibold text-base sm:text-lg md:text-xl text-gray-800">{property.name}</h3>
         <p className="text-sm sm:text-base text-gray-500">{property.location}</p>
         <p className="text-sm sm:text-base text-gray-500">{property.bhk}</p>
         <p className="text-sm sm:text-base text-gray-700">{property.types}</p>
@@ -102,52 +97,35 @@ const PropertyCard = ({ property }) => (
   </div>
 );
 
-
-
-// Main Slider Component
+// Unified Slider
 const PropertySlider2 = () => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
 
   return (
-    <div className="mx-auto max-w-[90%] py-10 relative">
-      {/* Custom Arrows */}
+    <div className="mx-auto max-w-[90%] relative">
+      {/* Arrows */}
       <div className="absolute -left-6 top-1/2 z-10 -translate-y-1/2">
         <button
           ref={prevRef}
-          className="prev-slide w-10 h-10 sm:w-12 sm:h-12 bg-theme-primary rounded-full flex items-center justify-center transition-all duration-300 group"
+          className="prev-slide w-10 h-10 sm:w-12 sm:h-12 bg-theme-primary rounded-full flex items-center justify-center group"
         >
-          <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white transition-transform duration-300 group-hover:scale-125" />
+          <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white group-hover:scale-125 transition-transform" />
         </button>
       </div>
-
       <div className="absolute -right-6 top-1/2 z-10 -translate-y-1/2">
         <button
           ref={nextRef}
-          className="next-slide w-10 h-10 sm:w-12 sm:h-12 bg-theme-primary rounded-full flex items-center justify-center transition-all duration-300 group"
+          className="next-slide w-10 h-10 sm:w-12 sm:h-12 bg-theme-primary rounded-full flex items-center justify-center group"
         >
-          <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-white transition-transform duration-300 group-hover:scale-125" />
+          <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-white group-hover:scale-125 transition-transform" />
         </button>
       </div>
 
       {/* Swiper */}
       <Swiper
         spaceBetween={20}
-        slidesPerView={1}
         loop={true}
-        grid={{ rows: 2, fill: "row" }}
-        breakpoints={{
-          768: {
-            slidesPerView: 2,
-            slidesPerGroup: 2,
-            grid: { rows: 2 },
-          },
-          1024: {
-            slidesPerView: 2,
-            slidesPerGroup: 2,
-            grid: { rows: 2 },
-          },
-        }}
         navigation={{
           prevEl: prevRef.current,
           nextEl: nextRef.current,
@@ -155,6 +133,20 @@ const PropertySlider2 = () => {
         onBeforeInit={(swiper) => {
           swiper.params.navigation.prevEl = prevRef.current;
           swiper.params.navigation.nextEl = nextRef.current;
+        }}
+        breakpoints={{
+          0: {
+            slidesPerView: 1,
+            grid: { rows: 1 },
+          },
+          768: {
+            slidesPerView: 2,
+            grid: { rows: 2, fill: "row" },
+          },
+          1024: {
+            slidesPerView: 2,
+            grid: { rows: 2, fill: "row" },
+          },
         }}
         modules={[Grid, Navigation]}
         className="mySwiper"

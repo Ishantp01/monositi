@@ -4,7 +4,8 @@ import { Navigation } from "swiper/modules";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "swiper/css";
 import "swiper/css/navigation";
-import { PropertyCard } from "../PropertyCard"; // Swap this if you want a different card
+import PropertyCard3 from "../PropertyCard3";
+
 
 const properties = [
     {
@@ -51,7 +52,7 @@ const properties = [
 ];;
 
 
-const PropertyCarousel = () => {
+const PropertySlider4 = ({link}) => {
     return (
         <div className="relative mx-auto max-w-[90%]">
             {/* Custom Navigation Arrows */}
@@ -89,7 +90,7 @@ const PropertyCarousel = () => {
                 }} >
                 {properties.map((property, index) => (
                     <SwiperSlide key={index}>
-                        <PropertyCard data={property} link={"/details"} />
+                        <PropertyCard3 data={property} link={link} />
                     </SwiperSlide>
                 ))}
 
@@ -98,4 +99,4 @@ const PropertyCarousel = () => {
     );
 };
 
-export default PropertyCarousel;
+export default PropertySlider4;

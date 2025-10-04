@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
+import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const data = [
@@ -80,38 +81,40 @@ export default function CardCarousel() {
             >
                 {data.map((item) => (
                     <SwiperSlide key={item.id}>
-                        <div className="rounded-xl border border-red-500 overflow-hidden shadow-md 
+                        <Link to={"/details"}>
+                            <div className="rounded-xl border border-red-500 overflow-hidden shadow-md 
                   max-w-[100%] sm:max-w-full mx-auto">
-                            {/* Image with taller height on large screens */}
-                            <img
-                                src={item.image}
-                                alt={item.title}
-                                className="w-full h-48 lg:h-64 object-cover transition-all duration-300"
-                            />
-                            <div className="flex gap-4 p-4">
+                                {/* Image with taller height on large screens */}
                                 <img
-                                    src={item.profileImage}
-                                    alt="Profile"
-                                    className="w-20 h-20 object-cover rounded-md shrink-0"
+                                    src={item.image}
+                                    alt={item.title}
+                                    className="w-full h-48 lg:h-64 object-cover transition-all duration-300"
                                 />
+                                <div className="flex gap-4 p-4">
+                                    <img
+                                        src={item.profileImage}
+                                        alt="Profile"
+                                        className="w-20 h-20 object-cover rounded-md shrink-0"
+                                    />
 
-                                <div className="flex flex-col text-sm text-gray-800 w-full">
-                                    <div className="flex flex-row lg:flex-row lg:items-center justify-between">
-                                        <h3 className="font-semibold text-black truncate">{item.title}</h3>
-                                        <p className="text-right text-gray-700 truncate">{item.subtitle}</p>
-                                    </div>
-
-                                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mt-1">
-                                        <div>
-                                            <div className="text-xs text-gray-500 lg:text-left">{item.by}</div>
-                                            <div className="text-xs text-gray-500 lg:text-right">{item.location}</div>
+                                    <div className="flex flex-col text-sm text-gray-800 w-full">
+                                        <div className="flex flex-row lg:flex-row lg:items-center justify-between">
+                                            <h3 className="font-semibold text-black truncate">{item.title}</h3>
+                                            <p className="text-right text-gray-700 truncate">{item.subtitle}</p>
                                         </div>
-                                        <div className="font-bold">{item.price}</div>
+
+                                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mt-1">
+                                            <div>
+                                                <div className="text-xs text-gray-500 lg:text-left">{item.by}</div>
+                                                <div className="text-xs text-gray-500 lg:text-right">{item.location}</div>
+                                            </div>
+                                            <div className="font-bold">{item.price}</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                        </div>
+                            </div>
+                        </Link>
                     </SwiperSlide>
                 ))}
             </Swiper>
