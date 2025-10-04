@@ -1,16 +1,30 @@
 import React from "react";
 import OutlineButton from "../MoreButton";
 
-function HeroReuse() {
+function HeroReuse({ property }) {
+  const formatINR = (n) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(n);
   return (
     <section className="bg-[#FFFFFF] relative mx-auto max-w-[90%] py-6 p-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left Images */}
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
-            <div className="h-60 bg-gray-300 rounded-lg flex items-center justify-center">
-              Main Image
-            </div>
+            {property?.photos?.[0] ? (
+              <img 
+                src={property.photos[0]} 
+                alt={property.name}
+                className="h-60 w-full object-cover rounded-lg"
+              />
+            ) : (
+              <div className="h-60 bg-gray-300 rounded-lg flex items-center justify-center">
+                Main Image
+              </div>
+            )}
           </div>
           <div className="h-28 bg-gray-300 rounded-lg"></div>
           <div className="h-28 bg-gray-300 rounded-lg"></div>
@@ -23,7 +37,7 @@ function HeroReuse() {
         <div className="flex flex-col">
           <div className="flex items-center justify-between">
             <h1 className="text-black text-2xl font-semibold mb-2">
-              Zolo Clayton, Hsr Layout, Bangalore
+              {property ? `${property.name}, ${property.city}, ${property.state}` : "Zolo Clayton, Hsr Layout, Bangalore"}
             </h1>
 
             <svg
@@ -40,12 +54,7 @@ function HeroReuse() {
             </svg>
           </div>
           <p className="text-gray-600 mb-4">
-            Move into Zolo Clayton, A professionally managed PG in HSR Layout.
-            Located in a safe neighbourhood, this unisex PG offers various
-            modern amenities for your comfort, Such as TV, Power Backup, Wi-Fi,
-            etc. This PG has Single and Double Occupancy types. This PG is near
-            major Commercial and Educational hubs. Please contact the seller to
-            book this fast selling high in demand PG stay.
+            {property?.description || "Move into Zolo Clayton, A professionally managed PG in HSR Layout. Located in a safe neighbourhood, this unisex PG offers various modern amenities for your comfort, Such as TV, Power Backup, Wi-Fi, etc. This PG has Single and Double Occupancy types. This PG is near major Commercial and Educational hubs. Please contact the seller to book this fast selling high in demand PG stay."}
           </p>
 
           {/* Info Grid */}
@@ -53,7 +62,7 @@ function HeroReuse() {
             <div className="grid grid-cols-4 gap-4 py-2 text-sm">
               <div>
                 <p className="text-[#C3B900] font-medium">Deposit Amount</p>
-                <p className="text-black">₹11,680</p>
+                <p className="text-black">{property ? formatINR(property.price) : "₹11,680"}</p>
               </div>
               <div>
                 <p className="text-[#C3B900] font-medium">Maintenance</p>
