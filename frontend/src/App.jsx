@@ -52,13 +52,13 @@ export default function App() {
         <Route path="/commercial-details/:id" element={<CommercialList />} />
 
         <Route path="/rent-details" element={<Rent />} />
-        <Route path="/service-request" element={<ServiceRequestPage />} />
         
         {/* Property Management Routes */}
         <Route path="/add-property" element={<AddProperty />} />
         <Route path="/my-properties" element={<MyProperties />} />
         <Route path="/edit-property/:id" element={<EditProperty />} />
 
+        <Route path="/service-request" element={<ServiceRequestPage />} />
         <Route path="/service-form" element={<ServiceProvider />} />
         <Route path="/services" element={<Services />} />
         <Route path="/service-request-list" element={<TenantRequestsPage />} />
