@@ -23,6 +23,11 @@ export default function Login() {
       if (response.success) {
         // Save token or user details in localStorage (if returned)
         localStorage.setItem("token", response.token);
+        localStorage.setItem("role", JSON.stringify(response.user.role));
+        localStorage.setItem("user", JSON.stringify(response.user));
+
+        console.log(response);
+
         alert("Login successful!");
         // redirect to dashboard or home
         window.location.href = "/";
