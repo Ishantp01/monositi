@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
+import Login from "./components/Login";
 import VerifyOtp from "./components/VerifyOtp";
 import Home from "./pages/Home";
 import SaleList from "./pages/SaleList";
@@ -27,7 +27,7 @@ import ServiceProvider from "./pages/ServiceProviderform";
 import ServiceRequestPage from "./pages/ServiceRequestPage";
 import Profile from "./pages/Profile";
 import PG from "./pages/PG";
-import Signup from "./pages/Signup";
+import SignUp from "./components/SignUp";
 import Services from "./pages/Services";
 import TenantRequestsPage from "./pages/ServiceRequestListTenant";
 
@@ -41,7 +41,7 @@ export default function App() {
         <Route path="/rentlist" element={<RentList />} />
         <Route path="/commercial" element={<CommercialList />} />
         <Route path="/pghostel" element={<PgHostelList />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
         
