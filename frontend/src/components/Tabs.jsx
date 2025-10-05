@@ -5,14 +5,13 @@ import Rent from './sections/Rent';
 import PgHotel from './sections/PgHotel';
 import Commercial from './sections/Commercial';
 
-const tabOptions = ['Buy', 'Rent', 'PG/Hostel', 'Commercial', 'Post Free Property Ad'];
+const tabOptions = ['Buy', 'Rent', 'PG/Hostel', 'Commercial'];
 
 const tabContent = {
   Buy: <Buy />,
   Rent: <Rent />,
   'PG/Hostel': <PgHotel />,
   Commercial: <Commercial />,
-  'Post Free Property Ad': <div className='text-center max-w-7xl mx-auto bg-red-50 py-6 font-inter mt-8'>List your property for Free!</div>,
 };
 
 const tabToHash = {
@@ -20,7 +19,6 @@ const tabToHash = {
   Rent: 'rent',
   'PG/Hostel': 'pg',
   Commercial: 'commercial',
-  'Post Free Property Ad': 'post-ad',
 };
 
 const hashToTab = {
@@ -28,7 +26,6 @@ const hashToTab = {
   rent: 'Rent',
   pg: 'PG/Hostel',
   commercial: 'Commercial',
-  'post-ad': 'Post Free Property Ad',
 };
 
 const PropertySearch = () => {
