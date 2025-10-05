@@ -23,7 +23,16 @@ export const propertyApi = {
     return await response.json();
   },
 
+  getPropertyByLandlord: async () => {
+    const response = await fetch(`${API_BASE_URL}/properties/landlord/me`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAuthToken()}`,
+      },
+    });
 
+    return await response.json();
+  },
 
   createProperty: async (formData) => {
     const response = await fetch(`${API_BASE_URL}/properties/properties`, {
@@ -37,7 +46,7 @@ export const propertyApi = {
   },
 
   updateProperty: async (id, formData) => {
-    const response = await fetch(`${API_BASE_URL}/properties/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/properties/properties/${id}`, {
       method: 'PUT',
       body: formData,
       headers: {
@@ -79,7 +88,7 @@ export const formatPropertyForForm = (property) => {
 
 export const createPropertyFormData = (propertyData) => {
   const formData = new FormData();
-  
+
   Object.keys(propertyData).forEach(key => {
     if (key !== 'photos' && propertyData[key] !== null && propertyData[key] !== undefined) {
       formData.append(key, propertyData[key]);
