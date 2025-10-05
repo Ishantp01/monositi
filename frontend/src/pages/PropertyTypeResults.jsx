@@ -56,17 +56,26 @@ export default function PropertyTypeResults() {
                   <div className="flex gap-2 mt-3">
                     <button
                       onClick={async () => {
-                        const res = await propertyApi.verifyProperty(p._id);
-                        if (res.success) {
-                          setItems((prev) => prev.map((it) => (it._id === p._id ? { ...it, status: 'Verified' } : it)));
-                        } else {
-                          alert(res.message || 'Failed to verify');
+                        try {
+                          const res = await propertyApi.verifyProperty(p._id, "Verified"); // ✅ pass status here
+                          if (res.success) {
+                            setItems((prev) =>
+                              prev.map((it) =>
+                                it._id === p._id ? { ...it, status: "Verified" } : it
+                              )
+                            );
+                          } else {
+                            alert(res.message || "Failed to verify");
+                          }
+                        } catch (err) {
+                          alert(err.message || "Something went wrong");
                         }
                       }}
                       className="px-3 py-1 rounded bg-green-600 text-white text-sm"
                     >
                       Verify
                     </button>
+
                     <button
                       onClick={async () => {
                         const res = await propertyApi.suspendProperty(p._id);
