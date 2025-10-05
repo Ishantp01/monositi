@@ -1,73 +1,88 @@
 import React, { useState } from "react";
 import AuthLayout from "./AuthLayout";
-
-const ROLES = ["Buyer /Owner", "Builder"];
+import apiRequest from "../utils/api"; // Common API handler
 
 export default function Login() {
-  const [role, setRole] = useState(ROLES[0]);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // Handle login form submission
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await apiRequest("/users/login", "POST", {
+        email,
+        password,
+      });
+
+      if (response.success) {
+        // Save token or user details in localStorage (if returned)
+        localStorage.setItem("token", response.token);
+        alert("Login successful!");
+        // redirect to dashboard or home
+        window.location.href = "/";
+      } else {
+        setError(response.message || "Invalid credentials.");
+      }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <AuthLayout image="https://images.unsplash.com/photo-1568605114967-8130f3a36994?q=80&w=1600">
       <div className="rounded-xl border border-gray-300 shadow-sm overflow-hidden">
         <div className="p-6 sm:p-8">
-          <h1 className="text-xl font-semibold text-gray-900 mb-4">Login</h1>
+          <h1 className="text-xl uppercase font-bold text-gray-900 mb-4 text-center">
+            Login
+          </h1>
 
-          <p className="mt-4 text-sm text-gray-700">Are You</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {ROLES.map((r) => (
-              <button
-                key={r}
-                onClick={() => setRole(r)}
-                className={`px-3 py-1 rounded-full border text-sm transition font-semibold ${
-                  role === r
-                    ? "bg-[#339989]/20 text-black border-[#339989]"
-                    : "border-gray-300 text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-
-          <form className="mt-6 space-y-6">
+          <form className="mt-6 space-y-6" onSubmit={handleLogin}>
             <input
-              type="tel"
-              placeholder="Enter Mobile No."
+              type="email"
+              placeholder="Enter Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className="w-full border-b border-gray-300 focus:border-gray-900 outline-none py-2 text-sm"
             />
 
+            <input
+              type="password"
+              placeholder="Enter Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full border-b border-gray-300 focus:border-gray-900 outline-none py-2 text-sm"
+            />
+
+            {error && (
+              <p className="text-red-500 text-sm text-center">{error}</p>
+            )}
+
             <button
               type="submit"
-              className="w-full rounded-full bg-theme-primary py-2 text-white font-medium hover:bg-red-700 transition"
+              disabled={loading}
+              className="w-full rounded-full bg-theme-primary py-2 text-white font-medium hover:bg-red-700 transition disabled:opacity-60"
             >
-              Next
+              {loading ? "Logging in..." : "Login"}
             </button>
 
-            <div className="text-right text-xs text-gray-400">Need Help ?</div>
-
-            {/* Divider */}
-            <div className="flex items-center gap-3 text-xs text-gray-400">
-              <span className="h-px flex-1 bg-gray-200" />
-              <span>Or login using</span>
-              <span className="h-px flex-1 bg-gray-200" />
+            <div className="text-right text-xs text-gray-400 cursor-pointer hover:underline">
+              Forgot Password?
             </div>
-
-            <button
-              type="button"
-              className="mx-auto flex items-center justify-center gap-2 rounded-full border px-4 py-2 text-sm hover:bg-gray-50"
-            >
-              <img
-                src="https://www.svgrepo.com/show/475656/google-color.svg"
-                alt="google"
-                className="w-4 h-4"
-              />
-              Google
-            </button>
           </form>
         </div>
 
         <div className="bg-[#E0E0E0] p-4 md:py-8 text-center text-sm">
-          Don’t have an account ?{" "}
+          Don’t have an account?{" "}
           <a href="/signup" className="text-theme-primary font-semibold">
             Sign Up
           </a>
