@@ -18,17 +18,12 @@ export const propertyApi = {
     return await response.json();
   },
 
-  getPropertyById: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/properties/${id}`);
+  getPropertyById: async (userId) => {
+    const response = await fetch(`${API_BASE_URL}/properties/${userId}`);
     return await response.json();
   },
 
-  getMyProperties: async () => {
-    const response = await fetch(`${API_BASE_URL}/properties/my-properties`, {
-      headers: getAuthHeaders()
-    });
-    return await response.json();
-  },
+
 
   createProperty: async (formData) => {
     const response = await fetch(`${API_BASE_URL}/properties/properties`, {
