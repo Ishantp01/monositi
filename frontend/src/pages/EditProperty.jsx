@@ -28,20 +28,25 @@ const EditProperty = () => {
 
   useEffect(() => {
     fetchProperty();
-  }, [id]);
+  }, []);
 
   const fetchProperty = async () => {
     try {
-      const result = await propertyApi.getPropertyById(id);
-      
+      const result = await propertyApi.getPropertyByLandlord();
       if (result.success) {
-        const property = result.property;
+        // Find property by id
+        const property = result.properties.find(p => p._id === id);
+        if (!property) {
+          setMessage('Property not found');
+          setLoading(false);
+          return;
+        }
         setFormData(formatPropertyForForm(property));
       } else {
-        setMessage('Error fetching property: ' + result.message);
+        setMessage('Error fetching properties: ' + result.message);
       }
     } catch (error) {
-      setMessage('Error fetching property: ' + error.message);
+      setMessage('Error fetching properties: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -110,11 +115,10 @@ const EditProperty = () => {
             </div>
 
             {message && (
-              <div className={`mb-6 p-4 rounded-lg ${
-                message.includes('successfully') 
-                  ? 'bg-green-50 text-green-800 border border-green-200' 
-                  : 'bg-red-50 text-red-800 border border-red-200'
-              }`}>
+              <div className={`mb-6 p-4 rounded-lg ${message.includes('successfully')
+                ? 'bg-green-50 text-green-800 border border-green-200'
+                : 'bg-red-50 text-red-800 border border-red-200'
+                }`}>
                 {message}
               </div>
             )}
@@ -133,10 +137,11 @@ const EditProperty = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary"
                 >
                   <option value="">Select Property Type</option>
-                  <option value="PG">PG/Hostel</option>
-                  <option value="Apartment">Apartment</option>
-                  <option value="House">House</option>
+                  <option value="PG/Hostel">PG/Hostel</option>
+                  <option value="Rent">Rent</option>
+                  <option value="Buy">Buy</option>
                   <option value="Commercial">Commercial</option>
+
                 </select>
               </div>
 
@@ -251,7 +256,8 @@ const EditProperty = () => {
                   <option value="">Select Gender Preference</option>
                   <option value="Boys">Boys Only</option>
                   <option value="Girls">Girls Only</option>
-                  <option value="Both">Both Boys and Girls</option>
+                  <option value="Co-ed">Both Boys and Girls</option>
+                  <option value="Any">Any</option>
                 </select>
               </div>
 
