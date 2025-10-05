@@ -211,7 +211,7 @@ exports.getPropertiesByType = async (req, res) => {
     // Fetch verified properties of the given type
     const properties = await Property.find({
       type,
-      status: "verified",
+      status: "Verified",
     }).populate("landlord", "name email");
 
     res.status(200).json({
