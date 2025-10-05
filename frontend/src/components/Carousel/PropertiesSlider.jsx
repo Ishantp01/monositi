@@ -7,7 +7,7 @@ import "swiper/css/navigation";
 import { PropertyCard } from "../PropertyCard";
 import { propertyApi } from "../../utils/propertyApi"; // import the API object
 
-const PropertyCarousel = ({ tags = "buy" }) => {
+const PropertyCarousel = ({ tags}) => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
