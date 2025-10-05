@@ -7,12 +7,7 @@ import { Link } from "react-router-dom";
 const Commercial = () => {
   return (
     <>
-      <GradientHeading text={"One Stop Destination For Commercial Properties"} />
-      <div className="my-8 md:my-16">
-        <Link to={"/commercial"}>
-        <PropertySlider5 properties={properties} id={2} />
-        </Link>
-      </div>
+
       <div className="w-full h-16">
       </div>
       <GradientHeading text={"Properties by Owners"} />
@@ -21,10 +16,7 @@ const Commercial = () => {
       </div>
       <div className="w-full h-16">
       </div>
-      <GradientHeading text={"Shops and Showrooms By Owners"} />
-      <div className="my-8 md:my-16">
-        <PropertySlider9 properties={showrooms} id={2} link={"/details"} />
-      </div>
+
 
 
     </>
