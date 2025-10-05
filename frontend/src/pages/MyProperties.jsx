@@ -22,14 +22,7 @@ const MyProperties = () => {
         return;
       }
 
-      const user = JSON.parse(storedUser);
-      console.log(user);
-
-      const userId = user._id;
-      JSON.parse(localStorage.getItem("user"));
-
-
-      const result = await propertyApi.getPropertyById(userId);
+      const result = await propertyApi.getPropertyByLandlord();
 
       if (result.success) {
         setProperties(result.properties);
