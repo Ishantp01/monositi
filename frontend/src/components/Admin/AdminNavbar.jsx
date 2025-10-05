@@ -4,10 +4,10 @@ import { Link } from "react-router-dom"
 
 const AdminNavbar = () => {
     const navItems = [
-        { name: "Renting", path: "/renting-properties" },
-        { name: "PG/Hostel", path: "/pg-hostel" },
-        { name: "Buy", path: "/buy" },
-        { name: "Commercial", path: "/commercial" },
+        { name: "Rent", path: "/properties/type/Rent" },
+        { name: "PG/Hostel", path: "/properties/type/PG%2FHostel" },
+        { name: "Buy", path: "/properties/type/Buy" },
+        { name: "Commercial", path: "/properties/type/Commercial" },
         { name: "Users", path: "/admin/users" },
     ];
 
