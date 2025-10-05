@@ -113,7 +113,6 @@ exports.getAllProperties = asyncHandler(async (req, res) => {
 exports.getPropertyById = asyncHandler(async (req, res) => {
   const property = await Property.findOne({
     _id: req.params.id,
-    status: "Verified",
   }).populate("landlord", "name email");
 
   if (!property) {

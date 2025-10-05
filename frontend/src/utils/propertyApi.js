@@ -30,10 +30,15 @@ export const propertyApi = {
         'Authorization': `Bearer ${getAuthToken()}`,
       },
     });
+  
 
     return await response.json();
   },
 
+  getPropertiesByType: async (type) => {
+    const response = await fetch(`${API_BASE_URL}/properties/properties/search/type?type=${encodeURIComponent(type)}`);
+    return await response.json();
+  },
   createProperty: async (formData) => {
     const response = await fetch(`${API_BASE_URL}/properties/properties`, {
       method: 'POST',
