@@ -9,6 +9,7 @@ const AdminNavbar = () => {
         { name: "PG/Hostel Renting", path: "/pg-hostel" },
         { name: "Leaseable Properties", path: "/leaseable" },
         { name: "Selling Properties-PG/Hostel", path: "/selling-pg-hostel" },
+        { name: "Users", path: "/admin/users" },
     ];
 
     return (
