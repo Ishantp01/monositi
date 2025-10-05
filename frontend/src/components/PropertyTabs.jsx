@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 
-const tabOptions = ['Buy', 'Rent', 'PG/Hostel', 'Commercial', 'Post Free Property Ad'];
+const tabOptions = ['Buy', 'Rent', 'PG/Hostel', 'Commercial'];
 
 const tabContent = {
   Buy: 'Find your dream property to Buy here.',
   Rent: 'Search properties available for Rent.',
   'PG/Hostel': 'Discover PGs and Hostels near your location.',
   Commercial: 'Explore Commercial properties like shops, offices.',
-  'Post Free Property Ad': 'List your property for Free!',
 };
 
 const PropertySearch = () => {
@@ -34,10 +33,7 @@ const PropertySearch = () => {
   }, [location.pathname]);
 
   const handleTabClick = (tab) => {
-    if (tab === 'Post Free Property Ad') {
-      console.log(`${tab} functionality not implemented yet`);
-      return;
-    }
+   
     
     // Update URL based on tab selection
     const tabToPath = {
