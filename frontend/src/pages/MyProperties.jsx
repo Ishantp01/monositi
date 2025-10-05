@@ -15,15 +15,29 @@ const MyProperties = () => {
 
   const fetchMyProperties = async () => {
     try {
-      const result = await propertyApi.getMyProperties();
-      
+      const storedUser = localStorage.getItem("user");
+      if (!storedUser) {
+        setMessage("User not logged in");
+        setLoading(false);
+        return;
+      }
+
+      const user = JSON.parse(storedUser);
+      console.log(user);
+
+      const userId = user._id;
+      JSON.parse(localStorage.getItem("user"));
+
+
+      const result = await propertyApi.getPropertyById(userId);
+
       if (result.success) {
         setProperties(result.properties);
       } else {
-        setMessage('Error fetching properties: ' + result.message);
+        setMessage("Error fetching properties: " + result.message);
       }
     } catch (error) {
-      setMessage('Error fetching properties: ' + error.message);
+      setMessage("Error fetching properties: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -36,7 +50,7 @@ const MyProperties = () => {
 
     try {
       const result = await propertyApi.deleteProperty(propertyId);
-      
+
       if (result.success) {
         setMessage('Property deleted successfully');
         fetchMyProperties(); // Refresh the list
@@ -55,7 +69,7 @@ const MyProperties = () => {
       'Rejected': 'bg-red-100 text-red-800',
       'Suspended': 'bg-gray-100 text-gray-800'
     };
-    
+
     return (
       <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[status] || 'bg-gray-100 text-gray-800'}`}>
         {status}
@@ -85,11 +99,10 @@ const MyProperties = () => {
           </div>
 
           {message && (
-            <div className={`mb-6 p-4 rounded-lg ${
-              message.includes('successfully') 
-                ? 'bg-green-50 text-green-800 border border-green-200' 
-                : 'bg-red-50 text-red-800 border border-red-200'
-            }`}>
+            <div className={`mb-6 p-4 rounded-lg ${message.includes('successfully')
+              ? 'bg-green-50 text-green-800 border border-green-200'
+              : 'bg-red-50 text-red-800 border border-red-200'
+              }`}>
               {message}
             </div>
           )}
@@ -151,7 +164,7 @@ const MyProperties = () => {
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">{property.name}</h3>
                     <p className="text-gray-600 text-sm mb-2">{property.address}, {property.city}</p>
                     <p className="text-theme-primary font-bold text-lg mb-3">₹{property.price.toLocaleString()}</p>
-                    
+
                     <div className="flex flex-wrap gap-1 mb-4">
                       {property.tags && property.tags.slice(0, 3).map((tag, index) => (
                         <span key={index} className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
