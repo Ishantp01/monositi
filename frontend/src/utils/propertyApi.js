@@ -30,7 +30,7 @@ export const propertyApi = {
         'Authorization': `Bearer ${getAuthToken()}`,
       },
     });
-  
+
 
     return await response.json();
   },
@@ -78,16 +78,22 @@ export const propertyApi = {
     return await response.json();
   },
 
-  verifyProperty: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/properties/admin/properties/${id}/verify`, {
-      method: 'PATCH',
-      headers: {
-        ...getAuthHeaders(),
-        'Content-Type': 'application/json',
-      },
-    });
+  verifyProperty: async (id, status) => {
+    const response = await fetch(
+      `${API_BASE_URL}/properties/admin/properties/${id}/verify`,
+      {
+        method: 'PATCH',
+        headers: {
+          ...getAuthHeaders(), // spread your auth headers
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status }), // send the status in the body
+      }
+    );
+
     return await response.json();
   },
+
 
   suspendProperty: async (id) => {
     const response = await fetch(`${API_BASE_URL}/properties/admin/properties/${id}/suspend`, {
