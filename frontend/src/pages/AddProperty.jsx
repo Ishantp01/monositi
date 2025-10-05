@@ -108,9 +108,10 @@ const AddProperty = () => {
                 >
                   <option value="">Select Property Type</option>
                   <option value="PG/Hostel">PG/Hostel</option>
-                  <option value="Apartment">Apartment</option>
-                  <option value="House">House</option>
+                  <option value="Rent">Rent</option>
+                  <option value="Buy">Buy</option>
                   <option value="Commercial">Commercial</option>
+
                 </select>
               </div>
 
@@ -225,7 +226,8 @@ const AddProperty = () => {
                   <option value="">Select Gender Preference</option>
                   <option value="Boys">Boys Only</option>
                   <option value="Girls">Girls Only</option>
-                  <option value="Both">Both Boys and Girls</option>
+                  <option value="Co-ed">Both Boys and Girls</option>
+                  <option value="Any">Any</option>
                 </select>
               </div>
 
