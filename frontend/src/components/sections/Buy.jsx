@@ -16,13 +16,13 @@ const Buy = () => {
             <div className="my-8 md:my-16">
                 <PropertyCarousel />
             </div>
-            <OutlineButton link="/salelist" />
-            <GradientHeading text={"Upcoming Projects"} />
-            <div className="my-8 md:my-16">
+            {/* <OutlineButton link="/salelist" />
+            <GradientHeading text={"Upcoming Projects"} /> */}
+            {/* <div className="my-8 md:my-16">
                 <Link to={"/details"}>
                     <PropertySlider2 />
                 </Link>
-            </div>
+            </div> */}
             <OutlineButton link="/salelist" />
         </>
     )
