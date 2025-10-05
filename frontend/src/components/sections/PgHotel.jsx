@@ -7,25 +7,18 @@ import PropertySlider7 from "../Carousel/PropertiesSlider7";
 const PgHotel = () => {
   return (
     <>
-      <GradientHeading text={"Find Hostel And PG Away From Home in City"} />
-      <div className="my-8 md:my-16">
+      {/* <div className="my-8 md:my-16">
         <PropertySlider5 properties={properties} id={1} />
-      </div>
+        </div> */}
       <div className="w-full h-16">
       </div>
-      <GradientHeading text={"Featured PG And Hostel "} />
+      <GradientHeading text={"Find Hostel And PG Away From Home in City"} />
 
       <div className="my-8 md:my-16">
         <PropertySlider6 id={1} />
       </div>
       <OutlineButton link="/pghostel" />
-      <div className="w-full h-16">
-      </div>
-      <GradientHeading text={"PG Homes with Wi-Fi"} />
-      <div className="my-8 md:my-16">
-        <PropertySlider7 id={1} />
-      </div>
-      <OutlineButton link="/pghostel" />
+
     </>
   )
 }
