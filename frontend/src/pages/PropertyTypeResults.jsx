@@ -14,9 +14,11 @@ export default function PropertyTypeResults() {
       setLoading(true);
       setError("");
       try {
-        const data = await propertyApi.getPropertiesByType(type);
+        const data = await propertyApi.getAllPropertiesForAdmin();
         if (data.success) {
-          setItems(data.properties || []);
+          const decodedType = decodeURIComponent(type);
+          const filtered = (data.properties || []).filter((p) => p.type === decodedType);
+          setItems(filtered);
         } else {
           setError(data.message || "Failed to load properties");
         }
@@ -51,6 +53,47 @@ export default function PropertyTypeResults() {
                   <h3 className="font-semibold text-black">{p.name}</h3>
                   <p className="text-sm text-gray-600">{p.city}, {p.state}</p>
                   <p className="text-sm text-gray-900 mt-1">₹ {p.price}</p>
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      onClick={async () => {
+                        const res = await propertyApi.verifyProperty(p._id);
+                        if (res.success) {
+                          setItems((prev) => prev.map((it) => (it._id === p._id ? { ...it, status: 'Verified' } : it)));
+                        } else {
+                          alert(res.message || 'Failed to verify');
+                        }
+                      }}
+                      className="px-3 py-1 rounded bg-green-600 text-white text-sm"
+                    >
+                      Verify
+                    </button>
+                    <button
+                      onClick={async () => {
+                        const res = await propertyApi.suspendProperty(p._id);
+                        if (res.success) {
+                          setItems((prev) => prev.map((it) => (it._id === p._id ? { ...it, status: 'Suspended' } : it)));
+                        } else {
+                          alert(res.message || 'Failed to suspend');
+                        }
+                      }}
+                      className="px-3 py-1 rounded bg-yellow-600 text-white text-sm"
+                    >
+                      Suspend
+                    </button>
+                    <button
+                      onClick={async () => {
+                        const res = await propertyApi.getPropertyById(p._id);
+                        if (res.success) {
+                          alert(`Property: ${res.property.name}`);
+                        } else {
+                          alert(res.message || 'Failed to fetch by id');
+                        }
+                      }}
+                      className="px-3 py-1 rounded bg-gray-800 text-white text-sm"
+                    >
+                      View
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
