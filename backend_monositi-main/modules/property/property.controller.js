@@ -244,3 +244,32 @@ exports.getPropertiesByLandlord = asyncHandler(async (req, res) => {
     properties,
   });
 });
+
+
+exports.getAllPropertiesForAdmin = async (req, res) => {
+  try {
+    // Optional: You can add role check if needed
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Admins only.",
+      });
+    }
+
+    // Fetch all properties without filtering by status
+    const properties = await Property.find().populate("landlord");
+
+    res.status(200).json({
+      success: true,
+      count: properties.length,
+      properties,
+    });
+  } catch (error) {
+    console.error("Error fetching all properties for admin:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
