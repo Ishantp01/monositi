@@ -16,6 +16,10 @@ router.post(
 router.get("/properties", propertyController.getAllProperties);
 router.get("/properties/:id", propertyController.getPropertyById);
 
+// landlord can get his/her property
+router.get("/landlord/me", protect, propertyController.getPropertiesByLandlord);
+
+
 // Landlord updates property (can also update images if needed)
 router.put(
   "/properties/:id",

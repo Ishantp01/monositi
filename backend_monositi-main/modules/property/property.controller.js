@@ -223,3 +223,18 @@ exports.getPropertiesByTags = async (req, res) => {
     });
   }
 };
+
+exports.getPropertiesByLandlord = asyncHandler(async (req, res) => {
+  const landlordId = req.user._id;
+
+  const properties = await Property.find({ landlord: landlordId }).populate(
+    "landlord",
+    "name email"
+  );
+
+  res.status(200).json({
+    success: true,
+    count: properties.length,
+    properties,
+  });
+});
