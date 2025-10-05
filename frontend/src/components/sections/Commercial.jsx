@@ -25,33 +25,6 @@ const Commercial = () => {
 export default Commercial;
 
 
-const properties = [
-  {
-    title: "Office Place On Lease",
-    buttonText: "Explore",
-    image: "https://tse2.mm.bing.net/th/id/OIP.OaeC1EGfr9R0AV9YNSbfIQHaFj?pid=Api&P=0&h=180",
-  },
-  {
-    title: "Shop  & Showroom On Lease",
-    buttonText: "Explore",
-    image: "https://images.unsplash.com/photo-1599423300746-b62533397364?q=80&w=1200",
-  },
-  {
-    title: "Co-working Space",
-    buttonText: "Explore",
-    image: "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1200",
-  },
-  {
-    title: "Plot On Lease",
-    buttonText: "Explore",
-    image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?q=80&w=1200",
-  },
-  {
-    title: "PG For Mens",
-    buttonText: "Explore",
-    image: "https://tse4.mm.bing.net/th/id/OIP.-OE6_VfmH29NPigtlqk--wHaE8?pid=Api&P=0&h=180",
-  },
-];
 
 export const officeSpaces = [
   {
