@@ -18,8 +18,8 @@ export const propertyApi = {
     return await response.json();
   },
 
-  getPropertyById: async (userId) => {
-    const response = await fetch(`${API_BASE_URL}/properties/${userId}`);
+  getPropertyById: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/properties/properties/${id}`);
     return await response.json();
   },
 
@@ -35,10 +35,6 @@ export const propertyApi = {
     return await response.json();
   },
 
-  getPropertiesByType: async (type) => {
-    const response = await fetch(`${API_BASE_URL}/properties/properties/search/type?type=${encodeURIComponent(type)}`);
-    return await response.json();
-  },
   createProperty: async (formData) => {
     const response = await fetch(`${API_BASE_URL}/properties/properties`, {
       method: 'POST',
@@ -71,6 +67,33 @@ export const propertyApi = {
 
   getPropertiesByTags: async (tags) => {
     const response = await fetch(`${API_BASE_URL}/properties/properties/search/type?type=${tags}`);
+    return await response.json();
+  },
+
+  // Admin endpoints
+  getAllPropertiesForAdmin: async () => {
+    const response = await fetch(`${API_BASE_URL}/properties/admin/all`, {
+      headers: getAuthHeaders(),
+    });
+    return await response.json();
+  },
+
+  verifyProperty: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/properties/admin/properties/${id}/verify`, {
+      method: 'PATCH',
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json',
+      },
+    });
+    return await response.json();
+  },
+
+  suspendProperty: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/properties/admin/properties/${id}/suspend`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+    });
     return await response.json();
   }
 };
