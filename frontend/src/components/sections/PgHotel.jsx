@@ -3,6 +3,7 @@ import OutlineButton from "../MoreButton";
 import PropertySlider5 from "../Carousel/PropertiesSlider5";
 import PropertySlider6 from "../Carousel/PropertiesSlider6";
 import PropertySlider7 from "../Carousel/PropertiesSlider7";
+import PropertyCarousel from "../Carousel/PropertiesSlider";
 
 const PgHotel = () => {
   return (
@@ -15,7 +16,7 @@ const PgHotel = () => {
       <GradientHeading text={"Find Hostel And PG Away From Home in City"} />
 
       <div className="my-8 md:my-16">
-        <PropertySlider6 id={1} />
+        <PropertyCarousel tags={"PG/Hostel"}/>
       </div>
       <OutlineButton link="/pghostel" />
 
