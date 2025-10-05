@@ -65,7 +65,7 @@ export const propertyApi = {
   },
 
   getPropertiesByTags: async (tags) => {
-    const response = await fetch(`${API_BASE_URL}/properties/search/by-tags?tags=${tags}`);
+    const response = await fetch(`${API_BASE_URL}/properties/properties/search/type?type=${tags}`);
     return await response.json();
   }
 };
