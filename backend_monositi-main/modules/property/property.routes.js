@@ -42,6 +42,9 @@ router.patch(
   propertyController.adminSuspendProperty
 );
 
+router.get("/admin/all", protect, adminOnly, propertyController.getAllPropertiesForAdmin);
+
+
 router.get("/properties/search/type", propertyController.getPropertiesByType);
 
 
