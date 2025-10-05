@@ -14,7 +14,7 @@ const Buy = () => {
             <OutlineButton link="/salelist" />
             <GradientHeading text={"Popular Owner Properties"} />
             <div className="my-8 md:my-16">
-                <PropertyCarousel />
+                <PropertyCarousel tags={"Buy"}/>
             </div>
             <OutlineButton link="/salelist" />
         </>
