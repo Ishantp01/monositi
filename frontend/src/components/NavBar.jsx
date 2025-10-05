@@ -130,6 +130,10 @@ const Navbar = ({ bgColor = 'bg-theme-primary', avatarUrl }) => {
       buttonText = 'Tenant Menu';
       buttonLink = '/tenant-requests';
       break;
+    case 'admin':
+      buttonText = 'admin Menu';
+      buttonLink = '/admin';
+      break;
     default:
       buttonText = 'Dashboard';
       buttonLink = '/dashboard';
