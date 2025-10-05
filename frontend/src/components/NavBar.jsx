@@ -110,7 +110,7 @@ const Navbar = ({ bgColor = 'bg-theme-primary', avatarUrl }) => {
   const [role, setRole] = useState('');
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem('role');
     if (storedUser) setRole(JSON.parse(storedUser));
   }, []);
 
