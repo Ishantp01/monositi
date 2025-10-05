@@ -189,37 +189,43 @@ exports.adminSuspendProperty = asyncHandler(async (req, res) => {
   res.json({ success: true, property });
 });
 
-exports.getPropertiesByTags = async (req, res) => {
+exports.getPropertiesByType = async (req, res) => {
   try {
-    const { tags } = req.query;
+    const { type } = req.query;
 
-    if (!tags) {
+    if (!type) {
       return res.status(400).json({
         success: false,
-        message: "Tags are required"
+        message: "Type is required",
       });
     }
 
-    // Split tags by comma and trim spaces
-    const tagsArray = tags.split(",").map(tag => tag.trim());
+    // Validate against allowed enum values to avoid invalid queries
+    const allowedTypes = ["PG/Hostel", "Rent", "Buy", "Commercial"];
+    if (!allowedTypes.includes(type)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid type. Allowed types: ${allowedTypes.join(", ")}`,
+      });
+    }
 
-    // Find properties where any of the tags match, and status is Verified
+    // Fetch verified properties of the given type
     const properties = await Property.find({
-      tags: { $in: tagsArray },
-      status: "Verified"
-    });
+      type,
+      status: "Verified",
+    }).populate("landlord", "name email");
 
     res.status(200).json({
       success: true,
       count: properties.length,
-      properties
+      properties,
     });
   } catch (error) {
-    console.error("Error fetching properties by tags:", error);
+    console.error("Error fetching properties by type:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
-      error: error.message
+      error: error.message,
     });
   }
 };

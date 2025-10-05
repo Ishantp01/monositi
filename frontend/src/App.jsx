@@ -26,6 +26,7 @@ import EditProperty from "./pages/EditProperty";
 import ServiceProvider from "./pages/ServiceProviderform";
 import ServiceRequestPage from "./pages/ServiceRequestPage";
 import Profile from "./pages/Profile";
+import AdminUsers from "./pages/AdminUsers";
 import PG from "./pages/PG";
 import SignUp from "./components/SignUp";
 import Services from "./pages/Services";
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/admin/users" element={<AdminUsers />} />
         
         <Route path="/verify" element={<VerifyOtp />} />
         <Route path="/details" element={<PropertyPage />} />

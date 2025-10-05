@@ -42,7 +42,7 @@ router.patch(
   propertyController.adminSuspendProperty
 );
 
-router.get("/properties/search/by-tags", propertyController.getPropertiesByTags);
+router.get("/properties/search/type", propertyController.getPropertiesByTags);
 
 
 module.exports = router;
