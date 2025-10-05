@@ -180,7 +180,7 @@ const Navbar = ({ bgColor = 'bg-theme-primary', avatarUrl }) => {
                   )}
                   {role === 'tenant' && (
                     <>
-                      <Link to="/request-service" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>
+                      <Link to="/service-request" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>
                         <Plus className="mr-3 h-4 w-4" /> Request Service
                       </Link>
                       <Link to="/service-request-list" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setShowDropdown(false)}>
