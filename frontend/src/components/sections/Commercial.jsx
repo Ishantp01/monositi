@@ -8,7 +8,6 @@ import PropertyCarousel from "../Carousel/PropertiesSlider";
 const Commercial = () => {
   return (
     <>
-
       <div className="w-full h-16">
       </div>
       <GradientHeading text={"Properties by Owners"} />
@@ -17,9 +16,6 @@ const Commercial = () => {
       </div>
       <div className="w-full h-16">
       </div>
-
-
-
     </>
   )
 }
