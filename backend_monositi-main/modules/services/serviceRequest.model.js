@@ -1,39 +1,30 @@
-// src/models/serviceRequest.model.js
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-// 📌 ServiceRequest Model — represents a tenant requesting a service
 const serviceRequestSchema = new mongoose.Schema(
   {
-    tenant: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      ref: 'User',
+      required: [true, 'User is required for service request']
     },
     serviceProvider: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "ServiceProvider",
-      default: null,
+      ref: 'ServiceProvider',
+      required: [true, 'Service provider is required'],
     },
-    serviceCategory: {
+    description: {
       type: String,
-      required: true,
+      required: [true, 'Description is required'],
+      trim: true
     },
-    description: String,
-    photosBefore: [String],
-    photosAfter: [String],
+    photos: [{ type: String }], // uploaded images related to request
     status: {
       type: String,
-      enum: ["Requested", "Assigned", "In Progress", "Completed", "Cancelled"],
-      default: "Requested",
+      enum: ['Requested', 'In Progress', 'Completed', 'Cancelled'],
+      default: 'Requested',
     },
-    tenantRating: {
-      type: Number,
-      min: 1,
-      max: 5,
-    },
-    tenantReview: String,
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("ServiceRequest", serviceRequestSchema);
+module.exports = mongoose.model('ServiceRequest', serviceRequestSchema);
