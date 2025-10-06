@@ -5,15 +5,14 @@ import GradientHeading from "../GradientHeading";
 import OutlineButton from "../MoreButton";
 
 const Rent = () => {
-    return (
-        <>
-            <GradientHeading text={"Popular Owner Properties"} />
-            <div className="my-8 md:my-16">
-                <PropertyCarousel tags={"Rent"} />
-            </div>
-            <OutlineButton link="/rentlist" />
-            
-        </>
-    )
-}
+  return (
+    <>
+      <GradientHeading text={"Popular Owner Properties"} />
+      <div className="my-8 md:my-16">
+        <PropertyCarousel tags={"Rent"} />
+      </div>
+      <OutlineButton link="/rentlist" />
+    </>
+  );
+};
 export default Rent;
