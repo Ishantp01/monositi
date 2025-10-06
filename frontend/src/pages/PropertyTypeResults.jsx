@@ -8,7 +8,6 @@ import { toast } from 'react-toastify';
 const propertyTypeConfig = {
   'Rent': { icon: '🏡', color: 'blue' },
   'Buy': { icon: '🏘️', color: 'green' },
-  'PG/Hostel': { icon: '🏠', color: 'purple' },
   'Commercial': { icon: '🏢', color: 'orange' }
 };
 
