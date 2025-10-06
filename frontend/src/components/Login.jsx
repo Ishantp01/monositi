@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AuthLayout from "./AuthLayout";
 import apiRequest from "../utils/api"; // Common API handler
+import { toast } from 'react-toastify';
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -28,9 +29,28 @@ export default function Login() {
 
         console.log(response);
 
-        alert("Login successful!");
-        // redirect to dashboard or home
-        window.location.href = "/";
+        // Show success toast notification
+        toast.success("🎉 Welcome back! Login successful!", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+        // Small delay to let user see the success message, then redirect
+        setTimeout(() => {
+          // Check for stored redirect URL and use it, otherwise go to home
+          const redirectUrl = localStorage.getItem('redirectAfterLogin');
+          if (redirectUrl) {
+            localStorage.removeItem('redirectAfterLogin'); // Clear the stored redirect
+            window.location.href = redirectUrl;
+          } else {
+            window.location.href = "/";
+          }
+        }, 1500);
       } else {
         setError(response.message || "Invalid credentials.");
       }

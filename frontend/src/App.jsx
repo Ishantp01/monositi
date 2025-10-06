@@ -1,4 +1,7 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Login from "./components/Login";
 import VerifyOtp from "./components/VerifyOtp";
 import Home from "./pages/Home";
@@ -8,6 +11,28 @@ import CommercialList from "./pages/Commercial";
 import PgHostelList from "./pages/PgHostelList";
 import PropertyPage from "./components/PropertyDetails/PropertyPage";
 import ScrollToTop from "./components/ScrollToTop";
+
+// Admin redirect component
+const AdminRedirect = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+
+    if (token && user) {
+      // User is already logged in, redirect directly to properties page
+      navigate('/properties/type/Rent');
+    } else {
+      // User is not logged in, store the intended destination and redirect to login
+      localStorage.setItem('redirectAfterLogin', '/properties/type/Rent');
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  return null;
+};
 
 
 
@@ -37,6 +62,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <ToastContainer />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/salelist" element={<SaleList />} />
@@ -46,7 +72,7 @@ export default function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/users" element={<AdminRedirect />} />
         <Route path="/properties/type/:type" element={<PropertyTypeResults />} />
         
         <Route path="/verify" element={<VerifyOtp />} />
@@ -69,7 +95,7 @@ export default function App() {
         
         
 
-        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/admin" element={<AdminRedirect />} />
         <Route path="/renting-properties" element={<Renting_Properties />} />
         <Route
           path="/selling-residential"
