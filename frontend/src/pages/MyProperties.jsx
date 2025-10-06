@@ -34,7 +34,7 @@ const MyProperties = () => {
     } finally {
       setLoading(false);
     }
-  };
+};
 
   const handleDeleteProperty = async (propertyId) => {
     if (!window.confirm('Are you sure you want to delete this property?')) {
@@ -53,7 +53,7 @@ const MyProperties = () => {
     } catch (error) {
       setMessage('Error deleting property: ' + error.message);
     }
-  };
+};
 
   const getStatusBadge = (status) => {
     const statusColors = {
@@ -61,21 +61,21 @@ const MyProperties = () => {
       'Verified': 'bg-green-100 text-green-800',
       'Rejected': 'bg-red-100 text-red-800',
       'Suspended': 'bg-gray-100 text-gray-800'
-    };
+  };
 
     return (
       <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[status] || 'bg-gray-100 text-gray-800'}`}>
         {status}
       </span>
     );
-  };
+};
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-theme-primary"></div>
-          <p className="mt-4 text-gray-600">Loading your properties...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="text-lg font-medium text-gray-700">Loading your properties...</p>
         </div>
       </div>
     );
@@ -84,48 +84,66 @@ const MyProperties = () => {
   return (
     <>
       <Navbar avatarUrl={avatar} />
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">My Properties</h1>
-            <p className="text-gray-600">Manage your property listings</p>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 md:p-6">
+        <div className="max-w-6xl mx-auto space-y-6">
+          {/* Header */}
+          <div className="text-center space-y-3">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-lg mb-4">
+              <span className="text-2xl">🏠</span>
+            </div>
+            <h1 className="text-4xl font-bold text-gray-800">My Properties</h1>
+            <p className="text-gray-600 text-lg">Manage your property listings</p>
           </div>
 
+          {/* Success/Error Message */}
           {message && (
-            <div className={`mb-6 p-4 rounded-lg ${message.includes('successfully')
-              ? 'bg-green-50 text-green-800 border border-green-200'
-              : 'bg-red-50 text-red-800 border border-red-200'
-              }`}>
-              {message}
+            <div className={`max-w-2xl mx-auto p-4 rounded-lg border ${
+              message.includes('successfully')
+                ? 'bg-green-50 text-green-800 border-green-200'
+                : 'bg-orange-50 text-orange-800 border-orange-200'
+            }`}>
+              <div className="flex items-center space-x-2">
+                <span className="text-lg">
+                  {message.includes('successfully') ? '✅' : '⚠️'}
+                </span>
+                <span className="font-medium">{message}</span>
+              </div>
             </div>
           )}
 
-          <div className="flex justify-between items-center mb-6">
-            <div className="text-sm text-gray-600">
-              {properties.length} property{properties.length !== 1 ? 'ies' : ''} found
+          {/* Controls */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="text-sm text-gray-600">
+                <span className="font-semibold text-gray-800">{properties.length}</span> propert{properties.length !== 1 ? 'ies' : 'y'} listed
+              </div>
+              <a
+                href="/add-property"
+                className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
+              >
+                <span>➕</span>
+                <span>Add New Property</span>
+              </a>
             </div>
-            <a
-              href="/add-property"
-              className="bg-theme-primary text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
-            >
-              Add New Property
-            </a>
           </div>
 
           {properties.length === 0 ? (
-            <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-              <div className="text-gray-400 mb-4">
-                <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-12 text-center">
+              <div className="text-gray-300 mb-6">
+                <div className="mx-auto w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-4">
+                  <span className="text-3xl">🏠</span>
+                </div>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No properties found</h3>
-              <p className="text-gray-600 mb-4">Start by adding your first property listing.</p>
+              <h3 className="text-xl font-bold text-gray-800 mb-3">No Properties Listed Yet</h3>
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                Start building your property portfolio by adding your first listing. It's quick and easy!
+              </p>
               <a
                 href="/add-property"
-                className="bg-theme-primary text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
               >
-                Add Your First Property
+                <span>🚀</span>
+                <span>Add Your First Property</span>
               </a>
             </div>
           ) : (
@@ -196,6 +214,5 @@ const MyProperties = () => {
       <Footer />
     </>
   );
-};
-
+}
 export default MyProperties;

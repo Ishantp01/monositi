@@ -89,17 +89,22 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
-        <p className="ml-4 text-lg font-medium text-gray-700">Loading profile...</p>
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-theme-primary"></div>
+          <p className="text-lg font-medium text-gray-700">Loading profile...</p>
+        </div>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-gray-600">User profile not found.</p>
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <div className="text-center space-y-2">
+          <div className="text-4xl">👤</div>
+          <p className="text-gray-600 text-lg">User profile not found.</p>
+        </div>
       </div>
     );
   }
@@ -107,58 +112,109 @@ export default function Profile() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-white py-10 px-4 mt-24">
-        <div className="max-w-4xl mx-auto">
+      <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-theme-primary">
+              User Profile
+            </h1>
+            <p className="text-gray-600 text-lg">Manage your account information</p>
+          </div>
+
           {/* Profile Card */}
-          <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden -mt-20 relative z-10 hover:shadow-red-300 transition-shadow duration-300">
-            <div className="px-8 pt-20 pb-8 bg-white">
-              <div className="flex flex-col lg:flex-row items-center lg:items-start lg:space-x-10">
+          <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-800 flex items-center">
+                <span className="mr-2 text-2xl">👤</span>
+                Profile Information
+              </h2>
+              <p className="text-gray-600 mt-1 text-sm">View and manage your personal details</p>
+            </div>
+
+            <div className="p-6">
+              <div className="flex flex-col lg:flex-row items-center lg:items-start lg:space-x-8">
                 {/* Profile Photo */}
                 <div className="relative mb-6 lg:mb-0">
                   <img
                     src={user.photo || "https://via.placeholder.com/150"}
                     alt={user.name}
-                    className="w-32 h-32 lg:w-40 lg:h-40 rounded-full border-4 border-red-600 shadow-lg object-cover transition-transform duration-300 hover:scale-105"
+                    className="w-32 h-32 lg:w-40 lg:h-40 rounded-full border-4 border-theme-primary shadow-lg object-cover transition-transform duration-300 hover:scale-105"
                   />
+                  <div className="absolute -bottom-2 -right-2 bg-theme-primary w-8 h-8 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-bold">
+                      {user.role?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Profile Info */}
-                <div className="text-center lg:text-left flex-1 mt-4 lg:mt-0">
-                  <h1 className="text-3xl lg:text-4xl font-bold text-black mb-2">{user.name}</h1>
-                  <p className="text-red-600 text-lg mb-3 font-medium">{user.role?.toUpperCase()}</p>
-                  <p className="text-gray-700">{user.email}</p>
+                <div className="text-center lg:text-left flex-1 mt-4 lg:mt-0 space-y-3">
+                  <div>
+                    <h3 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-1">
+                      {user.name}
+                    </h3>
+                    <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-theme-secondary text-theme-primary border border-theme-primary border-opacity-20">
+                      {user.role?.toUpperCase()}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 text-gray-600">
+                      <span className="text-sm">📧</span>
+                      <span className="text-sm font-medium">{user.email}</span>
+                    </div>
+                    {user.phone && (
+                      <div className="flex items-center space-x-2 text-gray-600">
+                        <span className="text-sm">📱</span>
+                        <span className="text-sm font-medium">{user.phone}</span>
+                      </div>
+                    )}
+                    {user.address && (
+                      <div className="flex items-center space-x-2 text-gray-600">
+                        <span className="text-sm">📍</span>
+                        <span className="text-sm font-medium">{user.address}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Edit Button */}
-            <div className="px-8 pb-8 flex justify-center">
-              <button
-                onClick={handleEdit}
-                className="bg-red-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors shadow-md text-lg"
-              >
-                Edit Profile
-              </button>
+              {/* Edit Button */}
+              <div className="mt-8 flex justify-center">
+                <button
+                  onClick={handleEdit}
+                  className="bg-theme-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors shadow-md flex items-center space-x-2"
+                >
+                  <span>✏️</span>
+                  <span>Edit Profile</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Edit Modal */}
         {isEditing && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white rounded-2xl w-full max-w-lg p-8 relative shadow-2xl animate-slide-in">
-              <h2 className="text-2xl font-bold text-black mb-6 text-center">Edit Profile</h2>
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+            <div className="bg-white rounded-xl w-full max-w-lg shadow-2xl border border-gray-200 transform transition-all">
+              <div className="bg-theme-primary p-6 rounded-t-xl">
+                <h2 className="text-xl font-bold text-white flex items-center justify-center">
+                  <span className="mr-2">✏️</span>
+                  Edit Profile
+                </h2>
+              </div>
 
-              <div className="flex flex-col space-y-6">
+              <div className="p-6 space-y-6">
                 {/* Photo Upload */}
-                <div className="flex justify-center mb-4">
-                  <div className="relative">
+                <div className="flex justify-center">
+                  <div className="relative group">
                     <img
                       src={editedUser.photo || "https://via.placeholder.com/150"}
                       alt="Preview"
-                      className="w-32 h-32 rounded-full border-4 border-red-600 object-cover shadow-lg"
+                      className="w-32 h-32 rounded-full border-4 border-theme-primary object-cover shadow-lg group-hover:shadow-xl transition-shadow"
                     />
-                    <div className="absolute bottom-0 right-0 bg-red-600 w-10 h-10 rounded-full flex justify-center items-center shadow-lg cursor-pointer hover:bg-red-700 transition-colors">
+                    <div className="absolute bottom-0 right-0 bg-theme-primary w-10 h-10 rounded-full flex justify-center items-center shadow-lg cursor-pointer hover:bg-red-700 transition-colors group-hover:scale-110">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-5 w-5 text-white"
@@ -179,42 +235,82 @@ export default function Profile() {
                 </div>
 
                 {/* Name */}
-                <div className="relative">
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Full Name
+                  </label>
                   <input
                     type="text"
                     name="name"
                     value={editedUser.name}
                     onChange={handleInputChange}
-                    className="w-full text-lg text-gray-900 py-3 mt-5 px-2 bg-transparent border-b-2 border-gray-300 focus:border-red-600 focus:outline-none"
-                    placeholder="Name"
+                    className="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-theme-primary transition-all"
+                    placeholder="Enter your full name"
                   />
                 </div>
 
                 {/* Email */}
-                <div className="relative">
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Email Address
+                  </label>
                   <input
                     type="email"
                     name="email"
                     value={editedUser.email}
                     onChange={handleInputChange}
-                    className="w-full text-gray-700 py-3 px-2 mt-5 bg-transparent border-b-2 border-gray-300 focus:border-red-600 focus:outline-none"
-                    placeholder="Email"
+                    className="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-theme-primary transition-all"
+                    placeholder="Enter your email address"
                   />
                 </div>
 
+                {/* Phone (if available) */}
+                {editedUser.phone !== undefined && (
+                  <div className="space-y-2">
+                    <label className="block text-sm font-semibold text-gray-700">
+                      Phone Number (Optional)
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={editedUser.phone || ''}
+                      onChange={handleInputChange}
+                      className="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-theme-primary transition-all"
+                      placeholder="Enter your phone number"
+                    />
+                  </div>
+                )}
+
+                {/* Address (if available) */}
+                {editedUser.address !== undefined && (
+                  <div className="space-y-2">
+                    <label className="block text-sm font-semibold text-gray-700">
+                      Address (Optional)
+                    </label>
+                    <textarea
+                      name="address"
+                      value={editedUser.address || ''}
+                      onChange={handleInputChange}
+                      rows="3"
+                      className="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-theme-primary transition-all resize-none"
+                      placeholder="Enter your address"
+                    />
+                  </div>
+                )}
+
                 {/* Save / Cancel */}
-                <div className="flex justify-center space-x-4 mt-6">
-                  <button
-                    onClick={handleSave}
-                    className="bg-red-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors"
-                  >
-                    Save
-                  </button>
+                <div className="flex justify-end gap-3 pt-4">
                   <button
                     onClick={handleCancel}
-                    className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-400 transition-colors"
+                    className="px-6 py-2 rounded-lg bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition-colors"
                   >
                     Cancel
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    className="px-6 py-2 rounded-lg bg-theme-primary text-white font-medium hover:bg-red-700 transition-colors shadow-lg"
+                  >
+                    Save Changes
                   </button>
                 </div>
               </div>

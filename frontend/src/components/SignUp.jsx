@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AuthLayout from "./AuthLayout";
 import apiRequest from "../utils/api"; // your common API handler
+import { toast } from 'react-toastify';
 
 const ROLES = ["tenant", "landlord", "serviceProvider"];
 
@@ -11,13 +12,9 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
     setLoading(true);
 
     try {
@@ -29,14 +26,36 @@ export default function SignUp() {
       });
 
       if (response.success) {
-        setSuccess("Registration successful! Redirecting to login...");
-        setTimeout(() => (window.location.href = "/login"), 1500);
+        toast.success("🎉 Registration successful! Welcome to monositi!", {
+          position: "top-right",
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+
+        setTimeout(() => (window.location.href = "/login"), 2000);
       } else {
-        setError(response.message || "Something went wrong.");
+        toast.error(`❌ ${response.message || "Something went wrong."}`, {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       }
     } catch (err) {
       console.error(err);
-      setError("Server error. Please try again later.");
+      toast.error("❌ Server error. Please try again later.", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } finally {
       setLoading(false);
     }
@@ -49,22 +68,24 @@ export default function SignUp() {
           <h1 className="text-xl font-semibold text-gray-900 mb-4">Sign Up</h1>
 
           {/* Role Selector */}
-          <p className="mt-2 text-lg text-gray-700">I am</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {ROLES.map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setRole(r)}
-                className={`px-3 py-1 rounded-full border text-sm font-semibold transition ${
-                  role === r
-                    ? "bg-[#339989]/20 text-black border-[#339989]"
-                    : "border-gray-300 text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                {r}
-              </button>
-            ))}
+          <div className="space-y-3">
+            <p className="text-lg font-semibold text-gray-700">I am a</p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:justify-center">
+              {ROLES.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setRole(r)}
+                  className={`px-6 py-3 rounded-xl border-2 text-sm font-semibold transition-all whitespace-nowrap ${
+                    role === r
+                      ? "bg-blue-50 text-blue-700 border-blue-500 shadow-md"
+                      : "border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-gray-50"
+                  }`}
+                >
+                  {r.charAt(0).toUpperCase() + r.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Form */}
@@ -104,11 +125,6 @@ export default function SignUp() {
                 {showPassword ? "HIDE" : "SHOW"}
               </button>
             </div>
-
-            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-            {success && (
-              <p className="text-green-600 text-sm text-center">{success}</p>
-            )}
 
             <button
               type="submit"
