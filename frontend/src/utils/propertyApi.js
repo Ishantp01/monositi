@@ -12,12 +12,8 @@ const getAuthHeaders = () => {
 };
 
 export const propertyApi = {
-  getAllProperties: async (filters = {}) => {
-    const queryParams = new URLSearchParams(filters);
-    const response = await fetch(`${API_BASE_URL}/properties?${queryParams}`);
-    return await response.json();
-  },
 
+  // Property APIs
   getPropertyById: async (id) => {
     const response = await fetch(`${API_BASE_URL}/properties/properties/${id}`);
     return await response.json();
@@ -30,8 +26,6 @@ export const propertyApi = {
         'Authorization': `Bearer ${getAuthToken()}`,
       },
     });
-
-
     return await response.json();
   },
 
@@ -72,8 +66,11 @@ export const propertyApi = {
 
   // Admin endpoints
   getAllPropertiesForAdmin: async () => {
-    const response = await fetch(`${API_BASE_URL}/properties/admin/all`, {
-      headers: getAuthHeaders(),
+    const response = await fetch(`${API_BASE_URL}/properties/admin/properties/all`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAuthToken()}`,
+      },
     });
     return await response.json();
   },
@@ -84,16 +81,14 @@ export const propertyApi = {
       {
         method: 'PATCH',
         headers: {
-          ...getAuthHeaders(), // spread your auth headers
+          ...getAuthHeaders(),
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ status }), // send the status in the body
+        body: JSON.stringify({ status }),
       }
     );
-
     return await response.json();
   },
-
 
   suspendProperty: async (id) => {
     const response = await fetch(`${API_BASE_URL}/properties/admin/properties/${id}/suspend`, {
@@ -101,9 +96,69 @@ export const propertyApi = {
       headers: getAuthHeaders(),
     });
     return await response.json();
-  }
+  },
+
+  // =======================
+  // Monositi helper functions
+  // =======================
+
+  // Get all Monositi listings
+  getAllMonositiListings: async () => {
+    const response = await fetch(`${API_BASE_URL}/monositi`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAuthToken()}`,
+      },
+    });
+    return await response.json();
+  },
+
+  // Get single Monositi listing by ID
+  getMonositiListingById: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/monositi/${id}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAuthToken()}`,
+      },
+    });
+    return await response.json();
+  },
+
+  // Create new Monositi listing
+  createMonositiListing: async (formData) => {
+    const response = await fetch(`${API_BASE_URL}/monositi`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Authorization': `Bearer ${getAuthToken()}`,
+      },
+    });
+    return await response.json();
+  },
+
+  // Update Monositi listing
+  updateMonositiListing: async (id, formData) => {
+    const response = await fetch(`${API_BASE_URL}/monositi/${id}`, {
+      method: 'PUT',
+      body: formData,
+      headers: {
+        'Authorization': `Bearer ${getAuthToken()}`,
+      },
+    });
+    return await response.json();
+  },
+
+  // Delete Monositi listing
+  deleteMonositiListing: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/monositi/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    return await response.json();
+  },
 };
 
+// Format for Monositi form
 export const formatPropertyForForm = (property) => {
   return {
     type: property.type || '',
@@ -120,6 +175,7 @@ export const formatPropertyForForm = (property) => {
   };
 };
 
+// Create FormData
 export const createPropertyFormData = (propertyData) => {
   const formData = new FormData();
 
