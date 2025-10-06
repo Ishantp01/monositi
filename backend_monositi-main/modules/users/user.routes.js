@@ -10,7 +10,7 @@ const {
   createMonositiTenant,
 } = require("./users.controller");
 
-const { protect, adminOnly } = require("../middlewares/authMiddleware");
+const { protect, adminOnly } = require("../../middlewares/authMiddleware");
 
 // Public
 router.post("/register", registerUser);

@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import AuthLayout from "./AuthLayout";
-import apiRequest from "../utils/api"; // your common API handler
-import { toast } from 'react-toastify';
-
-const ROLES = ["tenant", "landlord", "serviceProvider"];
+import apiRequest from "../utils/api"; // common API handler
+import { toast } from "react-toastify";
 
 export default function SignUp() {
-  const [role, setRole] = useState(ROLES[0]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,15 +15,15 @@ export default function SignUp() {
     setLoading(true);
 
     try {
+      // 👇 New API structure (no role)
       const response = await apiRequest("/users/register", "POST", {
         name,
         email,
         password,
-        role,
       });
 
-      if (response.success) {
-        toast.success("🎉 Registration successful! Welcome to monositi!", {
+      if (response.success || response.message === "User registered successfully") {
+        toast.success("🎉 Registration successful! Welcome to Monositi!", {
           position: "top-right",
           autoClose: 2500,
           hideProgressBar: false,
@@ -35,9 +32,10 @@ export default function SignUp() {
           draggable: true,
         });
 
+        // redirect after short delay
         setTimeout(() => (window.location.href = "/login"), 2000);
       } else {
-        toast.error(`❌ ${response.message || "Something went wrong."}`, {
+        toast.error(`❌ ${response.message || "Signup failed!"}`, {
           position: "top-right",
           autoClose: 4000,
           hideProgressBar: false,
@@ -47,7 +45,7 @@ export default function SignUp() {
         });
       }
     } catch (err) {
-      console.error(err);
+      console.error("Signup Error:", err);
       toast.error("❌ Server error. Please try again later.", {
         position: "top-right",
         autoClose: 4000,
@@ -66,27 +64,6 @@ export default function SignUp() {
       <div className="rounded-xl border border-gray-300 shadow-sm overflow-hidden">
         <div className="p-6 sm:p-8">
           <h1 className="text-xl font-semibold text-gray-900 mb-4">Sign Up</h1>
-
-          {/* Role Selector */}
-          <div className="space-y-3">
-            <p className="text-lg font-semibold text-gray-700">I am a</p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:justify-center">
-              {ROLES.map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => setRole(r)}
-                  className={`px-6 py-3 rounded-xl border-2 text-sm font-semibold transition-all whitespace-nowrap ${
-                    role === r
-                      ? "bg-blue-50 text-blue-700 border-blue-500 shadow-md"
-                      : "border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-gray-50"
-                  }`}
-                >
-                  {r.charAt(0).toUpperCase() + r.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* Form */}
           <form className="mt-6 space-y-5" onSubmit={handleSubmit}>

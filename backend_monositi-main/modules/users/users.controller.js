@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const User = require("./user.model");
-const sendEmail = require("../utils/sendEmail"); // 👈 You'll implement this utility to send OTP
+const sendEmail = require("../../utils/sendEmail"); // 👈 You'll implement this utility to send OTP
 
 // Helper: generate JWT
 const generateToken = (id) => {
