@@ -57,6 +57,8 @@ import PG from "./pages/PG";
 import SignUp from "./components/SignUp";
 import Services from "./pages/Services";
 import TenantRequestsPage from "./pages/ServiceRequestListTenant";
+import ManageUsers from "./components/Admin/ManageUsers";
+import AdminMonositi from "./components/Admin/AdminMonositi";
 
 export default function App() {
   return (
@@ -72,8 +74,13 @@ export default function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/admin/users" element={<AdminRedirect />} />
+
+        {/* admin routes */}
+        <Route path="/admin/users" element={<ManageUsers />} />
+        <Route path="/admin/monositi" element={<AdminMonositi />} />
         <Route path="/properties/type/:type" element={<PropertyTypeResults />} />
+        
+
         
         <Route path="/verify" element={<VerifyOtp />} />
         <Route path="/details" element={<PropertyPage />} />
