@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import AuthLayout from "./AuthLayout";
 import apiRequest from "../utils/api"; // Common API handler
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -21,15 +21,27 @@ export default function Login() {
         password,
       });
 
+      // 🔹 Handle forbidden (email not verified)
+      if (response.status === 403 || response.message?.includes("Email not verified")) {
+        toast.warning("⚠️ Email not verified. Please check your inbox.", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        setLoading(false);
+        return;
+      }
+
       if (response.success) {
-        // Save token or user details in localStorage (if returned)
+        // Save token or user details in localStorage
         localStorage.setItem("token", response.token);
         localStorage.setItem("role", JSON.stringify(response.user.role));
         localStorage.setItem("user", JSON.stringify(response.user));
 
-        console.log(response);
-
-        // Show success toast notification
+        // Success notification
         toast.success("🎉 Welcome back! Login successful!", {
           position: "top-right",
           autoClose: 2000,
@@ -37,15 +49,13 @@ export default function Login() {
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
-          progress: undefined,
         });
 
-        // Small delay to let user see the success message, then redirect
+        // Redirect after a short delay
         setTimeout(() => {
-          // Check for stored redirect URL and use it, otherwise go to home
-          const redirectUrl = localStorage.getItem('redirectAfterLogin');
+          const redirectUrl = localStorage.getItem("redirectAfterLogin");
           if (redirectUrl) {
-            localStorage.removeItem('redirectAfterLogin'); // Clear the stored redirect
+            localStorage.removeItem("redirectAfterLogin");
             window.location.href = redirectUrl;
           } else {
             window.location.href = "/";
@@ -55,6 +65,7 @@ export default function Login() {
         setError(response.message || "Invalid credentials.");
       }
     } catch (err) {
+      console.error("Login Error:", err);
       setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
