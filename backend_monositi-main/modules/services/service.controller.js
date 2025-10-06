@@ -1,7 +1,7 @@
-const ServiceProvider = require('./serviceProvider.model');
-const ServiceRequest = require('./serviceRequest.model');
-const User = require('../users/user.model');
-const asyncHandler = require('express-async-handler');
+const ServiceProvider = require("./serviceProvider.model");
+const ServiceRequest = require("./serviceRequest.model");
+const User = require("../users/user.model");
+const asyncHandler = require("express-async-handler");
 
 /**
  * Admin: Create a new service provider
@@ -16,7 +16,7 @@ exports.createServiceProvider = asyncHandler(async (req, res) => {
     state,
     photo,
     description,
-    experience
+    experience,
   } = req.body;
 
   const provider = await ServiceProvider.create({
@@ -33,7 +33,7 @@ exports.createServiceProvider = asyncHandler(async (req, res) => {
 
   res.status(201).json({
     success: true,
-    message: 'Service provider created successfully',
+    message: "Service provider created successfully",
     provider,
   });
 });
@@ -51,7 +51,9 @@ exports.listServiceProvidersByCategory = asyncHandler(async (req, res) => {
 
   const providers = await ServiceProvider.find(filter)
     .sort({ averageRating: -1 })
-    .select('name category contactNumber city state averageRating availability photo');
+    .select(
+      "name category contactNumber city state averageRating availability photo"
+    );
 
   res.json({
     success: true,
@@ -65,12 +67,15 @@ exports.listServiceProvidersByCategory = asyncHandler(async (req, res) => {
  */
 exports.getServiceProviderById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const provider = await ServiceProvider.findById(id).populate('reviews.user', 'name email');
+  const provider = await ServiceProvider.findById(id).populate(
+    "reviews.user",
+    "name email"
+  );
 
   if (!provider) {
     return res.status(404).json({
       success: false,
-      message: 'Service provider not found',
+      message: "Service provider not found",
     });
   }
 
@@ -88,7 +93,7 @@ exports.createServiceRequest = asyncHandler(async (req, res) => {
   if (!req.user) {
     return res.status(401).json({
       success: false,
-      message: 'Please login to book a service',
+      message: "Please login to book a service",
     });
   }
 
@@ -98,7 +103,7 @@ exports.createServiceRequest = asyncHandler(async (req, res) => {
   if (!serviceProvider || !description) {
     return res.status(400).json({
       success: false,
-      message: 'Service provider and description are required',
+      message: "Service provider and description are required",
     });
   }
 
@@ -107,7 +112,7 @@ exports.createServiceRequest = asyncHandler(async (req, res) => {
   if (!provider) {
     return res.status(404).json({
       success: false,
-      message: 'Service provider not found',
+      message: "Service provider not found",
     });
   }
 
@@ -120,7 +125,7 @@ exports.createServiceRequest = asyncHandler(async (req, res) => {
 
   res.status(201).json({
     success: true,
-    message: 'Service request created successfully',
+    message: "Service request created successfully",
     request,
   });
 });
@@ -132,11 +137,11 @@ exports.updateServiceRequestStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  const validStatuses = ['Requested', 'In Progress', 'Completed', 'Cancelled'];
+  const validStatuses = ["Requested", "In Progress", "Completed", "Cancelled"];
   if (!validStatuses.includes(status)) {
     return res.status(400).json({
       success: false,
-      message: 'Invalid status. Valid statuses: ' + validStatuses.join(', '),
+      message: "Invalid status. Valid statuses: " + validStatuses.join(", "),
     });
   }
 
@@ -144,25 +149,25 @@ exports.updateServiceRequestStatus = asyncHandler(async (req, res) => {
   if (!request) {
     return res.status(404).json({
       success: false,
-      message: 'Service request not found',
+      message: "Service request not found",
     });
   }
 
   // Only admin or the service provider for this request can update
-  if (req.user.role !== 'admin' && req.user.role !== 'serviceProvider') {
+  if (req.user.role !== "admin" && req.user.role !== "serviceProvider") {
     return res.status(403).json({
       success: false,
-      message: 'Only admins and service providers can update request status',
+      message: "Only admins and service providers can update request status",
     });
   }
 
   // If not admin, check if user is the service provider for this request
-  if (req.user.role !== 'admin') {
+  if (req.user.role !== "admin") {
     const providerId = request.serviceProvider.toString();
     if (req.user._id.toString() !== providerId) {
       return res.status(403).json({
         success: false,
-        message: 'You can only update status for your own service requests',
+        message: "You can only update status for your own service requests",
       });
     }
   }
@@ -172,7 +177,7 @@ exports.updateServiceRequestStatus = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    message: 'Service request status updated successfully',
+    message: "Service request status updated successfully",
     request,
   });
 });
@@ -182,17 +187,17 @@ exports.updateServiceRequestStatus = asyncHandler(async (req, res) => {
  */
 exports.getServiceRequestsForProvider = asyncHandler(async (req, res) => {
   // Only service providers and admins can view provider requests
-  if (req.user.role !== 'admin' && req.user.role !== 'serviceProvider') {
+  if (req.user.role !== "admin" && req.user.role !== "serviceProvider") {
     return res.status(403).json({
       success: false,
-      message: 'Only admins and service providers can view service requests',
+      message: "Only admins and service providers can view service requests",
     });
   }
 
   const providerId = req.user._id;
 
   const requests = await ServiceRequest.find({ serviceProvider: providerId })
-    .populate('user', 'name email')
+    .populate("user", "name email")
     .sort({ createdAt: -1 });
 
   res.json({
