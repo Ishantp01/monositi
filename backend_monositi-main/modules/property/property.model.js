@@ -1,4 +1,3 @@
-// src/models/property.model.js
 const mongoose = require("mongoose");
 
 const propertySchema = new mongoose.Schema(
@@ -10,7 +9,7 @@ const propertySchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["PG/Hostel", "Rent", "Buy", "Commercial"],
+      enum: ["Buy", "Rent", "Commercial"], // PG/Hostel removed
       required: true,
     },
     name: {
@@ -38,7 +37,7 @@ const propertySchema = new mongoose.Schema(
     },
     photos: [
       {
-        type: String, // store Cloudinary URLs or any image URLs
+        type: String, // Cloudinary URLs or any URL
       },
     ],
     tags: [
@@ -57,6 +56,14 @@ const propertySchema = new mongoose.Schema(
       default: "Pending",
     },
     isFeatured: {
+      type: Boolean,
+      default: false,
+    },
+    monositiVerified: {
+      type: Boolean,
+      default: false,
+    },
+    popular: {
       type: Boolean,
       default: false,
     },

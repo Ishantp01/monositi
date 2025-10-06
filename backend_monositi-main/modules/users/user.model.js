@@ -17,14 +17,25 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, "Password is required"],
+      minlength: 6,
     },
     role: {
       type: String,
-      enum: ["tenant", "landlord", "serviceProvider", "admin"],
-      default: "tenant",
+      enum: ["admin", "monositi-tenant", "user", "serviceProvider", "tenant"],
+      default: "user",
     },
     photo: {
       type: String,
+    },
+    verified: {
+      type: Boolean,
+      default: false,
+    },
+    otp: {
+      type: String,
+    },
+    otpExpires: {
+      type: Date,
     },
   },
   { timestamps: true }
@@ -40,7 +51,7 @@ userSchema.pre("save", async function (next) {
 
 // ✅ Password match helper
 userSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+  return bcrypt.compare(enteredPassword, this.password);
 };
 
 const User = mongoose.model("User", userSchema);
