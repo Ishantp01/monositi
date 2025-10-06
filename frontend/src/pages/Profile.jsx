@@ -2,15 +2,22 @@
 
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/NavBar";
+import { propertyApi, createPropertyFormData } from "../utils/propertyApi";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({});
+  const [properties, setProperties] = useState([]);
+  const [propertiesLoading, setPropertiesLoading] = useState(true);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [actionType, setActionType] = useState(""); // view/update
+  const [updatingProperty, setUpdatingProperty] = useState({});
+  const [updatingLoading, setUpdatingLoading] = useState(false);
   const token = localStorage.getItem("token");
 
-  // ✅ Fetch current user profile
+  // ---------------- Fetch User ----------------
   const fetchUserProfile = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/users/me", {
@@ -19,15 +26,11 @@ export default function Profile() {
           Authorization: `Bearer ${token}`,
         },
       });
-
       const data = await res.json();
-
       if (data.success) {
         setUser(data.user);
         setEditedUser(data.user);
-      } else {
-        console.error("Failed to fetch user:", data.message);
-      }
+      } else console.error("Failed to fetch user:", data.message);
     } catch (error) {
       console.error("Error fetching user:", error);
     } finally {
@@ -35,17 +38,31 @@ export default function Profile() {
     }
   };
 
+  // ---------------- Fetch Properties ----------------
+  const fetchUserProperties = async () => {
+    setPropertiesLoading(true);
+    try {
+      const data = await propertyApi.getPropertyByLandlord();
+      if (data.success) setProperties(data.properties);
+      else console.error("Failed to fetch properties:", data.message);
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+    } finally {
+      setPropertiesLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchUserProfile();
+    fetchUserProperties();
   }, []);
 
-  // ✅ Handle field changes
+  // ---------------- User Handlers ----------------
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditedUser((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ✅ Handle profile photo upload
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -57,7 +74,6 @@ export default function Profile() {
     }
   };
 
-  // ✅ Save updated profile
   const handleSave = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/users/me", {
@@ -68,14 +84,11 @@ export default function Profile() {
         },
         body: JSON.stringify(editedUser),
       });
-
       const data = await res.json();
       if (data.success) {
         setUser(data.user);
         setIsEditing(false);
-      } else {
-        console.error("Failed to update profile:", data.message);
-      }
+      } else console.error("Failed to update profile:", data.message);
     } catch (error) {
       console.error("Error updating profile:", error);
     }
@@ -87,237 +100,286 @@ export default function Profile() {
     setIsEditing(false);
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-theme-primary"></div>
-          <p className="text-lg font-medium text-gray-700">Loading profile...</p>
-        </div>
-      </div>
-    );
-  }
+  // ---------------- Property Actions ----------------
+  const handleDeleteProperty = async (id) => {
+    if (!confirm("Are you sure you want to delete this property?")) return;
+    try {
+      const data = await propertyApi.deleteProperty(id);
+      if (data.success) {
+        fetchUserProperties();
+        alert("Property deleted successfully!");
+      } else {
+        alert("Failed to delete property: " + data.message);
+      }
+    } catch (error) {
+      alert("Error deleting property: " + error.message);
+    }
+  };
 
-  if (!user) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <div className="text-center space-y-2">
-          <div className="text-4xl">👤</div>
-          <p className="text-gray-600 text-lg">User profile not found.</p>
-        </div>
+  const handleViewProperty = (property) => {
+    setSelectedProperty(property);
+    setActionType("view");
+  };
+
+  const handleUpdateProperty = (property) => {
+    setSelectedProperty(property);
+    setUpdatingProperty(property); // Load data for update
+    setActionType("update");
+  };
+
+  const handleUpdateInputChange = (e) => {
+    const { name, value } = e.target;
+    setUpdatingProperty((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdatePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUpdatingProperty((prev) => ({
+        ...prev,
+        photos: [...(prev.photos || []), file],
+      }));
+    }
+  };
+
+  const handleSavePropertyUpdate = async () => {
+    setUpdatingLoading(true);
+    try {
+      const formData = createPropertyFormData(updatingProperty);
+      const data = await propertyApi.updateProperty(selectedProperty._id, formData);
+      if (data.success) {
+        fetchUserProperties();
+        setSelectedProperty(null);
+        setActionType("");
+        alert("Property updated successfully!");
+      } else alert("Failed to update property: " + data.message);
+    } catch (error) {
+      alert("Error updating property: " + error.message);
+    } finally {
+      setUpdatingLoading(false);
+    }
+  };
+
+  const closePropertyModal = () => {
+    setSelectedProperty(null);
+    setActionType("");
+    setUpdatingProperty({});
+  };
+
+  // ---------------- UI ----------------
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex flex-col items-center space-y-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-theme-primary"></div>
+        <p className="text-lg font-medium text-gray-700">Loading profile...</p>
       </div>
-    );
-  }
+    </div>
+  );
+
+  if (!user) return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="text-center space-y-2">
+        <div className="text-4xl">👤</div>
+        <p className="text-gray-600 text-lg">User profile not found.</p>
+      </div>
+    </div>
+  );
 
   return (
     <>
       <Navbar />
       <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl md:text-4xl font-bold text-theme-primary">
-              User Profile
-            </h1>
-            <p className="text-gray-600 text-lg">Manage your account information</p>
-          </div>
-
-          {/* Profile Card */}
+        <div className="max-w-5xl mx-auto space-y-6">
+          {/* ---------------- User Profile Card ---------------- */}
           <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
-            <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-b border-gray-200">
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-b border-gray-200 flex justify-between items-center">
               <h2 className="text-xl font-bold text-gray-800 flex items-center">
                 <span className="mr-2 text-2xl">👤</span>
-                Profile Information
+                {user.name}'s Profile
               </h2>
-              <p className="text-gray-600 mt-1 text-sm">View and manage your personal details</p>
+              <button
+                onClick={handleEdit}
+                className="px-4 py-2 bg-theme-primary text-white rounded-lg hover:bg-red-700 transition-colors shadow-md"
+              >
+                Edit Profile
+              </button>
             </div>
+            <div className="p-6 flex flex-col lg:flex-row items-center lg:items-start lg:space-x-8">
+              <img
+                src={user.photo || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQq6gaTf6N93kzolH98ominWZELW881HqCgw&s"}
+                alt={user.name}
+                className="w-32 h-32 lg:w-40 lg:h-40 rounded-full  object-cover"
+              />
+              <div className="flex-1 mt-4 lg:mt-0 space-y-2 text-center lg:text-left">
+                <h3 className="text-2xl font-bold">{user.name}</h3>
+                <p className="text-gray-600">Email: {user.email}</p>
+                {user.phone && <p className="text-gray-600">Phone: {user.phone}</p>}
+                {user.address && <p className="text-gray-600">Address: {user.address}</p>}
+              </div>
+            </div>
+          </div>
 
+          {/* ---------------- User Properties ---------------- */}
+          <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-gray-800 flex items-center">
+                <span className="mr-2 text-2xl">🏘️</span>
+                Your Properties
+              </h2>
+              <button
+                onClick={fetchUserProperties}
+                className="px-4 py-2 bg-theme-primary text-white rounded-lg hover:bg-red-700 transition-colors shadow-md"
+              >
+                Refresh
+              </button>
+            </div>
             <div className="p-6">
-              <div className="flex flex-col lg:flex-row items-center lg:items-start lg:space-x-8">
-                {/* Profile Photo */}
-                <div className="relative mb-6 lg:mb-0">
-                  <img
-                    src={user.photo || "https://via.placeholder.com/150"}
-                    alt={user.name}
-                    className="w-32 h-32 lg:w-40 lg:h-40 rounded-full border-4 border-theme-primary shadow-lg object-cover transition-transform duration-300 hover:scale-105"
-                  />
-                  <div className="absolute -bottom-2 -right-2 bg-theme-primary w-8 h-8 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-bold">
-                      {user.role?.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Profile Info */}
-                <div className="text-center lg:text-left flex-1 mt-4 lg:mt-0 space-y-3">
-                  <div>
-                    <h3 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-1">
-                      {user.name}
-                    </h3>
-                    <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-theme-secondary text-theme-primary border border-theme-primary border-opacity-20">
-                      {user.role?.toUpperCase()}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2 text-gray-600">
-                      <span className="text-sm">📧</span>
-                      <span className="text-sm font-medium">{user.email}</span>
-                    </div>
-                    {user.phone && (
-                      <div className="flex items-center space-x-2 text-gray-600">
-                        <span className="text-sm">📱</span>
-                        <span className="text-sm font-medium">{user.phone}</span>
+              {propertiesLoading ? (
+                <p className="text-gray-600 text-center">Loading properties...</p>
+              ) : properties.length === 0 ? (
+                <p className="text-gray-600 text-center">No properties found.</p>
+              ) : (
+                <div className="space-y-4">
+                  {properties.map((prop) => (
+                    <div
+                      key={prop._id}
+                      className="flex justify-between items-center border-b border-gray-200 p-4 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <div>
+                        <h3 className="font-semibold text-gray-800">{prop.name}</h3>
+                        <p className="text-sm text-gray-500">{prop.city}, {prop.state}</p>
+                        <p className="text-sm text-gray-500">₹ {prop.price}</p>
                       </div>
-                    )}
-                    {user.address && (
-                      <div className="flex items-center space-x-2 text-gray-600">
-                        <span className="text-sm">📍</span>
-                        <span className="text-sm font-medium">{user.address}</span>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleViewProperty(prop)}
+                          className="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors"
+                        >
+                          View
+                        </button>
+                        <button
+                          onClick={() => handleUpdateProperty(prop)}
+                          className="px-3 py-1 bg-yellow-500 text-white rounded-lg text-sm hover:bg-yellow-600 transition-colors"
+                        >
+                          Update
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProperty(prop._id)}
+                          className="px-3 py-1 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors"
+                        >
+                          Delete
+                        </button>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
-
-              {/* Edit Button */}
-              <div className="mt-8 flex justify-center">
-                <button
-                  onClick={handleEdit}
-                  className="bg-theme-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors shadow-md flex items-center space-x-2"
-                >
-                  <span>✏️</span>
-                  <span>Edit Profile</span>
-                </button>
-              </div>
+              )}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Edit Modal */}
-        {isEditing && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-            <div className="bg-white rounded-xl w-full max-w-lg shadow-2xl border border-gray-200 transform transition-all">
-              <div className="bg-theme-primary p-6 rounded-t-xl">
-                <h2 className="text-xl font-bold text-white flex items-center justify-center">
-                  <span className="mr-2">✏️</span>
-                  Edit Profile
-                </h2>
-              </div>
+      {/* ---------------- Property Modal ---------------- */}
+      {selectedProperty && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+          <div className="bg-white rounded-xl w-full max-w-2xl shadow-2xl border border-gray-200 overflow-y-auto max-h-[90vh]">
+            <div className="bg-theme-primary p-6 rounded-t-xl flex justify-between items-center">
+              <h2 className="text-xl font-bold text-white">
+                {actionType === "view" ? "Property Details" : "Update Property"}
+              </h2>
+              <button onClick={closePropertyModal} className="text-white text-xl font-bold">&times;</button>
+            </div>
 
-              <div className="p-6 space-y-6">
-                {/* Photo Upload */}
-                <div className="flex justify-center">
-                  <div className="relative group">
-                    <img
-                      src={editedUser.photo || "https://via.placeholder.com/150"}
-                      alt="Preview"
-                      className="w-32 h-32 rounded-full border-4 border-theme-primary object-cover shadow-lg group-hover:shadow-xl transition-shadow"
-                    />
-                    <div className="absolute bottom-0 right-0 bg-theme-primary w-10 h-10 rounded-full flex justify-center items-center shadow-lg cursor-pointer hover:bg-red-700 transition-colors group-hover:scale-110">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 text-white"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M4 7h4l2-3h4l2 3h4a2 2 0 012 2v11a2 2 0 01-2 2H4a2 2 0 01-2-2V9a2 2 0 012-2zm8 11a5 5 0 100-10 5 5 0 000 10z" />
-                        <circle cx="12" cy="12" r="3" fill="white" />
-                      </svg>
+            <div className="p-6 space-y-4">
+              {actionType === "view" ? (
+                <>
+                  <h3 className="text-lg font-semibold">{selectedProperty.name}</h3>
+                  <p className="text-gray-600">{selectedProperty.description}</p>
+                  <p className="text-gray-600 font-medium">Type: {selectedProperty.type}</p>
+                  <p className="text-gray-600 font-medium">City: {selectedProperty.city}</p>
+                  <p className="text-gray-600 font-medium">State: {selectedProperty.state}</p>
+                  <p className="text-gray-600 font-medium">Price: ₹ {selectedProperty.price}</p>
+                  <p className="text-gray-600 font-medium">Tags: {selectedProperty.tags.join(", ")}</p>
+                  <p className="text-gray-600 font-medium">Contact: {selectedProperty.contactNumber}</p>
+                  {selectedProperty.photos && (
+                    <div className="flex gap-2 overflow-x-auto py-2">
+                      {selectedProperty.photos.map((photo, i) => (
+                        <img key={i} src={photo} alt="Property" className="w-32 h-24 object-cover rounded-lg border border-gray-200" />
+                      ))}
                     </div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePhotoChange}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer rounded-full"
-                    />
-                  </div>
-                </div>
-
-                {/* Name */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Full Name
-                  </label>
+                  )}
+                </>
+              ) : (
+                <>
                   <input
                     type="text"
                     name="name"
-                    value={editedUser.name}
-                    onChange={handleInputChange}
-                    className="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-theme-primary transition-all"
-                    placeholder="Enter your full name"
+                    value={updatingProperty.name || ""}
+                    onChange={handleUpdateInputChange}
+                    placeholder="Property Name"
+                    className="w-full border p-2 rounded-lg"
                   />
-                </div>
-
-                {/* Email */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Email Address
-                  </label>
                   <input
-                    type="email"
-                    name="email"
-                    value={editedUser.email}
-                    onChange={handleInputChange}
-                    className="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-theme-primary transition-all"
-                    placeholder="Enter your email address"
+                    type="text"
+                    name="description"
+                    value={updatingProperty.description || ""}
+                    onChange={handleUpdateInputChange}
+                    placeholder="Description"
+                    className="w-full border p-2 rounded-lg"
                   />
-                </div>
-
-                {/* Phone (if available) */}
-                {editedUser.phone !== undefined && (
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-gray-700">
-                      Phone Number (Optional)
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={editedUser.phone || ''}
-                      onChange={handleInputChange}
-                      className="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-theme-primary transition-all"
-                      placeholder="Enter your phone number"
-                    />
-                  </div>
-                )}
-
-                {/* Address (if available) */}
-                {editedUser.address !== undefined && (
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-gray-700">
-                      Address (Optional)
-                    </label>
-                    <textarea
-                      name="address"
-                      value={editedUser.address || ''}
-                      onChange={handleInputChange}
-                      rows="3"
-                      className="w-full border-2 border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-theme-primary focus:border-theme-primary transition-all resize-none"
-                      placeholder="Enter your address"
-                    />
-                  </div>
-                )}
-
-                {/* Save / Cancel */}
-                <div className="flex justify-end gap-3 pt-4">
+                  <input
+                    type="text"
+                    name="city"
+                    value={updatingProperty.city || ""}
+                    onChange={handleUpdateInputChange}
+                    placeholder="City"
+                    className="w-full border p-2 rounded-lg"
+                  />
+                  <input
+                    type="text"
+                    name="state"
+                    value={updatingProperty.state || ""}
+                    onChange={handleUpdateInputChange}
+                    placeholder="State"
+                    className="w-full border p-2 rounded-lg"
+                  />
+                  <input
+                    type="number"
+                    name="price"
+                    value={updatingProperty.price || ""}
+                    onChange={handleUpdateInputChange}
+                    placeholder="Price"
+                    className="w-full border p-2 rounded-lg"
+                  />
+                  <input
+                    type="text"
+                    name="tags"
+                    value={updatingProperty.tags?.join(", ") || ""}
+                    onChange={(e) =>
+                      setUpdatingProperty((prev) => ({ ...prev, tags: e.target.value.split(",").map(tag => tag.trim()) }))
+                    }
+                    placeholder="Tags (comma separated)"
+                    className="w-full border p-2 rounded-lg"
+                  />
+                  <input
+                    type="file"
+                    multiple
+                    onChange={handleUpdatePhotoChange}
+                    className="w-full border p-2 rounded-lg"
+                  />
                   <button
-                    onClick={handleCancel}
-                    className="px-6 py-2 rounded-lg bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition-colors"
+                    onClick={handleSavePropertyUpdate}
+                    disabled={updatingLoading}
+                    className="px-4 py-2 bg-theme-primary text-white rounded-lg mt-2 hover:bg-red-700 transition-colors"
                   >
-                    Cancel
+                    {updatingLoading ? "Saving..." : "Save Changes"}
                   </button>
-                  <button
-                    onClick={handleSave}
-                    className="px-6 py-2 rounded-lg bg-theme-primary text-white font-medium hover:bg-red-700 transition-colors shadow-lg"
-                  >
-                    Save Changes
-                  </button>
-                </div>
-              </div>
+                </>
+              )}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 }
