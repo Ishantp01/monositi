@@ -21,17 +21,19 @@ const PropertyCarousel = ({ tags}) => {
     setError("");
 
     try {
-      // Use the API function from your propertyApi
+      // Use the getPropertiesByTags function which has the correct endpoint
       const data = await propertyApi.getPropertiesByTags(tags);
       console.log(data);
 
       if (data.success) {
+        // Properties are already sorted by the API (featured first, then popular, then the rest)
         setProperties(data.properties);
       } else {
         setError(data.message || "Failed to fetch properties");
       }
     } catch (err) {
-      setError(err.message || "Something went wrong");
+      console.error("Error in PropertyCarousel:", err);
+      setError("Something went wrong while fetching properties");
     } finally {
       setLoading(false);
     }

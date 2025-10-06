@@ -12,6 +12,85 @@ const getAuthHeaders = () => {
 };
 
 export const propertyApi = {
+<<<<<<< HEAD
+=======
+  // Monositi API functions
+  getAllMonositiListings: async (filters = {}) => {
+    try {
+      const queryParams = new URLSearchParams(filters);
+      const response = await fetch(`${API_BASE_URL}/monositi?${queryParams}`);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching Monositi listings:", error);
+      return { success: false, message: "Failed to fetch Monositi listings", listings: [] };
+    }
+  },
+  
+  getMonositiListingById: async (id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/monositi/${id}`);
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching Monositi listing:", error);
+      return { success: false, message: "Failed to fetch Monositi listing" };
+    }
+  },
+  
+  // Original property API functions
+  getAllProperties: async (filters = {}) => {
+    const queryParams = new URLSearchParams(filters);
+    const response = await fetch(`${API_BASE_URL}/properties?${queryParams}`);
+    const data = await response.json();
+    
+    // Sort properties: featured first, then popular, then the rest
+    if (data.properties) {
+      data.properties.sort((a, b) => {
+        // Featured properties come first
+        if (a.isFeatured && !b.isFeatured) return -1;
+        if (!a.isFeatured && b.isFeatured) return 1;
+        
+        // Then popular properties
+        if (a.popular && !b.popular) return -1;
+        if (!a.popular && b.popular) return 1;
+        
+        // Default sorting (could be by date, price, etc.)
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    }
+    
+    return data;
+  },
+  
+  getFilteredProperties: async (type, filters = {}) => {
+    try {
+      // Use the correct endpoint for type-based property search
+      const response = await fetch(`${API_BASE_URL}/properties/properties/search/type?type=${type}`);
+      const data = await response.json();
+      
+      // Sort properties: featured first, then popular, then the rest
+      if (data.properties) {
+        data.properties.sort((a, b) => {
+          // Featured properties come first
+          if (a.isFeatured && !b.isFeatured) return -1;
+          if (!a.isFeatured && b.isFeatured) return 1;
+          
+          // Then popular properties
+          if (a.popular && !b.popular) return -1;
+          if (!a.popular && b.popular) return 1;
+          
+          // Default sorting (could be by date, price, etc.)
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+      }
+      
+      return data;
+    } catch (error) {
+      console.error("Error fetching filtered properties:", error);
+      return { success: false, message: "Failed to fetch properties", properties: [] };
+    }
+  },
+>>>>>>> 800c12a51a9d94974e772a6adc1cf19d8b5f1471
 
   // Property APIs
   getPropertyById: async (id) => {
@@ -61,7 +140,25 @@ export const propertyApi = {
 
   getPropertiesByTags: async (tags) => {
     const response = await fetch(`${API_BASE_URL}/properties/properties/search/type?type=${tags}`);
-    return await response.json();
+    const data = await response.json();
+    
+    // Sort properties: featured first, then popular, then the rest
+    if (data.properties) {
+      data.properties.sort((a, b) => {
+        // Featured properties come first
+        if (a.isFeatured && !b.isFeatured) return -1;
+        if (!a.isFeatured && b.isFeatured) return 1;
+        
+        // Then popular properties
+        if (a.popular && !b.popular) return -1;
+        if (!a.popular && b.popular) return 1;
+        
+        // Default sorting (could be by date, price, etc.)
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    }
+    
+    return data;
   },
 
   // Admin endpoints
