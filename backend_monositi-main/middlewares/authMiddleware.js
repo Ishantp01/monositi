@@ -26,6 +26,12 @@ const protect = asyncHandler(async (req, res, next) => {
         throw new Error("User not found");
       }
 
+      // Check if user is verified (unverified users cannot access protected routes)
+      if (!req.user.verified) {
+        res.status(403);
+        throw new Error("Account not verified. Please verify your email first.");
+      }
+
       next();
     } catch (error) {
       console.error("Auth error:", error);
@@ -58,7 +64,7 @@ const serviceProviderOnly = (req, res, next) => {
 };
 
 const tenantOnly = (req, res, next) => {
-  if (req.user.role !== "tenant") {
+  if (req.user.role !== "tenant" && req.user.role !== "monositi-tenant") {
     return res.status(403).json({ message: "Access denied: Tenant only" });
   }
   next();
