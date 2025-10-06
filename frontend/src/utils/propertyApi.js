@@ -95,7 +95,7 @@ export const propertyApi = {
   },
 
   getPropertyByLandlord: async () => {
-    const response = await fetch(`${API_BASE_URL}/properties/landlord/me`, {
+    const response = await fetch(`${API_BASE_URL}/properties/properties`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAuthToken()}`,

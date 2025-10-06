@@ -21,8 +21,8 @@ const Navbar = ({ bgColor = "bg-theme-primary", avatarUrl }) => {
           to="/"
           className="flex items-center gap-2 hover:opacity-80 transition"
         >
-          <Lock className="text-black" size={20} strokeWidth={4} />
-          <h1 className="text-black text-lg lg:text-2xl font-extrabold tracking-wide">
+          <Lock className="text-white" size={20} strokeWidth={4} />
+          <h1 className="text-white text-lg lg:text-2xl font-extrabold tracking-wide">
             Monositi
           </h1>
         </Link>

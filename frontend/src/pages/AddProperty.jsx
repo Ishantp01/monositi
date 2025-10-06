@@ -6,7 +6,6 @@ import avatar from '../assets/images/avatar2.jpg';
 
 // Property type icons
 const propertyTypeIcons = {
-  'PG/Hostel': '🏠',
   'Rent': '🏡',
   'Buy': '🏘️',
   'Commercial': '🏢'
@@ -88,7 +87,10 @@ const AddProperty = () => {
     setMessage('');
 
     try {
+      // Use helper function to create FormData
       const formDataToSend = createPropertyFormData(formData);
+
+      // Call API from helper
       const result = await propertyApi.createProperty(formDataToSend);
 
       if (result.success) {
@@ -106,6 +108,7 @@ const AddProperty = () => {
           contactNumber: '',
           photos: []
         });
+        setPhotoPreviews([]);
       } else {
         setMessage('Error adding property: ' + result.message);
       }
@@ -136,11 +139,10 @@ const AddProperty = () => {
 
           {/* Success/Error Message */}
           {message && (
-            <div className={`max-w-2xl mx-auto p-6 rounded-xl shadow-lg border-2 ${
-              message.includes('successfully')
+            <div className={`max-w-2xl mx-auto p-6 rounded-xl shadow-lg border-2 ${message.includes('successfully')
                 ? 'bg-green-50 border-green-200 text-green-800'
                 : 'bg-orange-50 border-orange-200 text-orange-800'
-            }`}>
+              }`}>
               <div className="flex items-center space-x-3">
                 <span className="text-2xl">
                   {message.includes('successfully') ? '✅' : '⚠️'}
@@ -162,7 +164,7 @@ const AddProperty = () => {
               icon="🏷️"
               description="Choose the category that best describes your property"
             >
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {Object.entries(propertyTypeIcons).map(([type, icon]) => (
                   <label key={type} className={`relative cursor-pointer`}>
                     <input
@@ -173,11 +175,10 @@ const AddProperty = () => {
                       onChange={handleInputChange}
                       className="sr-only"
                     />
-                    <div className={`p-4 rounded-xl border-2 text-center transition-all ${
-                      formData.type === type
+                    <div className={`p-4 rounded-xl border-2 text-center transition-all ${formData.type === type
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-200 hover:border-blue-500 hover:bg-gray-50'
-                    }`}>
+                      }`}>
                       <span className="text-3xl block mb-2">{icon}</span>
                       <span className="font-medium text-sm">{type}</span>
                     </div>
@@ -335,11 +336,10 @@ const AddProperty = () => {
                           onChange={handleInputChange}
                           className="sr-only"
                         />
-                        <div className={`p-3 rounded-lg border-2 text-center transition-all ${
-                          formData.genderPreference === option
+                        <div className={`p-3 rounded-lg border-2 text-center transition-all ${formData.genderPreference === option
                             ? 'border-blue-500 bg-blue-50 text-blue-700'
                             : 'border-gray-200 hover:border-blue-500 hover:bg-gray-50'
-                        }`}>
+                          }`}>
                           <span className="font-medium text-sm">{option}</span>
                         </div>
                       </label>
