@@ -22,8 +22,11 @@ export default function Login() {
       });
 
       // 🔹 Handle forbidden (email not verified)
-      if (response.status === 403 || response.message?.includes("Email not verified")) {
-        toast.warning("⚠️ Email not verified. Please check your inbox.", {
+      if (
+        response.status === 403 ||
+        response.message?.includes("Email not verified")
+      ) {
+        toast.warning("Email not verified. Please check your inbox.", {
           position: "top-right",
           autoClose: 4000,
           hideProgressBar: false,
@@ -66,7 +69,19 @@ export default function Login() {
       }
     } catch (err) {
       console.error("Login Error:", err);
-      setError("Something went wrong. Please try again.");
+      // Display more specific error messages
+      if (
+        err.message.includes("Server not available") ||
+        err.message.includes("Network error")
+      ) {
+        setError("Backend server is not running. Please contact support.");
+        toast.error("Server connection error. Please try again later.", {
+          position: "top-right",
+          autoClose: 4000,
+        });
+      } else {
+        setError(err.message || "Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
