@@ -23,8 +23,27 @@ const serviceRequestSchema = new mongoose.Schema(
       enum: ['Requested', 'In Progress', 'Completed', 'Cancelled'],
       default: 'Requested',
     },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
+
+// 🗑️ Soft delete method
+serviceRequestSchema.methods.softDelete = function () {
+  this.deletedAt = new Date();
+  return this.save();
+};
+
+// 🔍 Query middleware to exclude soft-deleted service requests by default
+serviceRequestSchema.pre(/^find/, function (next) {
+  // Only apply to queries that don't explicitly include deleted service requests
+  if (!this.getOptions().includeDeleted) {
+    this.where({ deletedAt: null });
+  }
+  next();
+});
 
 module.exports = mongoose.model('ServiceRequest', serviceRequestSchema);
