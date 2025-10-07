@@ -6,6 +6,7 @@ const {
   getServiceProviderById,
   createServiceRequest,
   updateServiceRequestStatus,
+  getServiceRequestById,
   getServiceRequestsForProvider,
 } = require('./service.controller');
 
@@ -22,6 +23,7 @@ router.get('/service-providers/:id', getServiceProviderById);
 router.post('/service-requests', protect, createServiceRequest);
 
 // Provider/Admin routes
+router.get('/service-requests/:id', protect, getServiceRequestById);
 router.patch('/service-requests/:id/status', protect, updateServiceRequestStatus);
 router.get('/service-requests/provider', protect, getServiceRequestsForProvider);
 

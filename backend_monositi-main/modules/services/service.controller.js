@@ -178,6 +178,48 @@ exports.updateServiceRequestStatus = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Provider or Admin: View a specific service request by ID
+ */
+exports.getServiceRequestById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // Only service providers and admins can view service requests
+  if (req.user.role !== 'admin' && req.user.role !== 'serviceProvider') {
+    return res.status(403).json({
+      success: false,
+      message: 'Only admins and service providers can view service requests',
+    });
+  }
+
+  const request = await ServiceRequest.findById(id)
+    .populate('user', 'name email')
+    .populate('serviceProvider', 'name category contactNumber city state');
+
+  if (!request) {
+    return res.status(404).json({
+      success: false,
+      message: 'Service request not found',
+    });
+  }
+
+  // If not admin, check if user is the service provider for this request
+  if (req.user.role !== 'admin') {
+    const providerId = request.serviceProvider._id.toString();
+    if (req.user._id.toString() !== providerId) {
+      return res.status(403).json({
+        success: false,
+        message: 'You can only view your own service requests',
+      });
+    }
+  }
+
+  res.json({
+    success: true,
+    request,
+  });
+});
+
+/**
  * Provider: View all their requests
  */
 exports.getServiceRequestsForProvider = asyncHandler(async (req, res) => {
