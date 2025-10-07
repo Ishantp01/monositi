@@ -1,19 +1,17 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = "http://localhost:5000/api";
 
 const getAuthToken = () => {
-  return localStorage.getItem('token');
+  return localStorage.getItem("token");
 };
 
 const getAuthHeaders = () => {
   return {
-    'Authorization': `Bearer ${getAuthToken()}`,
-    'Content-Type': 'application/json'
+    Authorization: `Bearer ${getAuthToken()}`,
+    "Content-Type": "application/json",
   };
 };
 
 export const propertyApi = {
-<<<<<<< HEAD
-=======
   // Monositi API functions
   getAllMonositiListings: async (filters = {}) => {
     try {
@@ -23,10 +21,14 @@ export const propertyApi = {
       return data;
     } catch (error) {
       console.error("Error fetching Monositi listings:", error);
-      return { success: false, message: "Failed to fetch Monositi listings", listings: [] };
+      return {
+        success: false,
+        message: "Failed to fetch Monositi listings",
+        listings: [],
+      };
     }
   },
-  
+
   getMonositiListingById: async (id) => {
     try {
       const response = await fetch(`${API_BASE_URL}/monositi/${id}`);
@@ -36,61 +38,66 @@ export const propertyApi = {
       return { success: false, message: "Failed to fetch Monositi listing" };
     }
   },
-  
+
   // Original property API functions
   getAllProperties: async (filters = {}) => {
     const queryParams = new URLSearchParams(filters);
     const response = await fetch(`${API_BASE_URL}/properties?${queryParams}`);
     const data = await response.json();
-    
+
     // Sort properties: featured first, then popular, then the rest
     if (data.properties) {
       data.properties.sort((a, b) => {
         // Featured properties come first
         if (a.isFeatured && !b.isFeatured) return -1;
         if (!a.isFeatured && b.isFeatured) return 1;
-        
+
         // Then popular properties
         if (a.popular && !b.popular) return -1;
         if (!a.popular && b.popular) return 1;
-        
+
         // Default sorting (could be by date, price, etc.)
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
     }
-    
+
     return data;
   },
-  
+
   getFilteredProperties: async (type, filters = {}) => {
     try {
       // Use the correct endpoint for type-based property search
-      const response = await fetch(`${API_BASE_URL}/properties/properties/search/type?type=${type}`);
+      const response = await fetch(
+        `${API_BASE_URL}/properties/properties/search/type?type=${type}`
+      );
       const data = await response.json();
-      
+
       // Sort properties: featured first, then popular, then the rest
       if (data.properties) {
         data.properties.sort((a, b) => {
           // Featured properties come first
           if (a.isFeatured && !b.isFeatured) return -1;
           if (!a.isFeatured && b.isFeatured) return 1;
-          
+
           // Then popular properties
           if (a.popular && !b.popular) return -1;
           if (!a.popular && b.popular) return 1;
-          
+
           // Default sorting (could be by date, price, etc.)
           return new Date(b.createdAt) - new Date(a.createdAt);
         });
       }
-      
+
       return data;
     } catch (error) {
       console.error("Error fetching filtered properties:", error);
-      return { success: false, message: "Failed to fetch properties", properties: [] };
+      return {
+        success: false,
+        message: "Failed to fetch properties",
+        properties: [],
+      };
     }
   },
->>>>>>> 800c12a51a9d94974e772a6adc1cf19d8b5f1471
 
   // Property APIs
   getPropertyById: async (id) => {
@@ -100,9 +107,9 @@ export const propertyApi = {
 
   getPropertyByLandlord: async () => {
     const response = await fetch(`${API_BASE_URL}/properties/properties`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${getAuthToken()}`,
+        Authorization: `Bearer ${getAuthToken()}`,
       },
     });
     return await response.json();
@@ -110,65 +117,73 @@ export const propertyApi = {
 
   createProperty: async (formData) => {
     const response = await fetch(`${API_BASE_URL}/properties/properties`, {
-      method: 'POST',
+      method: "POST",
       body: formData,
       headers: {
-        'Authorization': `Bearer ${getAuthToken()}`
-      }
+        Authorization: `Bearer ${getAuthToken()}`,
+      },
     });
     return await response.json();
   },
 
   updateProperty: async (id, formData) => {
-    const response = await fetch(`${API_BASE_URL}/properties/properties/${id}`, {
-      method: 'PUT',
-      body: formData,
-      headers: {
-        'Authorization': `Bearer ${getAuthToken()}`
+    const response = await fetch(
+      `${API_BASE_URL}/properties/properties/${id}`,
+      {
+        method: "PUT",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${getAuthToken()}`,
+        },
       }
-    });
+    );
     return await response.json();
   },
 
   deleteProperty: async (id) => {
     const response = await fetch(`${API_BASE_URL}/properties/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders()
+      method: "DELETE",
+      headers: getAuthHeaders(),
     });
     return await response.json();
   },
 
   getPropertiesByTags: async (tags) => {
-    const response = await fetch(`${API_BASE_URL}/properties/properties/search/type?type=${tags}`);
+    const response = await fetch(
+      `${API_BASE_URL}/properties/properties/search/type?type=${tags}`
+    );
     const data = await response.json();
-    
+
     // Sort properties: featured first, then popular, then the rest
     if (data.properties) {
       data.properties.sort((a, b) => {
         // Featured properties come first
         if (a.isFeatured && !b.isFeatured) return -1;
         if (!a.isFeatured && b.isFeatured) return 1;
-        
+
         // Then popular properties
         if (a.popular && !b.popular) return -1;
         if (!a.popular && b.popular) return 1;
-        
+
         // Default sorting (could be by date, price, etc.)
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
     }
-    
+
     return data;
   },
 
   // Admin endpoints
   getAllPropertiesForAdmin: async () => {
-    const response = await fetch(`${API_BASE_URL}/properties/admin/properties/all`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${getAuthToken()}`,
-      },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/properties/admin/properties/all`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${getAuthToken()}`,
+        },
+      }
+    );
     return await response.json();
   },
 
@@ -176,10 +191,10 @@ export const propertyApi = {
     const response = await fetch(
       `${API_BASE_URL}/properties/admin/properties/${id}/verify`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
           ...getAuthHeaders(),
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ status }),
       }
@@ -188,10 +203,13 @@ export const propertyApi = {
   },
 
   suspendProperty: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/properties/admin/properties/${id}/suspend`, {
-      method: 'PATCH',
-      headers: getAuthHeaders(),
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/properties/admin/properties/${id}/suspend`,
+      {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+      }
+    );
     return await response.json();
   },
 
@@ -202,9 +220,9 @@ export const propertyApi = {
   // Get all Monositi listings
   getAllMonositiListings: async () => {
     const response = await fetch(`${API_BASE_URL}/monositi`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${getAuthToken()}`,
+        Authorization: `Bearer ${getAuthToken()}`,
       },
     });
     return await response.json();
@@ -213,9 +231,9 @@ export const propertyApi = {
   // Get single Monositi listing by ID
   getMonositiListingById: async (id) => {
     const response = await fetch(`${API_BASE_URL}/monositi/${id}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${getAuthToken()}`,
+        Authorization: `Bearer ${getAuthToken()}`,
       },
     });
     return await response.json();
@@ -224,10 +242,10 @@ export const propertyApi = {
   // Create new Monositi listing
   createMonositiListing: async (formData) => {
     const response = await fetch(`${API_BASE_URL}/monositi`, {
-      method: 'POST',
+      method: "POST",
       body: formData,
       headers: {
-        'Authorization': `Bearer ${getAuthToken()}`,
+        Authorization: `Bearer ${getAuthToken()}`,
       },
     });
     return await response.json();
@@ -236,10 +254,10 @@ export const propertyApi = {
   // Update Monositi listing
   updateMonositiListing: async (id, formData) => {
     const response = await fetch(`${API_BASE_URL}/monositi/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       body: formData,
       headers: {
-        'Authorization': `Bearer ${getAuthToken()}`,
+        Authorization: `Bearer ${getAuthToken()}`,
       },
     });
     return await response.json();
@@ -248,7 +266,7 @@ export const propertyApi = {
   // Delete Monositi listing
   deleteMonositiListing: async (id) => {
     const response = await fetch(`${API_BASE_URL}/monositi/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: getAuthHeaders(),
     });
     return await response.json();
@@ -258,17 +276,17 @@ export const propertyApi = {
 // Format for Monositi form
 export const formatPropertyForForm = (property) => {
   return {
-    type: property.type || '',
-    name: property.name || '',
-    description: property.description || '',
-    address: property.address || '',
-    city: property.city || '',
-    state: property.state || '',
-    price: property.price || '',
-    tags: property.tags ? property.tags.join(', ') : '',
-    genderPreference: property.genderPreference || '',
-    contactNumber: property.contactNumber || '',
-    photos: []
+    type: property.type || "",
+    name: property.name || "",
+    description: property.description || "",
+    address: property.address || "",
+    city: property.city || "",
+    state: property.state || "",
+    price: property.price || "",
+    tags: property.tags ? property.tags.join(", ") : "",
+    genderPreference: property.genderPreference || "",
+    contactNumber: property.contactNumber || "",
+    photos: [],
   };
 };
 
@@ -276,15 +294,19 @@ export const formatPropertyForForm = (property) => {
 export const createPropertyFormData = (propertyData) => {
   const formData = new FormData();
 
-  Object.keys(propertyData).forEach(key => {
-    if (key !== 'photos' && propertyData[key] !== null && propertyData[key] !== undefined) {
+  Object.keys(propertyData).forEach((key) => {
+    if (
+      key !== "photos" &&
+      propertyData[key] !== null &&
+      propertyData[key] !== undefined
+    ) {
       formData.append(key, propertyData[key]);
     }
   });
 
   if (propertyData.photos && propertyData.photos.length > 0) {
     propertyData.photos.forEach((photo, index) => {
-      formData.append('photos', photo);
+      formData.append("photos", photo);
     });
   }
 
