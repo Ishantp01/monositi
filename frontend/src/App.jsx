@@ -50,6 +50,8 @@ import MyProperties from "./pages/MyProperties";
 import EditProperty from "./pages/EditProperty";
 import ServiceProvider from "./pages/ServiceProviderform";
 import ServiceRequestPage from "./pages/ServiceRequestPage";
+import ServiceProviderDetail from "./pages/ServiceProviderDetail";
+import ServiceRequestForm from "./pages/ServiceRequestForm";
 import Profile from "./pages/Profile";
 import AdminUsers from "./pages/AdminUsers";
 import PropertyTypeResults from "./pages/PropertyTypeResults";
@@ -99,6 +101,8 @@ export default function App() {
         <Route path="/service-form" element={<ServiceProvider />} />
         <Route path="/services" element={<Services />} />
         <Route path="/service-request-list" element={<TenantRequestsPage />} />
+        <Route path="/service-providers/:id" element={<ServiceProviderDetail />} />
+        <Route path="/service-request/new" element={<ServiceRequestForm />} />
         
         
 
