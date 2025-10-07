@@ -51,4 +51,11 @@ router.get(
   propertyController.getAllPropertiesForAdmin
 );
 
+router.get(
+  "/admin/properties/type",
+  protect,
+  adminOnly,
+  propertyController.adminGetPropertiesByType
+);
+
 module.exports = router;

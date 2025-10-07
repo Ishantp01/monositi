@@ -245,6 +245,34 @@ exports.getPropertiesByType = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @desc    Admin: Get properties by type (all statuses)
+ * @route   GET /admin/properties/type
+ * @access  Admin
+ */
+exports.adminGetPropertiesByType = asyncHandler(async (req, res) => {
+  const { type } = req.query;
+  const allowedTypes = ["Buy", "Rent", "Commercial"];
+
+  if (!type || !allowedTypes.includes(type)) {
+    return res.status(400).json({
+      success: false,
+      message: `Invalid or missing type. Allowed: ${allowedTypes.join(", ")}`,
+    });
+  }
+
+  const properties = await Property.find({
+    type,
+  }).populate("landlord", "name email");
+
+  res.json({
+    success: true,
+    count: properties.length,
+    properties,
+    type,
+  });
+});
+
+/**
  * @desc    Get all properties of logged-in user
  * @route   GET /user/properties
  * @access  Authenticated

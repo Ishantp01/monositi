@@ -37,6 +37,10 @@ const userSchema = new mongoose.Schema(
     otpExpires: {
       type: Date,
     },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
@@ -53,6 +57,21 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return bcrypt.compare(enteredPassword, this.password);
 };
+
+// 🗑️ Soft delete method
+userSchema.methods.softDelete = function () {
+  this.deletedAt = new Date();
+  return this.save();
+};
+
+// 🔍 Query middleware to exclude soft-deleted users by default
+userSchema.pre(/^find/, function (next) {
+  // Only apply to queries that don't explicitly include deleted users
+  if (!this.getOptions().includeDeleted) {
+    this.where({ deletedAt: null });
+  }
+  next();
+});
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;

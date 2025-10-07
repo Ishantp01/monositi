@@ -14,7 +14,7 @@ const generateOTP = () => {
 };
 
 /**
- * 📌 Register regular user (role=user, verified=false)
+ * Register regular user (role=user, verified=false)
  */
 exports.registerUser = async (req, res) => {
   try {
@@ -50,7 +50,7 @@ exports.registerUser = async (req, res) => {
 };
 
 /**
- * 📌 Verify email using OTP
+ * Verify email using OTP
  */
 exports.verifyEmail = async (req, res) => {
   try {
@@ -75,7 +75,7 @@ exports.verifyEmail = async (req, res) => {
 };
 
 /**
- * 📌 Login - only if verified
+ * Login - only if verified
  */
 exports.loginUser = async (req, res) => {
   try {
@@ -109,7 +109,7 @@ exports.loginUser = async (req, res) => {
 };
 
 /**
- * 📌 Admin creates Monositi Tenant directly (verified = true)
+ * Admin creates Monositi Tenant directly (verified = true)
  */
 exports.createMonositiTenant = async (req, res) => {
   try {
@@ -145,7 +145,7 @@ exports.createMonositiTenant = async (req, res) => {
 };
 
 /**
- * 📌 Get current user profile
+ * Get current user profile
  */
 exports.getUserProfile = async (req, res) => {
   try {
@@ -158,11 +158,89 @@ exports.getUserProfile = async (req, res) => {
 };
 
 /**
- * 📌 Get all users (Admin only)
+ * Get all users (Admin only)
  */
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password -otp -otpExpires");
+    const { includeDeleted = false } = req.query;
+    let users;
+
+    if (includeDeleted === 'true') {
+      // Include soft deleted users
+      users = await User.find({ deletedAt: { $ne: null } }).select("-password -otp -otpExpires");
+    } else {
+      // Default behavior - exclude soft deleted users (handled by model middleware)
+      users = await User.find().select("-password -otp -otpExpires");
+    }
+
+    res.json({
+      success: true,
+      count: users.length,
+      users,
+      includeDeleted: includeDeleted === 'true'
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
+/**
+ * Get user by ID (Admin only)
+ */
+exports.getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password -otp -otpExpires");
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    res.json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
+/**
+ * Admin: Soft delete user
+ */
+exports.softDeleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    // Prevent admin from deleting themselves
+    if (user._id.toString() === req.user._id.toString()) {
+      return res.status(400).json({ success: false, message: "Cannot delete your own account" });
+    }
+
+    await user.softDelete();
+    res.json({ success: true, message: "User soft deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
+/**
+ * Admin: Restore soft deleted user
+ */
+exports.restoreUser = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.id, deletedAt: { $ne: null } });
+    if (!user) return res.status(404).json({ success: false, message: "User not found or not deleted" });
+
+    user.deletedAt = null;
+    await user.save();
+    res.json({ success: true, message: "User restored successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
+/**
+ * Admin: Get all deleted users
+ */
+exports.getDeletedUsers = async (req, res) => {
+  try {
+    const users = await User.find({ deletedAt: { $ne: null } })
+      .select("-password -otp -otpExpires")
+      .sort({ deletedAt: -1 });
     res.json({ success: true, count: users.length, users });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error", error: error.message });
@@ -170,13 +248,20 @@ exports.getAllUsers = async (req, res) => {
 };
 
 /**
- * 📌 Get user by ID (Admin only)
+ * Admin: Permanently delete user (hard delete)
  */
-exports.getUserById = async (req, res) => {
+exports.permanentDeleteUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select("-password -otp -otpExpires");
+    const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
-    res.json({ success: true, user });
+
+    // Prevent admin from deleting themselves
+    if (user._id.toString() === req.user._id.toString()) {
+      return res.status(400).json({ success: false, message: "Cannot permanently delete your own account" });
+    }
+
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: "User permanently deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error", error: error.message });
   }

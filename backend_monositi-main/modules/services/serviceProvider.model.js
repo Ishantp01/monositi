@@ -11,6 +11,12 @@ const reviewSchema = new mongoose.Schema(
 
 const serviceProviderSchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      unique: true
+    },
     name: { type: String, required: [true, 'Name is required'] },
     category: {
       type: String,
