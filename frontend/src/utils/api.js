@@ -15,7 +15,12 @@ const getAuthHeaders = (isJSON = true) => {
 };
 
 // Universal API function
-const apiRequest = async (endpoint, method = "GET", body = null, isJSON = true) => {
+const apiRequest = async (
+  endpoint,
+  method = "GET",
+  body = null,
+  isJSON = true
+) => {
   try {
     const res = await fetch(`${API_BASE_URL}${endpoint}`, {
       method,
@@ -23,11 +28,30 @@ const apiRequest = async (endpoint, method = "GET", body = null, isJSON = true) 
       body: body && isJSON ? JSON.stringify(body) : body,
     });
 
+    // Check if server is unreachable
+    if (!res.ok) {
+      if (res.status === 404) {
+        throw new Error(
+          "Server not available. Please ensure the backend server is running."
+        );
+      }
+      const data = await res.json();
+      throw new Error(data.message || "API request failed");
+    }
+
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "API request failed");
     return data;
   } catch (err) {
     console.error("API Error:", err.message);
+    // Add more specific error handling
+    if (
+      err.message.includes("Failed to fetch") ||
+      err.message.includes("NetworkError")
+    ) {
+      throw new Error(
+        "Network error. Please check your connection and ensure the backend server is running."
+      );
+    }
     throw err;
   }
 };
