@@ -20,6 +20,7 @@ exports.createServiceProvider = asyncHandler(async (req, res) => {
   } = req.body;
 
   const provider = await ServiceProvider.create({
+    user: req.user._id,
     name,
     category,
     contactNumber,
@@ -178,6 +179,73 @@ exports.updateServiceRequestStatus = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Delete service request (Customer or Service Provider - with restrictions)
+ */
+exports.deleteServiceRequest = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const request = await ServiceRequest.findById(id);
+  if (!request) {
+    return res.status(404).json({
+      success: false,
+      message: 'Service request not found',
+    });
+  }
+
+  // Check authorization
+  const isCustomer = request.user.toString() === req.user._id.toString();
+  const isServiceProvider = request.serviceProvider.toString() === req.user._id.toString();
+  const isAdmin = req.user.role === 'admin';
+
+  if (!isCustomer && !isServiceProvider && !isAdmin) {
+    return res.status(403).json({
+      success: false,
+      message: 'You are not authorized to delete this service request',
+    });
+  }
+
+  // Service providers can only delete completed requests
+  if (isServiceProvider && request.status !== 'Completed') {
+    return res.status(403).json({
+      success: false,
+      message: 'Service providers can only delete completed service requests',
+    });
+  }
+
+  // Soft delete the service request
+  await request.softDelete();
+
+  res.json({
+    success: true,
+    message: 'Service request deleted successfully',
+  });
+});
+
+/**
+ * Admin: Get all deleted service requests
+ */
+exports.getDeletedServiceRequests = asyncHandler(async (req, res) => {
+  // Only admins can view deleted service requests
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: 'Only admins can view deleted service requests',
+    });
+  }
+
+  const requests = await ServiceRequest.find({ deletedAt: { $ne: null } })
+    .populate('user', 'name email')
+    .populate('serviceProvider', 'name category')
+    .sort({ deletedAt: -1 });
+
+  res.json({
+    success: true,
+    count: requests.length,
+    requests,
+  });
+});
+
+/**
  * Provider or Admin: View a specific service request by ID
  */
 exports.getServiceRequestById = asyncHandler(async (req, res) => {
@@ -241,5 +309,77 @@ exports.getServiceRequestsForProvider = asyncHandler(async (req, res) => {
     success: true,
     count: requests.length,
     requests,
+  });
+});
+
+/**
+ * Service Provider: Update their availability status
+ */
+exports.updateAvailability = asyncHandler(async (req, res) => {
+  // Only service providers can update their availability
+  if (req.user.role !== 'serviceProvider') {
+    return res.status(403).json({
+      success: false,
+      message: 'Only service providers can update availability status',
+    });
+  }
+
+  const { availability } = req.body;
+  const validStatuses = ['Available', 'Busy', 'Unavailable'];
+
+  if (!availability || !validStatuses.includes(availability)) {
+    return res.status(400).json({
+      success: false,
+      message: `Invalid availability status. Valid options: ${validStatuses.join(', ')}`,
+    });
+  }
+
+  // Find the service provider profile for the authenticated user
+  const provider = await ServiceProvider.findOne({ user: req.user._id });
+
+  if (!provider) {
+    return res.status(404).json({
+      success: false,
+      message: 'Service provider profile not found. Please create a service provider profile first.',
+    });
+  }
+
+  // Update the availability status
+  provider.availability = availability;
+  await provider.save();
+
+  res.json({
+    success: true,
+    message: 'Availability status updated successfully',
+    availability: provider.availability,
+  });
+});
+
+/**
+ * Service Provider: Get their own profile
+ */
+exports.getMyProfile = asyncHandler(async (req, res) => {
+  // Only service providers can view their own profile
+  if (req.user.role !== 'serviceProvider') {
+    return res.status(403).json({
+      success: false,
+      message: 'Only service providers can view their profile',
+    });
+  }
+
+  const provider = await ServiceProvider.findOne({ user: req.user._id })
+    .populate('user', 'name email')
+    .populate('reviews.user', 'name');
+
+  if (!provider) {
+    return res.status(404).json({
+      success: false,
+      message: 'Service provider profile not found',
+    });
+  }
+
+  res.json({
+    success: true,
+    provider,
   });
 });
