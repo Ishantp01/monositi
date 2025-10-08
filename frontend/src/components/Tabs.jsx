@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import Buy from "./sections/Buy";
 import Rent from "./sections/Rent";
-import PgHotel from "./sections/PgHotel";
+import PgHotel from "./sections/Monositi";
 import Commercial from "./sections/Commercial";
 import Services from "./sections/Services";
 

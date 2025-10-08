@@ -15,6 +15,6 @@ const Home = () => {
             <TabsWithSearch />
             <Footer />
         </>
-    )
+    )   
 }
 export default Home;

@@ -41,7 +41,11 @@ import PG_Hostel_Renting from "./components/Admin/PG_Hostel_Renting";
 import Selling_Properties__PGHostel from "./components/Admin/Selling_Properties__PGHostel";
 import Leaseable_Properties from "./components/Admin/Leaseable_Properties";
 
+<<<<<<< HEAD
 import Rent from "./pages/Rent";
+=======
+
+>>>>>>> ecb67ce08af364a0a7cf8e725659b0733c58912b
 import AddProperty from "./pages/AddProperty";
 import MyProperties from "./pages/MyProperties";
 import EditProperty from "./pages/EditProperty";
@@ -58,6 +62,7 @@ import Services from "./pages/Services";
 import TenantRequestsPage from "./pages/ServiceRequestListTenant";
 import ManageUsers from "./components/Admin/ManageUsers";
 import AdminMonositi from "./components/Admin/AdminMonositi";
+import RentDetails from "./pages/RentDetails";
 
 export default function App() {
   return (
@@ -83,13 +88,20 @@ export default function App() {
         />
 
         <Route path="/verify" element={<VerifyOtp />} />
-        <Route path="/details" element={<PropertyPage />} />
-        <Route path="/property-details/:id" element={<Rent />} />
+        {/* <Route path="/property-details/:id" element={<Rent />} /> */}
         <Route path="/pg-details/:id" element={<PG />} />
         <Route path="/commercial-details/:id" element={<CommercialList />} />
 
+<<<<<<< HEAD
         <Route path="/rent-details" element={<Rent />} />
 
+=======
+
+        <Route path="/buy-details" element={<PropertyPage />} />
+
+        <Route path="/rent-details" element={<RentDetails />} />
+        
+>>>>>>> ecb67ce08af364a0a7cf8e725659b0733c58912b
         {/* Property Management Routes */}
         <Route path="/add-property" element={<AddProperty />} />
         <Route path="/my-properties" element={<MyProperties />} />
@@ -104,6 +116,13 @@ export default function App() {
           element={<ServiceProviderDetail />}
         />
         <Route path="/service-request/new" element={<ServiceRequestForm />} />
+<<<<<<< HEAD
+=======
+        
+
+
+        
+>>>>>>> ecb67ce08af364a0a7cf8e725659b0733c58912b
 
         <Route path="/admin" element={<AdminRedirect />} />
         <Route path="/renting-properties" element={<Renting_Properties />} />

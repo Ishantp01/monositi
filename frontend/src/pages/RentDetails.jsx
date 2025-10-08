@@ -16,7 +16,7 @@ import avatar from '../assets/images/avatar2.jpg'
 import { properties as slider3Properties } from '../components/Carousel/PropertiesSlider3';
 import { properties as slider4Properties } from '../components/Carousel/PropertiesSlider4';
 
-function Rent() {
+function RentDetails() {
   const { id } = useParams();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -77,4 +77,4 @@ function Rent() {
   );
 }
 
-export default Rent;
+export default RentDetails;

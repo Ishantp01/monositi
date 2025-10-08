@@ -81,7 +81,7 @@ export default function CardCarousel() {
             >
                 {data.map((item) => (
                     <SwiperSlide key={item.id}>
-                        <Link to={"/details"}>
+                        <Link to={"/buy-details"}>
                             <div className="rounded-xl border border-red-500 overflow-hidden shadow-md 
                   max-w-[100%] sm:max-w-full mx-auto">
                                 {/* Image with taller height on large screens */}
