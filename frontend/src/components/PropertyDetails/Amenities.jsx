@@ -1,8 +1,18 @@
 import {
-  Home, TreeDeciduous, Dumbbell, Bike, Zap, Waves,
-  ArrowUpDown, Shield, TreePine, Car, Package, Users
+  Home,
+  TreeDeciduous,
+  Dumbbell,
+  Bike,
+  Zap,
+  Waves,
+  ArrowUpDown,
+  Shield,
+  TreePine,
+  Car,
+  Package,
+  Users,
 } from "lucide-react";
-import MoreButton from "../../components/MoreButton";
+import MoreButton from "../common/MoreButton";
 
 const amenities = [
   { name: "Club House", icon: Home },
