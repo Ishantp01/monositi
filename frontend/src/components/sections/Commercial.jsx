@@ -1,4 +1,4 @@
-import GradientHeading from "../GradientHeading";
+import GradientHeading from "../common/GradientHeading";
 import PropertySlider5 from "../Carousel/PropertiesSlider5";
 import PropertySlider8 from "../Carousel/PropertiesSlider8";
 import PropertySlider9 from "../Carousel/PropertiesSlider9";
@@ -8,20 +8,16 @@ import PropertyCarousel from "../Carousel/PropertiesSlider";
 const Commercial = () => {
   return (
     <>
-      <div className="w-full h-16">
-      </div>
+      <div className="w-full h-16"></div>
       <GradientHeading text={"Properties by Owners"} />
       <div className="my-8 md:my-16">
         <PropertyCarousel tags={"Commercial"} />
       </div>
-      <div className="w-full h-16">
-      </div>
+      <div className="w-full h-16"></div>
     </>
-  )
-}
+  );
+};
 export default Commercial;
-
-
 
 export const officeSpaces = [
   {
@@ -31,7 +27,8 @@ export const officeSpaces = [
     locality: "Block 4th Tilwara",
     posted: "Jun 08, '25",
     owner: "Hemant Kumar",
-    image: "https://allmakes.com/wp-content/uploads/2017/10/office-space-planning.jpg",
+    image:
+      "https://allmakes.com/wp-content/uploads/2017/10/office-space-planning.jpg",
   },
   {
     title: "Corporate Office",
@@ -40,7 +37,8 @@ export const officeSpaces = [
     locality: "Civil Lines",
     posted: "May 15, '25",
     owner: "Priya Sharma",
-    image: "https://tse1.mm.bing.net/th/id/OIP.qVKqQlLUZWc26HN5vPHSdQHaE6?pid=Api&P=0&h=180",
+    image:
+      "https://tse1.mm.bing.net/th/id/OIP.qVKqQlLUZWc26HN5vPHSdQHaE6?pid=Api&P=0&h=180",
   },
   {
     title: "Startup Office",
@@ -49,7 +47,8 @@ export const officeSpaces = [
     locality: "Napier Town",
     posted: "Apr 20, '25",
     owner: "Rohit Verma",
-    image: "https://s3.mortarr.com/images/project_gallery_images/open-concept-office-space-designs.jpeg",
+    image:
+      "https://s3.mortarr.com/images/project_gallery_images/open-concept-office-space-designs.jpeg",
   },
   {
     title: "Shared Office",
@@ -58,7 +57,8 @@ export const officeSpaces = [
     locality: "Ganjipura",
     posted: "Mar 18, '25",
     owner: "Anita Yadav",
-    image: "https://tse4.mm.bing.net/th/id/OIP.Q2ylHisUnojXVMEF7As4SAHaE8?pid=Api&P=0&h=180",
+    image:
+      "https://tse4.mm.bing.net/th/id/OIP.Q2ylHisUnojXVMEF7As4SAHaE8?pid=Api&P=0&h=180",
   },
   {
     title: "Premium Office",
@@ -67,7 +67,8 @@ export const officeSpaces = [
     locality: "Wright Town",
     posted: "Feb 28, '25",
     owner: "Manoj Gupta",
-    image: "https://tse4.mm.bing.net/th/id/OIP.PEKbcy8t_2rqLBuzDsaM-gHaFf?pid=Api&P=0&h=180",
+    image:
+      "https://tse4.mm.bing.net/th/id/OIP.PEKbcy8t_2rqLBuzDsaM-gHaFf?pid=Api&P=0&h=180",
   },
 ];
 
@@ -80,7 +81,8 @@ export const showrooms = [
     mainRoadFacing: true,
     owner: "Hemant Kumar",
     posted: "Jun 08, '25",
-    image: "https://tse1.mm.bing.net/th/id/OIP.85Plp5YZzSiHkpi4JMo-ygHaE8?pid=Api&P=0&h=180",
+    image:
+      "https://tse1.mm.bing.net/th/id/OIP.85Plp5YZzSiHkpi4JMo-ygHaE8?pid=Api&P=0&h=180",
   },
   {
     title: "Retail Showroom",
@@ -90,7 +92,8 @@ export const showrooms = [
     mainRoadFacing: true,
     owner: "Priya Sharma",
     posted: "May 15, '25",
-    image: "https://tse3.mm.bing.net/th/id/OIP.lAfOiRKWvTC70FvyEr3ukQHaFj?pid=Api&P=0&h=180",
+    image:
+      "https://tse3.mm.bing.net/th/id/OIP.lAfOiRKWvTC70FvyEr3ukQHaFj?pid=Api&P=0&h=180",
   },
   {
     title: "Luxury Showroom",
@@ -100,7 +103,8 @@ export const showrooms = [
     mainRoadFacing: true,
     owner: "Rohit Verma",
     posted: "Apr 20, '25",
-    image: "https://tse2.mm.bing.net/th/id/OIP.1dAmMu1CWi8s7KwWOWka4AHaE8?pid=Api&P=0&h=180",
+    image:
+      "https://tse2.mm.bing.net/th/id/OIP.1dAmMu1CWi8s7KwWOWka4AHaE8?pid=Api&P=0&h=180",
   },
   {
     title: "Car Showroom",
@@ -110,7 +114,8 @@ export const showrooms = [
     mainRoadFacing: true,
     owner: "Anita Yadav",
     posted: "Mar 18, '25",
-    image: "https://tse4.mm.bing.net/th/id/OIP.PrmoqJX5qNDOOwH0VFYLZwHaFj?pid=Api&P=0&h=180",
+    image:
+      "https://tse4.mm.bing.net/th/id/OIP.PrmoqJX5qNDOOwH0VFYLZwHaFj?pid=Api&P=0&h=180",
   },
   {
     title: "Premium Showroom",
@@ -120,6 +125,7 @@ export const showrooms = [
     mainRoadFacing: true,
     owner: "Manoj Gupta",
     posted: "Feb 28, '25",
-    image: "https://tse1.mm.bing.net/th/id/OIP.zp3UWJDS4WCzDYy_HHVCWAHaE8?pid=Api&P=0&h=180",
+    image:
+      "https://tse1.mm.bing.net/th/id/OIP.zp3UWJDS4WCzDYy_HHVCWAHaE8?pid=Api&P=0&h=180",
   },
 ];
