@@ -8,7 +8,6 @@ import Home from "./pages/Home";
 import SaleList from "./pages/SaleList";
 import RentList from "./pages/Rent/RentList";
 import CommercialList from "./pages/Commercial";
-import PgHostelList from "./pages/PgHostelList";
 import PropertyPage from "./components/PropertyDetails/PropertyPage";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -27,9 +26,7 @@ import ServiceRequestPage from "./pages/ServiceRequestPage";
 import ServiceProviderDetail from "./pages/Services/ServiceProviderDetail";
 import ServiceRequestForm from "./pages/Services/ServiceRequestForm";
 import Profile from "./pages/Profile";
-import AdminUsers from "./pages/AdminUsers";
 import PropertyTypeResults from "./pages/PropertyTypeResults";
-import PG from "./pages/PG";
 import SignUp from "./components/SignUp";
 import Services from "./pages/Services";
 import TenantRequestsPage from "./pages/ServiceRequestListTenant";
@@ -65,7 +62,6 @@ export default function App() {
         <Route path="/salelist" element={<SaleList />} />
         <Route path="/rentlist" element={<RentList />} />
         <Route path="/commercial" element={<CommercialList />} />
-        <Route path="/pghostel" element={<PgHostelList />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
@@ -80,7 +76,6 @@ export default function App() {
 
         <Route path="/verify" element={<VerifyOtp />} />
         {/* <Route path="/property-details/:id" element={<Rent />} /> */}
-        <Route path="/pg-details/:id" element={<PG />} />
         <Route path="/commercial-details/:id" element={<CommercialList />} />
 
         <Route path="/buy-details" element={<PropertyPage />} />
