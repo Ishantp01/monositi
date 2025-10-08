@@ -1,4 +1,4 @@
-import ImageCarousel from "../LargeCardCarousel";
+import ImageCarousel from "../PropertyDetails/LargeCardCarousel";
 import OutlineButton from "../MoreButton";
 import GradientHeading from "../GradientHeading";
 import PropertyCarousel from "../Carousel/PropertiesSlider";
