@@ -1,8 +1,8 @@
 import PropertyCarousel from "../Carousel/PropertiesSlider";
 import PropertySlider3 from "../Carousel/PropertiesSlider3";
 import PropertySlider4 from "../Carousel/PropertiesSlider4";
-import GradientHeading from "../GradientHeading";
-import OutlineButton from "../MoreButton";
+import GradientHeading from "../common/GradientHeading";
+import OutlineButton from "../common/MoreButton";
 
 const Rent = () => {
   return (
