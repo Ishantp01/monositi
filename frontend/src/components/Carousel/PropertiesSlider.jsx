@@ -4,10 +4,10 @@ import { Navigation } from "swiper/modules";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "swiper/css";
 import "swiper/css/navigation";
-import { PropertyCard } from "../PropertyCard";
+import PropertyCard from "../Cards/PropertyCard";
 import { propertyApi } from "../../utils/propertyApi"; // import the API object
 
-const PropertyCarousel = ({ tags}) => {
+const PropertyCarousel = ({ tags }) => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -40,9 +40,14 @@ const PropertyCarousel = ({ tags}) => {
   };
 
   const renderContent = () => {
-    if (loading) return <div className="text-center py-8">Loading properties...</div>;
-    if (error) return <div className="text-center text-red-600 py-8">{error}</div>;
-    if (!properties.length) return <div className="text-center py-8">No properties found for "{tags}"</div>;
+    if (loading)
+      return <div className="text-center py-8">Loading properties...</div>;
+    if (error)
+      return <div className="text-center text-red-600 py-8">{error}</div>;
+    if (!properties.length)
+      return (
+        <div className="text-center py-8">No properties found for "{tags}"</div>
+      );
 
     return (
       <Swiper
