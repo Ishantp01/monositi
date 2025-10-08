@@ -44,7 +44,6 @@ import Selling_Properties__PGHostel from "./components/Admin/Selling_Properties_
 import Leaseable_Properties from "./components/Admin/Leaseable_Properties";
 
 
-import Rent from "./pages/Rent"
 import AddProperty from "./pages/AddProperty";
 import MyProperties from "./pages/MyProperties";
 import EditProperty from "./pages/EditProperty";
@@ -61,6 +60,7 @@ import Services from "./pages/Services";
 import TenantRequestsPage from "./pages/ServiceRequestListTenant";
 import ManageUsers from "./components/Admin/ManageUsers";
 import AdminMonositi from "./components/Admin/AdminMonositi";
+import RentDetails from "./pages/RentDetails";
 
 export default function App() {
   return (
@@ -85,12 +85,14 @@ export default function App() {
 
         
         <Route path="/verify" element={<VerifyOtp />} />
-        <Route path="/details" element={<PropertyPage />} />
-        <Route path="/property-details/:id" element={<Rent />} />
+        {/* <Route path="/property-details/:id" element={<Rent />} /> */}
         <Route path="/pg-details/:id" element={<PG />} />
         <Route path="/commercial-details/:id" element={<CommercialList />} />
 
-        <Route path="/rent-details" element={<Rent />} />
+
+        <Route path="/buy-details" element={<PropertyPage />} />
+
+        <Route path="/rent-details" element={<RentDetails />} />
         
         {/* Property Management Routes */}
         <Route path="/add-property" element={<AddProperty />} />
@@ -104,6 +106,8 @@ export default function App() {
         <Route path="/service-providers/:id" element={<ServiceProviderDetail />} />
         <Route path="/service-request/new" element={<ServiceRequestForm />} />
         
+
+
         
 
         <Route path="/admin" element={<AdminRedirect />} />
