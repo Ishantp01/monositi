@@ -52,7 +52,6 @@ import ServiceRequestPage from "./pages/ServiceRequestPage";
 import ServiceProviderDetail from "./pages/ServiceProviderDetail";
 import ServiceRequestForm from "./pages/ServiceRequestForm";
 import Profile from "./pages/Profile";
-import AdminUsers from "./pages/AdminUsers";
 import PropertyTypeResults from "./pages/PropertyTypeResults";
 import PG from "./pages/PG";
 import SignUp from "./components/SignUp";
