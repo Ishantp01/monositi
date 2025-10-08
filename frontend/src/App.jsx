@@ -2,37 +2,29 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Login from "./components/Login";
-import VerifyOtp from "./components/VerifyOtp";
+import Login from "./components/common/Login";
+import VerifyOtp from "./components/Authentication/VerifyOtp";
 import Home from "./pages/Home";
 import SaleList from "./pages/SaleList";
 import RentList from "./pages/Rent/RentList";
-import CommercialList from "./pages/Commercial";
+import CommercialList from "./pages/Commercial/Commercial";
 import PropertyPage from "./components/PropertyDetails/PropertyPage";
-import ScrollToTop from "./components/ScrollToTop";
-
-import AdminPanel from "./components/Admin/AdminPanel";
-import Selling_Properties_Residental from "./components/Admin/Selling_Properties_Residental";
-import Renting_Properties from "./components/Admin/Renting_Properties";
-import PG_Hostel_Renting from "./components/Admin/PG_Hostel_Renting";
-import Selling_Properties__PGHostel from "./components/Admin/Selling_Properties__PGHostel";
-import Leaseable_Properties from "./components/Admin/Leaseable_Properties";
-
+import ScrollToTop from "./components/common/ScrollToTop";
 import AddProperty from "./pages/Properties/AddProperty";
-import MyProperties from "./pages/MyProperties";
-import EditProperty from "./pages/EditProperty";
+import MyProperties from "./pages/Properties/MyProperties";
+import EditProperty from "./pages/Properties/EditProperty";
 import ServiceProvider from "./pages/Services/ServiceProviderform";
-import ServiceRequestPage from "./pages/ServiceRequestPage";
+import ServiceRequestPage from "./pages/Services/ServiceRequestPage";
 import ServiceProviderDetail from "./pages/Services/ServiceProviderDetail";
 import ServiceRequestForm from "./pages/Services/ServiceRequestForm";
 import Profile from "./pages/Profile";
-import PropertyTypeResults from "./pages/PropertyTypeResults";
-import SignUp from "./components/SignUp";
-import Services from "./pages/Services";
-import TenantRequestsPage from "./pages/ServiceRequestListTenant";
+import PropertyTypeResults from "./pages/Properties/PropertyTypeResults";
+import SignUp from "./components/common/SignUp";
+import Services from "./pages/Services/Services";
+import TenantRequestsPage from "./pages/Services/ServiceRequestListTenant";
 import ManageUsers from "./components/Admin/ManageUsers";
 import AdminMonositi from "./components/Admin/AdminMonositi";
-import RentDetails from "./pages/RentDetails";
+import RentDetails from "./pages/Rent/RentDetails";
 
 const AdminRedirect = () => {
   const navigate = useNavigate();
@@ -98,17 +90,6 @@ export default function App() {
         <Route path="/service-request/new" element={<ServiceRequestForm />} />
 
         <Route path="/admin" element={<AdminRedirect />} />
-        <Route path="/renting-properties" element={<Renting_Properties />} />
-        <Route
-          path="/selling-residential"
-          element={<Selling_Properties_Residental />}
-        />
-        <Route path="/pg-hostel" element={<PG_Hostel_Renting />} />
-        <Route path="/leaseable" element={<Leaseable_Properties />} />
-        <Route
-          path="/selling-pg-hostel"
-          element={<Selling_Properties__PGHostel />}
-        />
         <Route path="/selling-pg-hostel" element={<SaleList />} />
       </Routes>
     </BrowserRouter>
