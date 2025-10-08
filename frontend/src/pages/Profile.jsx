@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Navbar from "../components/NavBar";
+import Navbar from "../components/layout/NavBar";
 import { propertyApi, createPropertyFormData } from "../utils/propertyApi";
 
 export default function Profile() {
@@ -146,7 +146,10 @@ export default function Profile() {
     setUpdatingLoading(true);
     try {
       const formData = createPropertyFormData(updatingProperty);
-      const data = await propertyApi.updateProperty(selectedProperty._id, formData);
+      const data = await propertyApi.updateProperty(
+        selectedProperty._id,
+        formData
+      );
       if (data.success) {
         fetchUserProperties();
         setSelectedProperty(null);
@@ -167,23 +170,27 @@ export default function Profile() {
   };
 
   // ---------------- UI ----------------
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
-      <div className="flex flex-col items-center space-y-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-theme-primary"></div>
-        <p className="text-lg font-medium text-gray-700">Loading profile...</p>
+  if (loading)
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-theme-primary"></div>
+          <p className="text-lg font-medium text-gray-700">
+            Loading profile...
+          </p>
+        </div>
       </div>
-    </div>
-  );
+    );
 
-  if (!user) return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
-      <div className="text-center space-y-2">
-        <div className="text-4xl">👤</div>
-        <p className="text-gray-600 text-lg">User profile not found.</p>
+  if (!user)
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <div className="text-center space-y-2">
+          <div className="text-4xl">👤</div>
+          <p className="text-gray-600 text-lg">User profile not found.</p>
+        </div>
       </div>
-    </div>
-  );
+    );
 
   return (
     <>
@@ -206,15 +213,22 @@ export default function Profile() {
             </div>
             <div className="p-6 flex flex-col lg:flex-row items-center lg:items-start lg:space-x-8">
               <img
-                src={user.photo || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQq6gaTf6N93kzolH98ominWZELW881HqCgw&s"}
+                src={
+                  user.photo ||
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQq6gaTf6N93kzolH98ominWZELW881HqCgw&s"
+                }
                 alt={user.name}
                 className="w-32 h-32 lg:w-40 lg:h-40 rounded-full  object-cover"
               />
               <div className="flex-1 mt-4 lg:mt-0 space-y-2 text-center lg:text-left">
                 <h3 className="text-2xl font-bold">{user.name}</h3>
                 <p className="text-gray-600">Email: {user.email}</p>
-                {user.phone && <p className="text-gray-600">Phone: {user.phone}</p>}
-                {user.address && <p className="text-gray-600">Address: {user.address}</p>}
+                {user.phone && (
+                  <p className="text-gray-600">Phone: {user.phone}</p>
+                )}
+                {user.address && (
+                  <p className="text-gray-600">Address: {user.address}</p>
+                )}
               </div>
             </div>
           </div>
@@ -235,9 +249,13 @@ export default function Profile() {
             </div>
             <div className="p-6">
               {propertiesLoading ? (
-                <p className="text-gray-600 text-center">Loading properties...</p>
+                <p className="text-gray-600 text-center">
+                  Loading properties...
+                </p>
               ) : properties.length === 0 ? (
-                <p className="text-gray-600 text-center">No properties found.</p>
+                <p className="text-gray-600 text-center">
+                  No properties found.
+                </p>
               ) : (
                 <div className="space-y-4">
                   {properties.map((prop) => (
@@ -246,8 +264,12 @@ export default function Profile() {
                       className="flex justify-between items-center border-b border-gray-200 p-4 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <div>
-                        <h3 className="font-semibold text-gray-800">{prop.name}</h3>
-                        <p className="text-sm text-gray-500">{prop.city}, {prop.state}</p>
+                        <h3 className="font-semibold text-gray-800">
+                          {prop.name}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {prop.city}, {prop.state}
+                        </p>
                         <p className="text-sm text-gray-500">₹ {prop.price}</p>
                       </div>
                       <div className="flex gap-2">
@@ -287,24 +309,50 @@ export default function Profile() {
               <h2 className="text-xl font-bold text-white">
                 {actionType === "view" ? "Property Details" : "Update Property"}
               </h2>
-              <button onClick={closePropertyModal} className="text-white text-xl font-bold">&times;</button>
+              <button
+                onClick={closePropertyModal}
+                className="text-white text-xl font-bold"
+              >
+                &times;
+              </button>
             </div>
 
             <div className="p-6 space-y-4">
               {actionType === "view" ? (
                 <>
-                  <h3 className="text-lg font-semibold">{selectedProperty.name}</h3>
-                  <p className="text-gray-600">{selectedProperty.description}</p>
-                  <p className="text-gray-600 font-medium">Type: {selectedProperty.type}</p>
-                  <p className="text-gray-600 font-medium">City: {selectedProperty.city}</p>
-                  <p className="text-gray-600 font-medium">State: {selectedProperty.state}</p>
-                  <p className="text-gray-600 font-medium">Price: ₹ {selectedProperty.price}</p>
-                  <p className="text-gray-600 font-medium">Tags: {selectedProperty.tags.join(", ")}</p>
-                  <p className="text-gray-600 font-medium">Contact: {selectedProperty.contactNumber}</p>
+                  <h3 className="text-lg font-semibold">
+                    {selectedProperty.name}
+                  </h3>
+                  <p className="text-gray-600">
+                    {selectedProperty.description}
+                  </p>
+                  <p className="text-gray-600 font-medium">
+                    Type: {selectedProperty.type}
+                  </p>
+                  <p className="text-gray-600 font-medium">
+                    City: {selectedProperty.city}
+                  </p>
+                  <p className="text-gray-600 font-medium">
+                    State: {selectedProperty.state}
+                  </p>
+                  <p className="text-gray-600 font-medium">
+                    Price: ₹ {selectedProperty.price}
+                  </p>
+                  <p className="text-gray-600 font-medium">
+                    Tags: {selectedProperty.tags.join(", ")}
+                  </p>
+                  <p className="text-gray-600 font-medium">
+                    Contact: {selectedProperty.contactNumber}
+                  </p>
                   {selectedProperty.photos && (
                     <div className="flex gap-2 overflow-x-auto py-2">
                       {selectedProperty.photos.map((photo, i) => (
-                        <img key={i} src={photo} alt="Property" className="w-32 h-24 object-cover rounded-lg border border-gray-200" />
+                        <img
+                          key={i}
+                          src={photo}
+                          alt="Property"
+                          className="w-32 h-24 object-cover rounded-lg border border-gray-200"
+                        />
                       ))}
                     </div>
                   )}
@@ -356,7 +404,12 @@ export default function Profile() {
                     name="tags"
                     value={updatingProperty.tags?.join(", ") || ""}
                     onChange={(e) =>
-                      setUpdatingProperty((prev) => ({ ...prev, tags: e.target.value.split(",").map(tag => tag.trim()) }))
+                      setUpdatingProperty((prev) => ({
+                        ...prev,
+                        tags: e.target.value
+                          .split(",")
+                          .map((tag) => tag.trim()),
+                      }))
                     }
                     placeholder="Tags (comma separated)"
                     className="w-full border p-2 rounded-lg"
