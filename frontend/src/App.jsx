@@ -6,33 +6,11 @@ import Login from "./components/Login";
 import VerifyOtp from "./components/VerifyOtp";
 import Home from "./pages/Home";
 import SaleList from "./pages/SaleList";
-import RentList from "./pages/RentList";
+import RentList from "./pages/Rent/RentList";
 import CommercialList from "./pages/Commercial";
 import PgHostelList from "./pages/PgHostelList";
 import PropertyPage from "./components/PropertyDetails/PropertyPage";
 import ScrollToTop from "./components/ScrollToTop";
-
-// Admin redirect component
-const AdminRedirect = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Check if user is already logged in
-    const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
-
-    if (token && user) {
-      // User is already logged in, redirect directly to properties page
-      navigate("/properties/type/Rent");
-    } else {
-      // User is not logged in, store the intended destination and redirect to login
-      localStorage.setItem("redirectAfterLogin", "/properties/type/Rent");
-      navigate("/login");
-    }
-  }, [navigate]);
-
-  return null;
-};
 
 import AdminPanel from "./components/Admin/AdminPanel";
 import Selling_Properties_Residental from "./components/Admin/Selling_Properties_Residental";
@@ -41,12 +19,7 @@ import PG_Hostel_Renting from "./components/Admin/PG_Hostel_Renting";
 import Selling_Properties__PGHostel from "./components/Admin/Selling_Properties__PGHostel";
 import Leaseable_Properties from "./components/Admin/Leaseable_Properties";
 
-<<<<<<< HEAD
-import Rent from "./pages/Rent";
-=======
-
->>>>>>> ecb67ce08af364a0a7cf8e725659b0733c58912b
-import AddProperty from "./pages/AddProperty";
+import AddProperty from "./pages/Properties/AddProperty";
 import MyProperties from "./pages/MyProperties";
 import EditProperty from "./pages/EditProperty";
 import ServiceProvider from "./pages/Services/ServiceProviderform";
@@ -63,6 +36,24 @@ import TenantRequestsPage from "./pages/ServiceRequestListTenant";
 import ManageUsers from "./components/Admin/ManageUsers";
 import AdminMonositi from "./components/Admin/AdminMonositi";
 import RentDetails from "./pages/RentDetails";
+
+const AdminRedirect = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
+
+    if (token && user) {
+      navigate("/properties/type/Rent");
+    } else {
+      localStorage.setItem("redirectAfterLogin", "/properties/type/Rent");
+      navigate("/login");
+    }
+  }, [navigate]);
+
+  return null;
+};
 
 export default function App() {
   return (
@@ -92,16 +83,10 @@ export default function App() {
         <Route path="/pg-details/:id" element={<PG />} />
         <Route path="/commercial-details/:id" element={<CommercialList />} />
 
-<<<<<<< HEAD
-        <Route path="/rent-details" element={<Rent />} />
-
-=======
-
         <Route path="/buy-details" element={<PropertyPage />} />
 
         <Route path="/rent-details" element={<RentDetails />} />
-        
->>>>>>> ecb67ce08af364a0a7cf8e725659b0733c58912b
+
         {/* Property Management Routes */}
         <Route path="/add-property" element={<AddProperty />} />
         <Route path="/my-properties" element={<MyProperties />} />
@@ -116,13 +101,6 @@ export default function App() {
           element={<ServiceProviderDetail />}
         />
         <Route path="/service-request/new" element={<ServiceRequestForm />} />
-<<<<<<< HEAD
-=======
-        
-
-
-        
->>>>>>> ecb67ce08af364a0a7cf8e725659b0733c58912b
 
         <Route path="/admin" element={<AdminRedirect />} />
         <Route path="/renting-properties" element={<Renting_Properties />} />
@@ -136,6 +114,7 @@ export default function App() {
           path="/selling-pg-hostel"
           element={<Selling_Properties__PGHostel />}
         />
+        <Route path="/selling-pg-hostel" element={<SaleList />} />
       </Routes>
     </BrowserRouter>
   );
