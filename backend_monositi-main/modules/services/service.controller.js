@@ -4,9 +4,79 @@ const User = require("../users/user.model");
 const asyncHandler = require("express-async-handler");
 
 /**
- * Admin: Create a new service provider
+ * Admin: Create a new service provider profile for an existing user
  */
 exports.createServiceProvider = asyncHandler(async (req, res) => {
+  const {
+    userId,
+    name,
+    category,
+    contactNumber,
+    address,
+    city,
+    state,
+    photo,
+    description,
+    experience,
+  } = req.body;
+
+  // Check if user exists
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  // Check if user already has a service provider profile
+  const existingProvider = await ServiceProvider.findOne({ user: userId });
+  if (existingProvider) {
+    return res.status(400).json({
+      success: false,
+      message: "User already has a service provider profile",
+    });
+  }
+
+  // Create service provider profile
+  const provider = await ServiceProvider.create({
+    user: userId,
+    name,
+    category,
+    contactNumber,
+    address,
+    city,
+    state,
+    photo,
+    description,
+    experience,
+    approvedBy: req.user._id,
+    approvedAt: new Date(),
+  });
+
+  // Update user role to serviceProvider
+  user.role = "serviceProvider";
+  await user.save();
+
+  res.status(201).json({
+    success: true,
+    message: "Service provider profile created successfully",
+    provider,
+  });
+});
+
+/**
+ * Service Provider: Create their own profile (self-registration)
+ */
+exports.createMyServiceProviderProfile = asyncHandler(async (req, res) => {
+  // Only users with role 'user' can create their own service provider profile
+  if (req.user.role !== 'user') {
+    return res.status(403).json({
+      success: false,
+      message: "Only regular users can create service provider profiles",
+    });
+  }
+
   const {
     name,
     category,
@@ -19,6 +89,16 @@ exports.createServiceProvider = asyncHandler(async (req, res) => {
     experience,
   } = req.body;
 
+  // Check if user already has a service provider profile
+  const existingProvider = await ServiceProvider.findOne({ user: req.user._id });
+  if (existingProvider) {
+    return res.status(400).json({
+      success: false,
+      message: "You already have a service provider profile",
+    });
+  }
+
+  // Create service provider profile (pending approval)
   const provider = await ServiceProvider.create({
     user: req.user._id,
     name,
@@ -30,11 +110,12 @@ exports.createServiceProvider = asyncHandler(async (req, res) => {
     photo,
     description,
     experience,
+    isActive: false, // Pending admin approval
   });
 
   res.status(201).json({
     success: true,
-    message: "Service provider created successfully",
+    message: "Service provider profile created successfully. Pending admin approval.",
     provider,
   });
 });
@@ -44,13 +125,14 @@ exports.createServiceProvider = asyncHandler(async (req, res) => {
  */
 exports.listServiceProvidersByCategory = asyncHandler(async (req, res) => {
   const { category, city, availability } = req.query;
-  const filter = {};
+  const filter = { isActive: true }; // Only show active providers
 
   if (category) filter.category = category;
   if (city) filter.city = city;
   if (availability) filter.availability = availability;
 
   const providers = await ServiceProvider.find(filter)
+    .populate('user', 'name email')
     .sort({ averageRating: -1 })
     .select(
       "name category contactNumber city state averageRating availability photo"
@@ -60,6 +142,102 @@ exports.listServiceProvidersByCategory = asyncHandler(async (req, res) => {
     success: true,
     count: providers.length,
     providers,
+  });
+});
+
+/**
+ * Admin: Get all service providers (including inactive)
+ */
+exports.getAllServiceProviders = asyncHandler(async (req, res) => {
+  const { status, category } = req.query;
+  const filter = {};
+
+  if (status === 'active') filter.isActive = true;
+  if (status === 'inactive') filter.isActive = false;
+  if (category) filter.category = category;
+
+  const providers = await ServiceProvider.find(filter)
+    .populate('user', 'name email role verified')
+    .populate('approvedBy', 'name email')
+    .sort({ createdAt: -1 });
+
+  res.json({
+    success: true,
+    count: providers.length,
+    providers,
+  });
+});
+
+/**
+ * Admin: Approve service provider
+ */
+exports.approveServiceProvider = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const provider = await ServiceProvider.findById(id);
+  if (!provider) {
+    return res.status(404).json({
+      success: false,
+      message: "Service provider not found",
+    });
+  }
+
+  if (provider.isActive) {
+    return res.status(400).json({
+      success: false,
+      message: "Service provider is already approved",
+    });
+  }
+
+  // Approve the provider
+  provider.isActive = true;
+  provider.approvedBy = req.user._id;
+  provider.approvedAt = new Date();
+  await provider.save();
+
+  // Update user role
+  const user = await User.findById(provider.user);
+  if (user) {
+    user.role = "serviceProvider";
+    await user.save();
+  }
+
+  res.json({
+    success: true,
+    message: "Service provider approved successfully",
+    provider,
+  });
+});
+
+/**
+ * Admin: Reject/Deactivate service provider
+ */
+exports.deactivateServiceProvider = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const provider = await ServiceProvider.findById(id);
+  if (!provider) {
+    return res.status(404).json({
+      success: false,
+      message: "Service provider not found",
+    });
+  }
+
+  // Deactivate the provider
+  provider.isActive = false;
+  await provider.save();
+
+  // Revert user role to regular user
+  const user = await User.findById(provider.user);
+  if (user) {
+    user.role = "user";
+    await user.save();
+  }
+
+  res.json({
+    success: true,
+    message: "Service provider deactivated successfully",
+    provider,
   });
 });
 
@@ -146,7 +324,7 @@ exports.updateServiceRequestStatus = asyncHandler(async (req, res) => {
     });
   }
 
-  const request = await ServiceRequest.findById(id);
+  const request = await ServiceRequest.findById(id).populate('serviceProvider', 'user');
   if (!request) {
     return res.status(404).json({
       success: false,
@@ -164,8 +342,8 @@ exports.updateServiceRequestStatus = asyncHandler(async (req, res) => {
 
   // If not admin, check if user is the service provider for this request
   if (req.user.role !== "admin") {
-    const providerId = request.serviceProvider.toString();
-    if (req.user._id.toString() !== providerId) {
+    const providerUserId = request.serviceProvider.user.toString();
+    if (req.user._id.toString() !== providerUserId) {
       return res.status(403).json({
         success: false,
         message: "You can only update status for your own service requests",
@@ -304,9 +482,16 @@ exports.getServiceRequestsForProvider = asyncHandler(async (req, res) => {
     });
   }
 
-  const providerId = req.user._id;
+  // Find the service provider profile for the authenticated user
+  const provider = await ServiceProvider.findOne({ user: req.user._id });
+  if (!provider) {
+    return res.status(404).json({
+      success: false,
+      message: "Service provider profile not found",
+    });
+  }
 
-  const requests = await ServiceRequest.find({ serviceProvider: providerId })
+  const requests = await ServiceRequest.find({ serviceProvider: provider._id })
     .populate("user", "name email")
     .sort({ createdAt: -1 });
 

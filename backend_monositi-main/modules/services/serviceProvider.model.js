@@ -17,6 +17,7 @@ const serviceProviderSchema = new mongoose.Schema(
       required: true,
       unique: true
     },
+    // Basic info (can be different from user info if needed)
     name: { type: String, required: [true, 'Name is required'] },
     category: {
       type: String,
@@ -37,6 +38,13 @@ const serviceProviderSchema = new mongoose.Schema(
     },
     reviews: [reviewSchema],
     averageRating: { type: Number, default: 0 },
+    // Admin management fields
+    isActive: { type: Boolean, default: true },
+    approvedBy: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: 'User' 
+    },
+    approvedAt: { type: Date },
   },
   { timestamps: true }
 );

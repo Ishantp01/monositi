@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+import API_BASE_URL from './constant';
 
 const getAuthToken = () => {
   return localStorage.getItem('token');
@@ -13,10 +13,15 @@ const getAuthHeaders = () => {
 
 export const serviceApi = {
   // Get all service providers (with optional category filter)
-  getServiceProviders: async (category = '') => {
+  getServiceProviders: async (category = '', city = '', availability = '') => {
     try {
-      const queryParams = category ? `?category=${category}` : '';
-      const response = await fetch(`${API_BASE_URL}/services/service-providers${queryParams}`);
+      const params = new URLSearchParams();
+      if (category) params.append('category', category);
+      if (city) params.append('city', city);
+      if (availability) params.append('availability', availability);
+
+      const queryString = params.toString() ? `?${params.toString()}` : '';
+      const response = await fetch(`${API_BASE_URL}/services/service-providers${queryString}`);
       const data = await response.json();
       return data;
     } catch (error) {
@@ -41,8 +46,11 @@ export const serviceApi = {
     try {
       const response = await fetch(`${API_BASE_URL}/services/service-requests`, {
         method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(formData)
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`,
+          // Don't set Content-Type for FormData, let browser set it with boundary
+        },
+        body: formData
       });
       return await response.json();
     } catch (error) {

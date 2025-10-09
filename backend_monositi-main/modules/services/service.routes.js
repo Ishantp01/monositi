@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const upload = require('../../config/multer');
 const {
   createServiceProvider,
+  createMyServiceProviderProfile,
   listServiceProvidersByCategory,
+  getAllServiceProviders,
   getServiceProviderById,
+  approveServiceProvider,
+  deactivateServiceProvider,
   createServiceRequest,
   updateServiceRequestStatus,
   getServiceRequestById,
@@ -16,16 +21,22 @@ const {
 
 const { protect, adminOnly } = require('../../middlewares/authMiddleware');
 
-// Admin routes
-router.post('/admin/service-providers', protect, adminOnly, createServiceProvider);
+// Admin routes for service provider management
+router.post('/admin/service-providers', protect, adminOnly, upload.single('photo'), createServiceProvider);
+router.get('/admin/service-providers', protect, adminOnly, getAllServiceProviders);
+router.patch('/admin/service-providers/:id/approve', protect, adminOnly, approveServiceProvider);
+router.patch('/admin/service-providers/:id/deactivate', protect, adminOnly, deactivateServiceProvider);
 router.get('/admin/service-requests/deleted', protect, adminOnly, getDeletedServiceRequests);
+
+// Self-registration route for users to become service providers
+router.post('/service-providers/register', protect, upload.single('photo'), createMyServiceProviderProfile);
 
 // Public routes
 router.get('/service-providers', listServiceProvidersByCategory);
 router.get('/service-providers/:id', getServiceProviderById);
 
 // User routes
-router.post('/service-requests', protect, createServiceRequest);
+router.post('/service-requests', protect, upload.array('photos', 5), createServiceRequest);
 
 // Provider/Admin routes
 router.get('/service-requests/:id', protect, getServiceRequestById);
