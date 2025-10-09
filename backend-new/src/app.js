@@ -1,5 +1,5 @@
-const express = require('express');
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
 
 // Create Express app
 const app = express();
@@ -29,7 +29,7 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-const routes = require('./routes');
+import routes from './routes/index.js';
 app.use('/api', routes);
 
 // 404 handler
@@ -49,4 +49,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-module.exports = app;
+export default app;

@@ -1,11 +1,10 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const connectDB = async () => {
   try {
     const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/monositi';
 
-    await mongoose.connect(mongoURI, {
-    });
+    await mongoose.connect(mongoURI);
 
     console.log('MongoDB Connected Successfully');
   } catch (error) {
@@ -14,4 +13,4 @@ const connectDB = async () => {
   }
 };
 
-module.exports = connectDB;
+export default connectDB;

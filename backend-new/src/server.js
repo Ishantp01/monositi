@@ -1,9 +1,9 @@
-require('dotenv').config();
-const app = require('./app');
-const connectDB = require('./config/db');
+import 'dotenv/config';
+import app from './app.js';
+import connectDB from './config/db.js';
 
 // Connect to MongoDB
-connectDB();
+await connectDB();
 
 // Start server
 const PORT = process.env.PORT || 5000;
@@ -26,4 +26,4 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-module.exports = server;
+export default server;
