@@ -8,7 +8,7 @@ const Home = () => {
   return (
     <>
       <Navbar avatarUrl={avatar} />
-      <div className="mt-8 md:mt-16">
+      <div className="mt-14 md:mt-24">
         <Carousel interval={8000} />
       </div>
       <TabsWithSearch />
