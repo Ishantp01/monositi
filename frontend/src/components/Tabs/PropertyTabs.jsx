@@ -1,49 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
+import DynamicFilterBar from "./DynamicFilterBar";
 
-const tabOptions = ['Buy', 'Rent', 'PG/Hostel', 'Commercial'];
+const tabOptions = ["Buy", "Rent", "PG/Hostel", "Commercial"];
 
 const tabContent = {
-  Buy: 'Find your dream property to Buy here.',
-  Rent: 'Search properties available for Rent.',
-  'PG/Hostel': 'Discover PGs and Hostels near your location.',
-  Commercial: 'Explore Commercial properties like shops, offices.',
+  Buy: "Find your dream property to Buy here.",
+  Rent: "Search properties available for Rent.",
+  "PG/Hostel": "Discover PGs and Hostels near your location.",
+  Commercial: "Explore Commercial properties like shops, offices.",
 };
 
 const PropertySearch = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('Buy');
+  const [activeTab, setActiveTab] = useState("Buy");
 
   // Map URL paths to tab names
   const pathToTab = {
-    '/': 'Buy',
-    '/buy': 'Buy',
-    '/rent': 'Rent',
-    '/pg': 'PG/Hostel',
-    '/commercial': 'Commercial'
+    "/": "Buy",
+    "/buy": "Buy",
+    "/rent": "Rent",
+    "/pg": "PG/Hostel",
+    "/commercial": "Commercial",
   };
 
   // Update active tab based on URL
   useEffect(() => {
     const currentPath = location.pathname;
-    const tabFromPath = pathToTab[currentPath] || 'Buy';
+    const tabFromPath = pathToTab[currentPath] || "Buy";
     setActiveTab(tabFromPath);
   }, [location.pathname]);
 
   const handleTabClick = (tab) => {
-   
-    
     // Update URL based on tab selection
     const tabToPath = {
-      'Buy': '/buy',
-      'Rent': '/rent',
-      'PG/Hostel': '/pg',
-      'Commercial': '/commercial'
+      Buy: "/buy",
+      Rent: "/rent",
+      "PG/Hostel": "/pg",
+      Commercial: "/commercial",
     };
-    
-    const newPath = tabToPath[tab] || '/buy';
+
+    const newPath = tabToPath[tab] || "/buy";
     navigate(newPath);
   };
 
@@ -52,14 +51,22 @@ const PropertySearch = () => {
       {/* Header Text */}
       <div className="text-center text-sm sm:text-base">
         <p className="text-lg sm:text-sm font-bold">
-          <span className="font-mrdafoe text-xl text-theme-primary pr-2">Find</span>{' '}
-          A Place Away From{' '}
-          <span className="font-mrdafoe text-xl text-theme-primary ps-2">Home</span>
+          <span className="font-mrdafoe text-xl text-theme-primary pr-2">
+            Find
+          </span>{" "}
+          A Place Away From{" "}
+          <span className="font-mrdafoe text-xl text-theme-primary ps-2">
+            Home
+          </span>
         </p>
         <p className="text-lg sm:text-sm font-bold">
-          <span className="font-mrdafoe text-xl text-theme-primary pr-2">Which</span>{' '}
-          Feels Like{' '}
-          <span className="font-mrdafoe text-xl text-theme-primary ps-2">Home</span>
+          <span className="font-mrdafoe text-xl text-theme-primary pr-2">
+            Which
+          </span>{" "}
+          Feels Like{" "}
+          <span className="font-mrdafoe text-xl text-theme-primary ps-2">
+            Home
+          </span>
         </p>
       </div>
 
@@ -69,10 +76,11 @@ const PropertySearch = () => {
           <button
             key={tab}
             onClick={() => handleTabClick(tab)}
-            className={`pb-1 border-b-2 ${activeTab === tab
-              ? 'text-theme-primary border-theme-primary'
-              : 'text-black border-transparent hover:border-gray-400'
-              } transition-all`}
+            className={`pb-1 border-b-2 ${
+              activeTab === tab
+                ? "text-theme-primary border-theme-primary"
+                : "text-black border-transparent hover:border-gray-400"
+            } transition-all`}
           >
             {tab}
           </button>
@@ -87,14 +95,17 @@ const PropertySearch = () => {
           className="flex-1 min-w-0 outline-none px-2 py-1 text-sm sm:text-base"
         />
         {/* Responsive button: icon-only on small screens, text + icon on sm+ */}
-        <button className="flex-shrink-0 flex items-center justify-center bg-theme-primary text-white rounded-full text-sm sm:text-base
-                     w-9 h-9 sm:w-auto sm:h-auto sm:px-4 sm:py-1.5 transition-all duration-200">
+        <button
+          className="flex-shrink-0 flex items-center justify-center bg-theme-primary text-white rounded-full text-sm sm:text-base
+                     w-9 h-9 sm:w-auto sm:h-auto sm:px-4 sm:py-1.5 transition-all duration-200"
+        >
           <Search size={18} strokeWidth={2.5} /> {/* Bold icon */}
           <span className="hidden sm:inline ml-1">Search</span>
         </button>
       </div>
 
-
+      {/* Dynamic Filter Bar */}
+      <DynamicFilterBar activeTab={activeTab} />
 
       {/* Tab Content */}
       <div className="mt-6 bg-gray-100 rounded-lg p-4 text-center shadow-sm">
