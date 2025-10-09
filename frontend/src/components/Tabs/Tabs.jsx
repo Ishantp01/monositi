@@ -4,6 +4,7 @@ import Buy from "../sections/Buy";
 import Rent from "../sections/Rent";
 import Commercial from "../sections/Commercial";
 import Services from "../sections/Services";
+import DynamicFilterBar from "./DynamicFilterBar";
 
 const tabOptions = ["Buy", "Rent", "Monositi", "Commercial", "Services"];
 
@@ -92,7 +93,7 @@ const PropertySearch = () => {
 
       {/* Search Bar */}
       <div className="mx-4 lg:mx-auto">
-        <div className="flex items-center justify-between mx-auto max-w-xl border border-blue-400 rounded-full px-2 py-1 sm:px-4 sm:py-2 w-full overflow-hidden gap-2">
+        {/* <div className="flex items-center justify-between mx-auto max-w-xl border border-blue-400 rounded-full px-2 py-1 sm:px-4 sm:py-2 w-full overflow-hidden gap-2">
           <input
             type="text"
             placeholder={`Search ${activeTab.toLowerCase()}...`}
@@ -105,8 +106,11 @@ const PropertySearch = () => {
             <Search size={18} strokeWidth={2.5} />
             <span className="hidden sm:inline ml-1">Search</span>
           </button>
-        </div>
+        </div> */}
       </div>
+
+      {/* Dynamic Filter Bar */}
+      <DynamicFilterBar activeTab={activeTab} />
 
       {/* Tab Content */}
       {tabContent[activeTab]}
