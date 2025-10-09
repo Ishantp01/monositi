@@ -64,7 +64,10 @@ const PropertyCarousel = ({ tags }) => {
       >
         {properties.map((property) => (
           <SwiperSlide key={property._id}>
-            <PropertyCard data={property} link={`/details/${property._id}`} />
+            <PropertyCard
+              property={property}
+              link={`/details/${property._id}`}
+            />
           </SwiperSlide>
         ))}
       </Swiper>
