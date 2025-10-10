@@ -21,7 +21,7 @@ const tabToHash = {
   Rent: "rent",
   Monositi: "monositi",
   Commercial: "commercial",
-  Services: "commercial",
+  Services: "services",
 };
 
 const hashToTab = {
@@ -29,7 +29,7 @@ const hashToTab = {
   rent: "Rent",
   monositi: "Monositi",
   commercial: "Commercial",
-  commercial: "Service",
+  services: "Services",
 };
 
 const PropertySearch = () => {
