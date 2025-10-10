@@ -1,5 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { Provider } from 'react-redux'
+import { store } from './redux/store'
 import "@fontsource/inter"; 
 import "@fontsource/inter/300.css"; // Light
 import "@fontsource/inter/400.css"; // Regular (default)
@@ -14,6 +16,8 @@ import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </StrictMode>,
 )
