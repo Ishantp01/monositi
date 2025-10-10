@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import "swiper/css";
 import "swiper/css/navigation";
 import PropertyCard from "../Cards/PropertyCard";
-import { propertyApi } from "../../utils/propertyApi"; // import the API object
+import { propertyApi } from "../../utils/propertyApi";
 
 const PropertyCarousel = ({ tags }) => {
   const [properties, setProperties] = useState([]);
@@ -21,12 +21,10 @@ const PropertyCarousel = ({ tags }) => {
     setError("");
 
     try {
-      // Use the getPropertiesByTags function which has the correct endpoint
       const data = await propertyApi.getPropertiesByTags(tags);
       console.log(data);
 
       if (data.success) {
-        // Properties are already sorted by the API (featured first, then popular, then the rest)
         setProperties(data.properties);
       } else {
         setError(data.message || "Failed to fetch properties");
