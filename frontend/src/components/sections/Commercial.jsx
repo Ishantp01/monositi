@@ -1,7 +1,4 @@
 import GradientHeading from "../common/GradientHeading";
-import PropertySlider5 from "../Carousel/PropertiesSlider5";
-import PropertySlider8 from "../Carousel/PropertiesSlider8";
-import PropertySlider9 from "../Carousel/PropertiesSlider9";
 import { Link } from "react-router-dom";
 import PropertyCarousel from "../Carousel/PropertiesSlider";
 
