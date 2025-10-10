@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Settings } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Menu, X, Settings, LogOut, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../redux/slices/authSlice";
 
 const Navbar = () => {
-  const [role, setRole] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
+  const { isAuthenticated, user, role } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    const storedRole = localStorage.getItem("role");
-    if (storedRole) setRole(JSON.parse(storedRole));
-  }, []);
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
+  };
 
   const buttonClass =
-    "relative px-4 py-2 rounded-lg text-md  text-gray-600 font-medium flex items-center gap-2 transition-all duration-300 ease-in-out hover:bg-gray-100";
+    "relative px-4 py-2 rounded-lg text-md text-gray-600 font-medium flex items-center gap-2 transition-all duration-300 ease-in-out hover:bg-gray-100";
 
   // Placeholder avatar for testing
   const placeholderAvatar = "https://via.placeholder.com/32";
@@ -47,13 +52,19 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center gap-3 ml-auto">
-          {/* <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+          <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
             <Link to="/add-property" className={buttonClass}>
               Post Property
             </Link>
-          </motion.div> */}
+          </motion.div>
 
-          {role === "admin" && (
+          {isAuthenticated && role && (
+            <div className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg font-medium">
+              {role.charAt(0).toUpperCase() + role.slice(1)}
+            </div>
+          )}
+
+          {isAuthenticated && role === "admin" && (
             <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
               <Link to="/admin" className={buttonClass}>
                 <Settings size={16} /> Admin
@@ -61,27 +72,35 @@ const Navbar = () => {
             </motion.div>
           )}
 
-          <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
-            <Link to="/login" className={buttonClass}>
-              Login
-            </Link>
-          </motion.div>
+          {!isAuthenticated ? (
+            <>
+              <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+                <Link to="/login" className={buttonClass}>
+                  Login
+                </Link>
+              </motion.div>
 
-          <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
-            <Link to="/signup" className={buttonClass}>
-              Sign Up
-            </Link>
-          </motion.div>
-
-          {/* <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.2 }}>
-            <Link to="/profile" className="flex items-center">
-              <img
-                src={placeholderAvatar}
-                alt="User Avatar"
-                className="w-8 h-8 rounded-full object-cover border-2 border-gray-200 hover:border-gray-300 transition-all duration-300 ease-in-out"
-              />
-            </Link>
-          </motion.div> */}
+              <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+                <Link to="/signup" className={buttonClass}>
+                  Sign Up
+                </Link>
+              </motion.div>
+            </>
+          ) : (
+            <>
+              <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+                <Link to="/profile" className={buttonClass}>
+                  <User size={16} /> Profile
+                </Link>
+              </motion.div>
+              
+              <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+                <button onClick={handleLogout} className={buttonClass}>
+                  <LogOut size={16} /> Logout
+                </button>
+              </motion.div>
+            </>
+          )}
         </div>
       </div>
 
@@ -104,7 +123,13 @@ const Navbar = () => {
                 Post Property
               </Link>
 
-              {role === "admin" && (
+              {isAuthenticated && role && (
+                <div className="w-full text-center py-2.5 bg-blue-100 text-blue-800 font-medium rounded-lg">
+                  {role.charAt(0).toUpperCase() + role.slice(1)}
+                </div>
+              )}
+
+              {isAuthenticated && role === "admin" && (
                 <Link
                   to="/admin"
                   className="w-full text-center py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
@@ -114,34 +139,47 @@ const Navbar = () => {
                 </Link>
               )}
 
-              <Link
-                to="/login"
-                className="w-full text-center py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
-                onClick={() => setMenuOpen(false)}
-              >
-                Login
-              </Link>
+              {!isAuthenticated ? (
+                <>
+                  <Link
+                    to="/login"
+                    className="w-full text-center py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
 
-              <Link
-                to="/signup"
-                className="w-full text-center py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
-                onClick={() => setMenuOpen(false)}
-              >
-                Sign Up
-              </Link>
-
-              <Link
-                to="/profile"
-                className="w-full flex items-center justify-center gap-2 py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
-                onClick={() => setMenuOpen(false)}
-              >
-                <img
-                  src={placeholderAvatar}
-                  alt="User Avatar"
-                  className="w-8 h-8 rounded-full object-cover border-2 border-gray-200"
-                />
-                Profile
-              </Link>
+                  <Link
+                    to="/signup"
+                    className="w-full text-center py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/profile"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <User size={16} />
+                    Profile
+                  </Link>
+                  
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setMenuOpen(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </>
+              )}
             </div>
           </motion.div>
         )}
