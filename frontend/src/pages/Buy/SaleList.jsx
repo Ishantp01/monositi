@@ -193,7 +193,7 @@ export default function SaleList() {
   return (
     <>
       <Navbar bgColor="light" avatarUrl={avatar} />
-      <div className="max-w-6xl mx-auto p-4 space-y-8 font-inter">
+      <div className="max-w-6xl mx-auto mt-40 p-4 space-y-8 font-inter">
         {/* Dynamic Filter Bar for Buy */}
         <DynamicFilterBar activeTab="Buy" />
 
