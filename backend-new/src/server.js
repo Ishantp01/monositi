@@ -1,9 +1,11 @@
 import 'dotenv/config';
 import app from './app.js';
 import connectDB from './config/db.js';
+import dotenv from 'dotenv';
 
 // Connect to MongoDB
 await connectDB();
+dotenv.config();
 
 // Start server
 const PORT = process.env.PORT || 5000;

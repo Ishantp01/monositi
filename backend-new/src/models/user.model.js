@@ -1,105 +1,51 @@
-import mongoose from "mongoose";
-import bcrypt from "bcrypt";
-
-const addressSchema = new mongoose.Schema(
-  {
-    label: { type: String }, // e.g. "Home", "Office"
-    line1: { type: String },
-    line2: { type: String },
-    city: { type: String },
-    state: { type: String },
-    postalCode: { type: String },
-    country: { type: String, default: "India" },
-  },
-  { _id: false }
-);
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      trim: true,
-    },
-    email: {
-      type: String,
-      lowercase: true,
-      unique: true,
-      sparse: true,
-    },
-    phone: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-    },
-    password_hash: {
-      type: String,
-      select: false,
-    },
+    name: { type: String }, // Optional at signup — can be filled later
+    email: { type: String, unique: true, sparse: true },
+    phone: { type: String, unique: true, required: true },
+    password_hash: String, // not used yet but kept for future web login
+
     role: {
       type: String,
-      enum: ["tenant", "owner", "agent", "service_provider", "admin"],
-      default: "tenant",
+      enum: ['tenant', 'owner', 'agent', 'service_provider', 'admin'],
+      default: 'tenant',
     },
-    profile_img: {
-      type: String,
-    },
-    KYC_docs: [
-      {
-        url: { type: String },
-        docType: { type: String },
-        status: {
-          type: String,
-          enum: ["pending", "verified", "rejected"],
-          default: "pending",
-        },
-      },
-    ],
+
+    KYC_docs: [String],
+
     verification_status: {
       type: String,
-      enum: ["unverified", "pending", "verified", "rejected"],
-      default: "unverified",
+      enum: ['pending', 'verified', 'rejected'],
+      default: 'pending',
     },
-    rating: {
-      type: Number,
-      default: 0,
-    },
-    subscription_status: {
-      type: String,
-      enum: ["none", "active", "expired"],
-      default: "none",
-    },
-    address_book: [addressSchema],
+
+    monositi_verified: { type: Boolean, default: false },
+    rating: { type: Number, default: 0 },
+    profile_img: String,
+
+    registered_on: { type: Date, default: Date.now },
+
     contact_preferences: {
+      email: { type: Boolean, default: true },
+      sms: { type: Boolean, default: true },
       whatsapp: { type: Boolean, default: true },
-      email: { type: Boolean, default: false },
     },
-    last_active: {
-      type: Date,
-      default: Date.now,
+
+    subscription: {
+      status: { type: Boolean, default: false },
+      plan: {
+        type: String,
+        enum: ['basic', 'premium', 'enterprise', null],
+        default: null,
+      },
+      valid_till: Date,
     },
   },
   { timestamps: true }
 );
 
-// 🔐 Hash password if modified (future-proof)
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password_hash")) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password_hash = await bcrypt.hash(this.password_hash, salt);
-  next();
-});
+export default mongoose.model('User', userSchema);
 
-// 🔍 Compare passwords (future use)
-userSchema.methods.comparePassword = async function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password_hash);
-};
 
-// 🧼 Remove sensitive fields from JSON
-userSchema.methods.toJSON = function () {
-  const obj = this.toObject();
-  delete obj.password_hash;
-  return obj;
-};
-
-export default mongoose.model("User", userSchema);
