@@ -62,8 +62,6 @@ export const updateUserProfile = async (req, res) => {
 
 
 
-
-
 // Temporary OTP store (for dev; use Redis or DB for production)
 const otpStore = new Map();
 
