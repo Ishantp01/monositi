@@ -697,3 +697,70 @@ export const searchProperties = async (req, res) => {
 };
 
 
+export const getPropertyDocuments = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ObjectId format
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid property ID format"
+      });
+    }
+
+    const property = await Property.findById(id)
+      .select("documents owner_id verification_status name address city state")
+      .populate('owner_id', 'name email phone');
+
+    if (!property) {
+      return res.status(404).json({
+        success: false,
+        message: "Property not found"
+      });
+    }
+
+    // Check if property has documents
+    if (!property.documents || property.documents.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No documents available for this property"
+      });
+    }
+
+    // Return document information
+    return res.status(200).json({
+      success: true,
+      message: `Found ${property.documents.length} document(s) for this property`,
+      property: {
+        _id: property._id,
+        name: property.name,
+        address: property.address,
+        city: property.city,
+        state: property.state,
+        verification_status: property.verification_status,
+        owner: {
+          _id: property.owner_id._id,
+          name: property.owner_id.name,
+          email: property.owner_id.email,
+          phone: property.owner_id.phone
+        }
+      },
+      documents: property.documents.map((doc, index) => ({
+        id: index + 1,
+        url: doc,
+        type: doc.includes('.pdf') ? 'PDF' : 'Image',
+        filename: doc.split('/').pop().split('.')[0] // Extract filename from URL
+      })),
+      totalDocuments: property.documents.length
+    });
+
+  } catch (error) {
+    console.error("getPropertyDocuments error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message
+    });
+  }
+};

@@ -8,6 +8,7 @@ import {
   getOwnerProperties,
   getNearbyProperties,
   searchProperties,
+  getPropertyDocuments,
 } from "./property.controller.js";
 import Property from "../../models/property.model.js";
 import upload from "../../config/multer.js";
@@ -36,6 +37,7 @@ router.post(
 );
 
 router.get("/my-properties", protect, getOwnerProperties);
+router.get("/:id/documents", getPropertyDocuments);
 router.put("/:id", protect, updateProperty);
 router.delete("/:id", protect, deleteProperty);
 router.get("/:id", getPropertyById);
