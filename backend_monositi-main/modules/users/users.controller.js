@@ -145,6 +145,42 @@ exports.createMonositiTenant = async (req, res) => {
 };
 
 /**
+ * Admin creates Service Provider user directly (verified = true)
+ */
+exports.createServiceProviderUser = async (req, res) => {
+  try {
+    const { name, email, password, photo } = req.body;
+
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ success: false, message: "Email already registered" });
+    }
+
+    const user = await User.create({
+      name,
+      email,
+      password,
+      photo,
+      role: "serviceProvider",
+      verified: true,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Service Provider user created successfully. Now create their service provider profile.",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
+/**
  * Get current user profile
  */
 exports.getUserProfile = async (req, res) => {

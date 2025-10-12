@@ -8,6 +8,7 @@ const {
   getAllUsers,
   getUserById,
   createMonositiTenant,
+  createServiceProviderUser,
   softDeleteUser,
   restoreUser,
   getDeletedUsers,
@@ -26,6 +27,7 @@ router.get("/me", protect, getUserProfile);
 
 // Admin
 router.post("/admin/monositi-tenant", protect, adminOnly, createMonositiTenant);
+router.post("/admin/service-provider-user", protect, adminOnly, createServiceProviderUser);
 router.get("/", protect, adminOnly, getAllUsers);
 router.get("/:id", protect, adminOnly, getUserById);
 router.patch("/:id/soft-delete", protect, adminOnly, softDeleteUser);
