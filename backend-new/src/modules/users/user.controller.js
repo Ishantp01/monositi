@@ -1,7 +1,42 @@
 import User from '../../models/user.model.js';
 import jwt from "jsonwebtoken";
 import twilio from "twilio";
-import { twilioClient, whatsappFrom } from "../config/whatsapp.config.js";
+import { twilioClient, whatsappFrom } from "../../config/whatsapp.js";
+
+
+export const registerUser = async (req, res) => {
+  try {
+    const { name, email, phone, role } = req.body;
+
+    // Basic validations
+    if (!phone) {
+      return res.status(400).json({ success: false, message: "Phone number is required" });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ phone });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: "User already exists" });
+    }
+
+    // Create new user
+    const newUser = await User.create({
+      name,
+      email,
+      phone,
+      role: role || "tenant", // default role if not provided
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      user: newUser,
+    });
+  } catch (err) {
+    console.error("Register user error:", err);
+    res.status(500).json({ success: false, message: "Failed to register user" });
+  }
+};
 
 export const updateUserProfile = async (req, res) => {
     try {
@@ -45,7 +80,9 @@ export const sendOtp = async (req, res) => {
       from: whatsappFrom,
       to: `whatsapp:${phone}`,
       body: `Your OTP for login is ${otp}. It will expire in 2 minutes.`,
-    });
+    })
+    .then(msg => console.log("Message SID:", msg.sid))
+    .catch(err => console.error("Twilio error:", err));
 
     setTimeout(() => otpStore.delete(phone), 120000);
 
