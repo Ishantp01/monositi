@@ -4,10 +4,10 @@ import { Navigation } from "swiper/modules";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "swiper/css";
 import "swiper/css/navigation";
-import { PropertyCard } from "../PropertyCard";
-import { propertyApi } from "../../utils/propertyApi"; // import the API object
+import PropertyCard from "../Cards/PropertyCard";
+import { propertyApi } from "../../utils/propertyApi";
 
-const PropertyCarousel = ({ tags}) => {
+const PropertyCarousel = ({ tags }) => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -21,12 +21,10 @@ const PropertyCarousel = ({ tags}) => {
     setError("");
 
     try {
-      // Use the getPropertiesByTags function which has the correct endpoint
       const data = await propertyApi.getPropertiesByTags(tags);
       console.log(data);
 
       if (data.success) {
-        // Properties are already sorted by the API (featured first, then popular, then the rest)
         setProperties(data.properties);
       } else {
         setError(data.message || "Failed to fetch properties");
@@ -40,9 +38,14 @@ const PropertyCarousel = ({ tags}) => {
   };
 
   const renderContent = () => {
-    if (loading) return <div className="text-center py-8">Loading properties...</div>;
-    if (error) return <div className="text-center text-red-600 py-8">{error}</div>;
-    if (!properties.length) return <div className="text-center py-8">No properties found for "{tags}"</div>;
+    if (loading)
+      return <div className="text-center py-8">Loading properties...</div>;
+    if (error)
+      return <div className="text-center text-red-600 py-8">{error}</div>;
+    if (!properties.length)
+      return (
+        <div className="text-center py-8">No properties found for "{tags}"</div>
+      );
 
     return (
       <Swiper
@@ -59,7 +62,10 @@ const PropertyCarousel = ({ tags}) => {
       >
         {properties.map((property) => (
           <SwiperSlide key={property._id}>
-            <PropertyCard data={property} link={`/details/${property._id}`} />
+            <PropertyCard
+              property={property}
+              link={`/details/${property._id}`}
+            />
           </SwiperSlide>
         ))}
       </Swiper>

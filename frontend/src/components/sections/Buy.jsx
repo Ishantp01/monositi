@@ -1,6 +1,6 @@
-import ImageCarousel from "../LargeCardCarousel";
-import OutlineButton from "../MoreButton";
-import GradientHeading from "../GradientHeading";
+import ImageCarousel from "../PropertyDetails/LargeCardCarousel";
+import OutlineButton from "../common/MoreButton";
+import GradientHeading from "../common/GradientHeading";
 import PropertyCarousel from "../Carousel/PropertiesSlider";
 import PropertySlider2 from "../Carousel/PropertiesSlider2";
 import { Link } from "react-router-dom";

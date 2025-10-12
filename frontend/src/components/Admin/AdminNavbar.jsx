@@ -3,13 +3,14 @@ import { Menu, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const AdminNavbar = () => {
-    const navItems = [
-        { name: "Rent", path: "/properties/type/Rent" },
-        { name: "Buy", path: "/properties/type/Buy" },
-        { name: "Commercial", path: "/properties/type/Commercial" },
-        { name: "Users", path: "/admin/users" },
-        { name: "Monositi", path: "/admin/monositi" },
-    ];
+  const navItems = [
+    { name: "Rent", path: "/properties/type/Rent" },
+    { name: "Buy", path: "/properties/type/Buy" },
+    { name: "Commercial", path: "/properties/type/Commercial" },
+    { name: "Users", path: "/admin/users" },
+    { name: "Monositi", path: "/admin/monositi" },
+    { name: "Service Provider", path: "/admin/service-provider" },
+  ];
 
   return (
     <header className="w-full shadow-sm bg-white border-b">
