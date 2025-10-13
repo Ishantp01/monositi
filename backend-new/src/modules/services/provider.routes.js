@@ -4,7 +4,13 @@ import {
   updateBookingStatus, 
   getProviderBookings, 
   completeBooking, 
-  rateCustomer 
+  rateCustomer,
+  createServiceForProvider,
+  getLoggedInProviderService,
+  updateProviderService,
+  updateServiceAvailability,
+  manageServiceAddons,
+  manageServiceImages
 } from './provider.controller.js';
 import { protect } from '../../middlewares/authMiddleware.js';
 import { upload } from '../../config/multer.js';
@@ -38,6 +44,46 @@ router.patch('/bookings/:id/complete',
 router.post('/bookings/:id/rate-customer', 
   protect, 
   rateCustomer
+);
+
+// ✅ Service Management Routes
+router.post('/create-service',
+  protect,
+  upload.fields([
+    { name: 'images', maxCount: 10 },
+    { name: 'service_docs', maxCount: 5 }
+  ]),
+  createServiceForProvider
+);
+
+router.get('/my-service',
+  protect,
+  getLoggedInProviderService
+);
+
+router.put('/update-service',
+  protect,
+  upload.fields([
+    { name: 'images', maxCount: 10 },
+    { name: 'service_docs', maxCount: 5 }
+  ]),
+  updateProviderService
+);
+
+router.patch('/update-availability',
+  protect,
+  updateServiceAvailability
+);
+
+router.patch('/manage-addons',
+  protect,
+  manageServiceAddons
+);
+
+router.patch('/manage-images',
+  protect,
+  upload.array('images', 10),
+  manageServiceImages
 );
 
 export default router;
