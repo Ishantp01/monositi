@@ -4,6 +4,7 @@ import twilio from "twilio";
 import { twilioClient, whatsappFrom } from "../../config/whatsapp.js";
 import { uploadFileToCloudinary } from '../../utils/uploadToCloudinary.js';
 import fs from "fs";
+import User from '../../models/user.model.js';
 
 
 export const registerUser = async (req, res) => {
@@ -81,8 +82,11 @@ export const sendOtp = async (req, res) => {
       to: `whatsapp:${phone}`,
       body: `Your OTP for login is ${otp}. It will expire in 2 minutes.`,
     })
+    
     .then(msg => console.log("Message SID:", msg.sid))
     .catch(err => console.error("Twilio error:", err));
+    console.log("Sending OTP to", otp);
+
 
     setTimeout(() => otpStore.delete(phone), 120000);
 
