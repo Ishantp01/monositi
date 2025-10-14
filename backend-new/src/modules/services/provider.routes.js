@@ -13,7 +13,6 @@ import {
   manageServiceImages
 } from './provider.controller.js';
 import { protect } from '../../middlewares/authMiddleware.js';
-import { upload } from '../../config/multer.js';
 
 const router = express.Router();
 
