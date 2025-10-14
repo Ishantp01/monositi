@@ -1,5 +1,5 @@
 // models/ServiceBooking.js
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const serviceBookingSchema = new mongoose.Schema({
   service: { type: mongoose.Schema.Types.ObjectId, ref: 'Service', required: true },
@@ -39,4 +39,4 @@ const serviceBookingSchema = new mongoose.Schema({
 // Index for geospatial queries
 serviceBookingSchema.index({ 'service_address.coordinates': '2dsphere' });
 
-export default mongoose.model('ServiceBooking', serviceBookingSchema);
+module.exports = mongoose.model('ServiceBooking', serviceBookingSchema);
