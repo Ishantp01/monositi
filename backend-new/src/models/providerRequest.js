@@ -1,5 +1,5 @@
 // models/ProviderRequest.js
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const providerRequestSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -14,4 +14,4 @@ const providerRequestSchema = new mongoose.Schema({
   admin_comment: String,
 }, { timestamps: true });
 
-export default mongoose.model('ProviderRequest', providerRequestSchema);
+module.exports = mongoose.model('ProviderRequest', providerRequestSchema);

@@ -24,4 +24,4 @@ monositi_verified: { type: Boolean, default: false }
 
 serviceSchema.index({ location: '2dsphere' });
 
-export default mongoose.model('Service', serviceSchema);
+module.exports = mongoose.model('Service', serviceSchema);

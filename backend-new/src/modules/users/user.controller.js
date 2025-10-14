@@ -1,9 +1,10 @@
-import User from '../../models/user.model.js';
+
 import jwt from "jsonwebtoken";
 import twilio from "twilio";
 import { twilioClient, whatsappFrom } from "../../config/whatsapp.js";
 import { uploadFileToCloudinary } from '../../utils/uploadToCloudinary.js';
 import fs from "fs";
+
 
 export const registerUser = async (req, res) => {
   try {
