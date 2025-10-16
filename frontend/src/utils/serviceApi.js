@@ -184,5 +184,86 @@ export const serviceApi = {
       console.error("Error rating service:", error);
       return { success: false, message: "Failed to rate service" };
     }
+  },
+
+  // SERVICE PROVIDER FUNCTIONS
+
+  // Create service (for service providers)
+  createService: async (formData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/services/create`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+          // Don't set Content-Type for FormData, let browser set it with boundary
+        },
+        body: formData
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Error creating service:", error);
+      return { success: false, message: "Failed to create service" };
+    }
+  },
+
+  // Get provider's services
+  getProviderServices: async (params = {}) => {
+    try {
+      const queryString = new URLSearchParams(params).toString();
+      const url = queryString ? `/services/my-services?${queryString}` : '/services/my-services';
+      const response = await fetch(`${API_BASE_URL}${url}`, {
+        headers: getAuthHeaders()
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching provider services:", error);
+      return { success: false, message: "Failed to fetch services", services: [] };
+    }
+  },
+
+  // Update service
+  updateService: async (serviceId, formData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/services/${serviceId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+          // Don't set Content-Type for FormData, let browser set it with boundary
+        },
+        body: formData
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Error updating service:", error);
+      return { success: false, message: "Failed to update service" };
+    }
+  },
+
+  // Delete service
+  deleteService: async (serviceId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/services/${serviceId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Error deleting service:", error);
+      return { success: false, message: "Failed to delete service" };
+    }
+  },
+
+  // Toggle service status
+  toggleServiceStatus: async (serviceId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/services/${serviceId}/toggle-status`, {
+        method: 'PATCH',
+        headers: getAuthHeaders()
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Error toggling service status:", error);
+      return { success: false, message: "Failed to toggle service status" };
+    }
   }
 };
