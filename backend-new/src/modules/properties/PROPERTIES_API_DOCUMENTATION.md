@@ -27,6 +27,7 @@ http://localhost:5000/api/properties
 ### Authentication
 Most APIs require JWT authentication except public browsing endpoints.
 
+
 ---
 
 ## 🔐 Authentication
