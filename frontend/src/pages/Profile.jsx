@@ -19,10 +19,14 @@ import {
   Clock,
   Settings,
   Bell,
-  MessageSquare
+  MessageSquare,
+  Calendar,
+  Star,
+  MapPin
 } from "lucide-react";
 import { toast } from "react-toastify";
 import apiRequest from "../utils/api";
+import { serviceApi } from "../utils/serviceApi";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -31,19 +35,25 @@ export default function Profile() {
   const [editedUser, setEditedUser] = useState({});
   const [kycFiles, setKycFiles] = useState([]);
   const [kycUploading, setKycUploading] = useState(false);
-  const [activeTab, setActiveTab] = useState("profile"); // profile, kyc, preferences
+  const [activeTab, setActiveTab] = useState("profile"); // profile, kyc, preferences, bookings
   const [contactPreferences, setContactPreferences] = useState({
     email: true,
     sms: true,
     whatsapp: true
   });
   const [preferencesLoading, setPreferencesLoading] = useState(false);
+  const [bookings, setBookings] = useState([]);
+  const [bookingsLoading, setBookingsLoading] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [rating, setRating] = useState(5);
+  const [review, setReview] = useState('');
   const token = localStorage.getItem("token");
 
   // ---------------- Fetch User ----------------
   const fetchUserProfile = async () => {
     try {
-      const data = await apiRequest("/users/users/me", "GET");
+      const data = await apiRequest("/users/me", "GET");
       if (data.success) {
         setUser(data.user);
         setEditedUser(data.user);
@@ -70,6 +80,7 @@ export default function Profile() {
       return;
     }
     fetchUserProfile();
+    fetchBookings();
   }, [token]);
 
   // ---------------- User Handlers ----------------
@@ -80,7 +91,7 @@ export default function Profile() {
 
   const handleSave = async () => {
     try {
-      const data = await apiRequest("/users/users/me", "PUT", {
+      const data = await apiRequest("/users/me", "PUT", {
         name: editedUser.name,
         email: editedUser.email,
         profile_img: editedUser.profile_img
@@ -127,7 +138,7 @@ export default function Profile() {
         formData.append('kycDocs', file);
       });
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/users/users/me/kyc`, {
+      const response = await fetch(`${'http://localhost:5000/api'}/users/me/kyc`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -163,7 +174,7 @@ export default function Profile() {
   const handleSavePreferences = async () => {
     setPreferencesLoading(true);
     try {
-      const data = await apiRequest("/users/users/me/contact-preferences", "PATCH", contactPreferences);
+      const data = await apiRequest("/users/me/contact-preferences", "PATCH", contactPreferences);
 
       if (data.success) {
         toast.success("Contact preferences updated successfully!");
@@ -177,6 +188,63 @@ export default function Profile() {
     } finally {
       setPreferencesLoading(false);
     }
+  };
+
+  // ---------------- Bookings Handlers ----------------
+  const fetchBookings = async () => {
+    setBookingsLoading(true);
+    try {
+      const data = await serviceApi.getCustomerBookings();
+      if (data.success) {
+        setBookings(data.bookings || []);
+      } else {
+        toast.error("Failed to fetch bookings");
+      }
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      toast.error("Error fetching bookings");
+    } finally {
+      setBookingsLoading(false);
+    }
+  };
+
+  const handleCancelBooking = async (bookingId, reason = '') => {
+    try {
+      const data = await serviceApi.cancelBooking(bookingId, reason);
+      if (data.success) {
+        toast.success("Booking cancelled successfully");
+        fetchBookings(); // Refresh bookings
+      } else {
+        toast.error(data.message || "Failed to cancel booking");
+      }
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      toast.error("Error cancelling booking");
+    }
+  };
+
+  const handleRateService = async () => {
+    try {
+      const data = await serviceApi.rateService(selectedBooking._id, rating, review);
+      if (data.success) {
+        toast.success("Service rated successfully");
+        setShowRatingModal(false);
+        setSelectedBooking(null);
+        setRating(5);
+        setReview('');
+        fetchBookings(); // Refresh bookings
+      } else {
+        toast.error(data.message || "Failed to rate service");
+      }
+    } catch (error) {
+      console.error("Error rating service:", error);
+      toast.error("Error rating service");
+    }
+  };
+
+  const openRatingModal = (booking) => {
+    setSelectedBooking(booking);
+    setShowRatingModal(true);
   };
 
   // ---------------- Helper Functions ----------------
@@ -384,6 +452,18 @@ export default function Profile() {
                   <div className="flex items-center space-x-2">
                     <Settings className="w-4 h-4" />
                     <span>Preferences</span>
+                  </div>
+                </button>
+                <button
+                  onClick={() => setActiveTab("bookings")}
+                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${activeTab === "bookings"
+                    ? "border-[#f73c56] text-[#f73c56]"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    }`}
+                >
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="w-4 h-4" />
+                    <span>My Bookings</span>
                   </div>
                 </button>
               </nav>
@@ -757,7 +837,219 @@ export default function Profile() {
                   </div>
                 </motion.div>
               )}
+
+              {activeTab === "bookings" && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-6"
+                >
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-start space-x-3">
+                      <Calendar className="w-5 h-5 text-blue-500 mt-0.5" />
+                      <div>
+                        <h3 className="font-medium text-blue-900">My Service Bookings</h3>
+                        <p className="text-sm text-blue-700 mt-1">
+                          View and manage your service bookings, track status, and rate completed services.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {bookingsLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f73c56] mx-auto"></div>
+                      <p className="mt-2 text-gray-600">Loading bookings...</p>
+                    </div>
+                  ) : bookings.length > 0 ? (
+                    <div className="space-y-4">
+                      {bookings.map((booking) => (
+                        <div key={booking._id} className="bg-white border border-gray-200 rounded-lg p-6">
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-lg text-gray-900">
+                                {booking.service?.service_name}
+                              </h3>
+                              <p className="text-sm text-gray-600">{booking.service?.category}</p>
+                              <div className="flex items-center mt-2 text-sm text-gray-500">
+                                <MapPin className="w-4 h-4 mr-1" />
+                                <span>Provider: {booking.provider?.name}</span>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium ${booking.status === 'completed' ? 'bg-green-100 text-green-800' :
+                                booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                  booking.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                                    'bg-gray-100 text-gray-800'
+                                }`}>
+                                {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                              <p className="text-sm text-gray-500">Scheduled Date</p>
+                              <p className="font-medium">
+                                {booking.scheduled_for
+                                  ? new Date(booking.scheduled_for).toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })
+                                  : 'Not scheduled'
+                                }
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Total Amount</p>
+                              <p className="font-medium text-green-600">₹{booking.total_amount}</p>
+                            </div>
+                          </div>
+
+                          {booking.notes && (
+                            <div className="mb-4">
+                              <p className="text-sm text-gray-500">Notes</p>
+                              <p className="text-sm text-gray-700">{booking.notes}</p>
+                            </div>
+                          )}
+
+                          {booking.service_address && (
+                            <div className="mb-4">
+                              <p className="text-sm text-gray-500">Service Address</p>
+                              <p className="text-sm text-gray-700">
+                                {booking.service_address.street}, {booking.service_address.city}, {booking.service_address.state} {booking.service_address.zipCode}
+                              </p>
+                            </div>
+                          )}
+
+                          {booking.customer_rating && (
+                            <div className="mb-4">
+                              <p className="text-sm text-gray-500">Your Rating</p>
+                              <div className="flex items-center">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`w-4 h-4 ${i < booking.customer_rating ? 'text-yellow-500 fill-current' : 'text-gray-300'
+                                      }`}
+                                  />
+                                ))}
+                                <span className="ml-2 text-sm text-gray-600">({booking.customer_rating}/5)</span>
+                              </div>
+                              {booking.customer_review && (
+                                <p className="text-sm text-gray-700 mt-1">{booking.customer_review}</p>
+                              )}
+                            </div>
+                          )}
+
+                          <div className="flex gap-2 pt-4 border-t border-gray-200">
+                            {booking.status === 'pending' && (
+                              <button
+                                onClick={() => handleCancelBooking(booking._id, 'Cancelled by customer')}
+                                className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm"
+                              >
+                                Cancel Booking
+                              </button>
+                            )}
+
+                            {booking.status === 'completed' && !booking.customer_rating && (
+                              <button
+                                onClick={() => openRatingModal(booking)}
+                                className="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors text-sm"
+                              >
+                                Rate Service
+                              </button>
+                            )}
+
+                            <div className="text-xs text-gray-500 flex items-center ml-auto">
+                              Booked on {new Date(booking.createdAt).toLocaleDateString()}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 bg-gray-50 rounded-lg">
+                      <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings yet</h3>
+                      <p className="text-gray-600">
+                        Your service bookings will appear here once you book a service.
+                      </p>
+                    </div>
+                  )}
+                </motion.div>
+              )}
             </div>
+
+            {/* Rating Modal */}
+            {showRatingModal && selectedBooking && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold">Rate Service</h3>
+                      <button
+                        onClick={() => setShowRatingModal(false)}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    <div className="mb-4">
+                      <p className="text-sm text-gray-600 mb-2">Service: {selectedBooking.service?.service_name}</p>
+                      <p className="text-sm text-gray-600">Provider: {selectedBooking.provider?.name}</p>
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                      <div className="flex items-center space-x-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            onClick={() => setRating(star)}
+                            className="focus:outline-none"
+                          >
+                            <Star
+                              className={`w-8 h-8 ${star <= rating ? 'text-yellow-500 fill-current' : 'text-gray-300'
+                                }`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Review (Optional)</label>
+                      <textarea
+                        value={review}
+                        onChange={(e) => setReview(e.target.value)}
+                        placeholder="Share your experience..."
+                        rows={3}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#f73c56] focus:border-transparent resize-none"
+                      />
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setShowRatingModal(false)}
+                        className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleRateService}
+                        className="flex-1 px-4 py-2 bg-[#f73c56] text-white rounded-lg hover:bg-[#e9334e] transition-colors"
+                      >
+                        Submit Rating
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </motion.div>
         </div>
       </div>
