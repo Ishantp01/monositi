@@ -29,26 +29,26 @@ router.post("/verify-otp", verifyOtp);
 //================================================================
 // 2. User Profile Routes (Requires Authentication)
 //================================================================
-router.route('/users/me')
+router.route('/me')
     .get(protect, getMyProfile)
     .put(protect, updateMyProfile);
 
 // Specific PATCH routes for granular updates
-router.patch('/users/me/kyc', protect, upload.array('kycDocs', 5), updateKyc); // Allows uploading up to 5 files with field name 'kycDocs'
-router.patch('/users/me/contact-preferences', protect, updateContactPreferences);
+router.patch('/me/kyc', protect, upload.array('kycDocs', 5), updateKyc); // Allows uploading up to 5 files with field name 'kycDocs'
+router.patch('/me/contact-preferences', protect, updateContactPreferences);
 
 //================================================================
 // 3. Role & Permissions Routes (Requires Authentication)
 //================================================================
-router.patch('/users/me/role', protect, requestRoleChange);
+router.patch('/me/role', protect, requestRoleChange);
 
 //================================================================
 // 4. Admin User Management Routes (Requires Admin privileges)
 //================================================================
-router.route('/users')
+router.route('/')
     .get(protect, adminOnly, getAllUsers);
 
-router.route('/users/:id')
+router.route('/:id')
     .get(protect, adminOnly, getUserById)
     .patch(protect, adminOnly, updateUserByAdmin)
     .delete(protect, adminOnly, deleteUser);
