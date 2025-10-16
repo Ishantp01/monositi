@@ -8,37 +8,37 @@ import User from '../../models/user.model.js';
 
 
 export const registerUser = async (req, res) => {
-  try {
-    const { name, email, phone, role } = req.body;
+    try {
+        const { name, email, phone, role } = req.body;
 
-    // Basic validations
-    if (!phone) {
-      return res.status(400).json({ success: false, message: "Phone number is required" });
+        // Basic validations
+        if (!phone) {
+            return res.status(400).json({ success: false, message: "Phone number is required" });
+        }
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ phone });
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: "User already exists" });
+        }
+
+        // Create new user
+        const newUser = await User.create({
+            name,
+            email,
+            phone,
+            role: role || "tenant", // default role if not provided
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "User registered successfully",
+            user: newUser,
+        });
+    } catch (err) {
+        console.error("Register user error:", err);
+        res.status(500).json({ success: false, message: "Failed to register user" });
     }
-
-    // Check if user already exists
-    const existingUser = await User.findOne({ phone });
-    if (existingUser) {
-      return res.status(400).json({ success: false, message: "User already exists" });
-    }
-
-    // Create new user
-    const newUser = await User.create({
-      name,
-      email,
-      phone,
-      role: role || "tenant", // default role if not provided
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "User registered successfully",
-      user: newUser,
-    });
-  } catch (err) {
-    console.error("Register user error:", err);
-    res.status(500).json({ success: false, message: "Failed to register user" });
-  }
 };
 
 export const updateUserProfile = async (req, res) => {
@@ -52,11 +52,11 @@ export const updateUserProfile = async (req, res) => {
             { new: true }
         );
 
-        res.json({message: 'User profile updated successfully', user});
+        res.json({ message: 'User profile updated successfully', user });
     }
-    catch(err) {
+    catch (err) {
         console.error('Error updating user profile:', err);
-        res.status(500).json({message: 'Failed to update user profile'});
+        res.status(500).json({ message: 'Failed to update user profile' });
     }
 }
 
@@ -71,105 +71,105 @@ const otpStore = new Map();
 
 
 export const sendOtp = async (req, res) => {
-  try {
-    const { phone } = req.body;
-    if (!phone) {
-      return res.status(400).json({ success: false, message: "Phone number is required" });
+    try {
+        const { phone } = req.body;
+        if (!phone) {
+            return res.status(400).json({ success: false, message: "Phone number is required" });
+        }
+
+        // Check if a user with this phone number already exists.
+        let user = await User.findOne({ phone });
+
+        // If the user does not exist, create a new one with dummy data.
+        if (!user) {
+            console.log(`User with phone ${phone} not found. Creating a new user.`);
+            // Create a unique email based on the phone number
+            const uniqueEmail = `${phone.replace('+', '')}@example.com`;
+
+            user = new User({
+                phone: phone,
+                name: 'New User', // Default dummy name
+                email: uniqueEmail, // Assign the unique email
+                // Other fields will automatically use the defaults from the schema
+            });
+            await user.save();
+            console.log(`New user created successfully with ID: ${user._id}`);
+        }
+
+        // Generate and store the OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        otpStore.set(phone, otp);
+
+        // Send OTP via Twilio
+        console.log(`Sending OTP ${otp} to ${phone}`);
+        await twilioClient.messages.create({
+            from: whatsappFrom,
+            to: `whatsapp:${phone}`,
+            body: `Your OTP for login is ${otp}. It will expire in 2 minutes.`,
+        })
+            .then(msg => console.log("Message SID:", msg.sid))
+            .catch(err => console.error("Twilio error:", err)); // Log Twilio specific errors
+
+        // Set a timeout to delete the OTP after 2 minutes (120000 ms)
+        setTimeout(() => {
+            if (otpStore.get(phone) === otp) {
+                otpStore.delete(phone);
+                console.log(`OTP for ${phone} expired and was deleted.`);
+            }
+        }, 120000);
+
+        res.status(200).json({ success: true, message: "OTP sent successfully via WhatsApp" });
+
+    } catch (err) {
+        console.error("Send OTP error:", err);
+        res.status(500).json({ success: false, message: "Failed to send OTP due to a server error." });
     }
-
-    // Check if a user with this phone number already exists.
-    let user = await User.findOne({ phone });
-
-    // If the user does not exist, create a new one with dummy data.
-    if (!user) {
-      console.log(`User with phone ${phone} not found. Creating a new user.`);
-      // Create a unique email based on the phone number
-      const uniqueEmail = `${phone.replace('+', '')}@example.com`;
-
-      user = new User({
-        phone: phone,
-        name: 'New User', // Default dummy name
-        email: uniqueEmail, // Assign the unique email
-        // Other fields will automatically use the defaults from the schema
-      });
-      await user.save();
-      console.log(`New user created successfully with ID: ${user._id}`);
-    }
-
-    // Generate and store the OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    otpStore.set(phone, otp);
-
-    // Send OTP via Twilio
-    console.log(`Sending OTP ${otp} to ${phone}`);
-    await twilioClient.messages.create({
-      from: whatsappFrom,
-      to: `whatsapp:${phone}`,
-      body: `Your OTP for login is ${otp}. It will expire in 2 minutes.`,
-    })
-    .then(msg => console.log("Message SID:", msg.sid))
-    .catch(err => console.error("Twilio error:", err)); // Log Twilio specific errors
-
-    // Set a timeout to delete the OTP after 2 minutes (120000 ms)
-    setTimeout(() => {
-      if (otpStore.get(phone) === otp) {
-        otpStore.delete(phone);
-        console.log(`OTP for ${phone} expired and was deleted.`);
-      }
-    }, 120000);
-
-    res.status(200).json({ success: true, message: "OTP sent successfully via WhatsApp" });
-
-  } catch (err) {
-    console.error("Send OTP error:", err);
-    res.status(500).json({ success: false, message: "Failed to send OTP due to a server error." });
-  }
 };
 
 
 
- 
+
 export const verifyOtp = async (req, res) => {
-  try {
-    const { phone, otp } = req.body;
+    try {
+        const { phone, otp } = req.body;
 
-    if (!phone || !otp) {
-      return res.status(400).json({ success: false, message: "Phone and OTP are required" });
+        if (!phone || !otp) {
+            return res.status(400).json({ success: false, message: "Phone and OTP are required" });
+        }
+
+        const storedOtp = otpStore.get(phone);
+
+        if (!storedOtp || storedOtp !== otp) {
+            return res.status(400).json({ success: false, message: "Invalid or expired OTP" });
+        }
+
+        let user = await User.findOne({ phone });
+
+        // If user not found, create a new one
+        if (!user) {
+            user = await User.create({ phone });
+        }
+
+        // OTP verified — remove from temporary store
+        otpStore.delete(phone);
+
+        // Generate JWT token
+        const token = jwt.sign(
+            { id: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        res.json({
+            success: true,
+            message: "OTP verified successfully",
+            token,
+            user,
+        });
+    } catch (err) {
+        console.error("Verify OTP error:", err);
+        res.status(500).json({ success: false, message: "Failed to verify OTP" });
     }
-
-    const storedOtp = otpStore.get(phone);
-
-    if (!storedOtp || storedOtp !== otp) {
-      return res.status(400).json({ success: false, message: "Invalid or expired OTP" });
-    }
-
-    let user = await User.findOne({ phone });
-
-    // If user not found, create a new one
-    if (!user) {
-      user = await User.create({ phone });
-    }
-
-    // OTP verified — remove from temporary store
-    otpStore.delete(phone);
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    res.json({
-      success: true,
-      message: "OTP verified successfully",
-      token,
-      user,
-    });
-  } catch (err) {
-    console.error("Verify OTP error:", err);
-    res.status(500).json({ success: false, message: "Failed to verify OTP" });
-  }
 };
 
 
@@ -484,7 +484,7 @@ export const updateMySubscription = async (req, res) => {
         if (!['basic', 'premium', 'enterprise'].includes(plan)) {
             return res.status(400).json({ success: false, message: 'Invalid subscription plan' });
         }
-        
+
         const valid_till = new Date();
         valid_till.setFullYear(valid_till.getFullYear() + 1); // Set validity for 1 year
 
