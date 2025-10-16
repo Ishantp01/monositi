@@ -9,6 +9,7 @@ import { updateUserProfile, sendOtp, verifyOtp ,registerUser,getMyProfile,
     updateContactPreferences,
     requestRoleChange,
     getAllUsers,
+    makeAdmin,
     getUserById,
     updateUserByAdmin,
     deleteUser,
@@ -52,6 +53,9 @@ router.route('/:id')
     .get(protect, adminOnly, getUserById)
     .patch(protect, adminOnly, updateUserByAdmin)
     .delete(protect, adminOnly, deleteUser);
+
+// Promote a user to admin
+router.put('/:id/make-admin',  makeAdmin);
 
 //================================================================
 // 5. Subscription & Features Routes (Requires Authentication)
