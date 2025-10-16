@@ -73,6 +73,56 @@ export const serviceApi = {
     ];
   },
 
+  // Get all active services
+  getAllServices: async (params = {}) => {
+    try {
+      const queryString = new URLSearchParams(params).toString();
+      const url = queryString ? `/services?${queryString}` : '/services';
+      const response = await fetch(`${API_BASE_URL}${url}`);
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching services:", error);
+      return { success: false, message: "Failed to fetch services", services: [] };
+    }
+  },
+
+  // Search services with advanced filters
+  searchServices: async (params = {}) => {
+    try {
+      const queryString = new URLSearchParams(params).toString();
+      const url = queryString ? `/services/search?${queryString}` : '/services/search';
+      const response = await fetch(`${API_BASE_URL}${url}`);
+      return await response.json();
+    } catch (error) {
+      console.error("Error searching services:", error);
+      return { success: false, message: "Failed to search services", services: [] };
+    }
+  },
+
+  // Get service categories
+  getServiceCategories: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/services/categories`);
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching service categories:", error);
+      return { success: false, message: "Failed to fetch categories", categories: [] };
+    }
+  },
+
+  // Get service by ID
+  getServiceById: async (id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/services/${id}`, {
+        headers: getAuthHeaders()
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching service:", error);
+      return { success: false, message: "Failed to fetch service" };
+    }
+  },
+
   // Create service booking (requires authentication)
   createServiceBooking: async (bookingData) => {
     try {
@@ -88,6 +138,51 @@ export const serviceApi = {
     } catch (error) {
       console.error("Error creating service booking:", error);
       return { success: false, message: "Failed to create service booking" };
+    }
+  },
+
+  // Get customer bookings
+  getCustomerBookings: async (params = {}) => {
+    try {
+      const queryString = new URLSearchParams(params).toString();
+      const url = queryString ? `/services/bookings/my-bookings?${queryString}` : '/services/bookings/my-bookings';
+      const response = await fetch(`${API_BASE_URL}${url}`, {
+        headers: getAuthHeaders()
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching customer bookings:", error);
+      return { success: false, message: "Failed to fetch bookings", bookings: [] };
+    }
+  },
+
+  // Cancel booking
+  cancelBooking: async (bookingId, reason = '') => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/services/bookings/${bookingId}/cancel`, {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ reason })
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      return { success: false, message: "Failed to cancel booking" };
+    }
+  },
+
+  // Rate service
+  rateService: async (bookingId, rating, review = '') => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/services/bookings/${bookingId}/rate`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ rating, review })
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Error rating service:", error);
+      return { success: false, message: "Failed to rate service" };
     }
   }
 };
