@@ -13,8 +13,23 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
+// Body parsing middleware with error handling
+app.use((req, res, next) => {
+  // Skip JSON parsing for multipart requests
+  if (req.headers['content-type'] && req.headers['content-type'].startsWith('multipart/form-data')) {
+    return next();
+  }
+
+  express.json({ limit: '10mb' })(req, res, (err) => {
+    if (err) {
+      console.error('JSON parsing error:', err.message);
+      // If JSON parsing fails, continue without parsing
+      return next();
+    }
+    next();
+  });
+});
+
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check endpoint
