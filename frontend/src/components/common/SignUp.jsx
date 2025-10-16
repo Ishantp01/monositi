@@ -259,29 +259,29 @@ export default function SignupPage() {
                 </select>
               </div>
 
-             {/* Photo */}
-<div>
-  <label className="block text-sm font-medium text-gray-700 mb-2">
-    Profile Photo
-  </label>
-  <div className="relative">
-    <input
-      type="file"
-      name="photo"
-      onChange={(e) =>
-        setFormData({ ...formData, photo: e.target.files[0] })
-      }
-      className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 px-4 text-gray-700 cursor-pointer transition-all duration-300
+              {/* Photo */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Profile Photo
+                </label>
+                <div className="relative">
+                  <input
+                    type="file"
+                    name="photo"
+                    onChange={(e) =>
+                      setFormData({ ...formData, photo: e.target.files[0] })
+                    }
+                    className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 px-4 text-gray-700 cursor-pointer transition-all duration-300
                  hover:border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200"
-    />
-    {/* Optional: display selected file name */}
-    {formData.photo && (
-      <p className="mt-1 text-sm text-gray-600">
-        Selected file: {formData.photo.name}
-      </p>
-    )}
-  </div>
-</div>
+                  />
+                  {/* Optional: display selected file name */}
+                  {formData.photo && (
+                    <p className="mt-1 text-sm text-gray-600">
+                      Selected file: {formData.photo.name}
+                    </p>
+                  )}
+                </div>
+              </div>
 
 
 

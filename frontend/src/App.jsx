@@ -25,6 +25,7 @@ import TenantRequestsPage from "./pages/Services/ServiceRequestListTenant";
 import ManageUsers from "./components/Admin/ManageUsers";
 import AdminMonositi from "./components/Admin/AdminMonositi";
 import RentDetails from "./pages/Rent/RentDetails";
+import ServiceBookingForm from "./components/Services/ServiceBookingForm";
 
 const AdminRedirect = () => {
   const navigate = useNavigate();
@@ -57,6 +58,7 @@ export default function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/form-two" element={<ServiceBookingForm />} />
 
         {/* admin routes */}
         <Route path="/admin/users" element={<ManageUsers />} />

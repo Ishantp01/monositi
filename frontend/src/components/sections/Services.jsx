@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { serviceApi } from "../../utils/serviceApi";
 import GradientHeading from "../common/GradientHeading";
+import ServiceBookingForm from "../Services/ServiceBookingForm";
 
 // Import service icons
 import plumbingIcon from "../../assets/services/faucet.png";
@@ -18,6 +19,8 @@ const Services = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [serviceProviders, setServiceProviders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showBookingForm, setShowBookingForm] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState(null);
 
   // Map category IDs to icons
   const categoryIcons = {
@@ -68,6 +71,16 @@ const Services = () => {
     navigate(`/service-request/new`, { state: { providerId } });
   };
 
+  const handleBookService = (provider) => {
+    setSelectedProvider(provider);
+    setShowBookingForm(true);
+  };
+
+  const handleCloseBookingForm = () => {
+    setShowBookingForm(false);
+    setSelectedProvider(null);
+  };
+
   // Get categories from the API
   const categories = Object.keys(categoryIcons);
 
@@ -82,11 +95,10 @@ const Services = () => {
             key={category}
             onClick={() => handleCategoryClick(category)}
             className={`flex flex-col items-center p-4 rounded-lg cursor-pointer transition-all
-                      ${
-                        selectedCategory === category
-                          ? "bg-blue-100 border-2 border-theme-primary"
-                          : "bg-white border border-gray-200 hover:border-blue-300 hover:shadow-md"
-                      }`}
+                      ${selectedCategory === category
+                ? "bg-blue-100 border-2 border-theme-primary"
+                : "bg-white border border-gray-200 hover:border-blue-300 hover:shadow-md"
+              }`}
           >
             <img
               src={categoryIcons[category]}
@@ -141,18 +153,18 @@ const Services = () => {
                     <p className="text-sm mt-2 line-clamp-2">
                       {provider.description}
                     </p>
-                    <div className="flex justify-between mt-4">
+                    <div className="flex justify-between mt-4 gap-2">
                       <button
                         onClick={() => handleViewDetails(provider._id)}
-                        className="px-4 py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors"
+                        className="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors text-sm"
                       >
                         View Details
                       </button>
                       <button
-                        onClick={() => handleCreateRequest(provider._id)}
-                        className="px-4 py-2 bg-theme-primary text-white rounded-md hover:bg-blue-700 transition-colors"
+                        onClick={() => handleBookService(provider)}
+                        className="flex-1 px-3 py-2 bg-theme-primary text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
                       >
-                        Request Service
+                        Book Now
                       </button>
                     </div>
                   </div>
@@ -171,6 +183,13 @@ const Services = () => {
           )}
         </div>
       )}
+
+      {/* Service Booking Form Modal */}
+      <ServiceBookingForm
+        isOpen={showBookingForm}
+        onClose={handleCloseBookingForm}
+        serviceProvider={selectedProvider}
+      />
     </div>
   );
 };

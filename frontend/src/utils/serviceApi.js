@@ -71,5 +71,23 @@ export const serviceApi = {
       { id: 'appliance', name: 'Appliance Repair', icon: 'appliance.svg' },
       { id: 'other', name: 'Other Services', icon: 'other.svg' }
     ];
+  },
+
+  // Create service booking (requires authentication)
+  createServiceBooking: async (bookingData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/services/bookings`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+          // Don't set Content-Type for FormData, let browser set it with boundary
+        },
+        body: bookingData // FormData object
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Error creating service booking:", error);
+      return { success: false, message: "Failed to create service booking" };
+    }
   }
 };
