@@ -8,7 +8,7 @@ import { uploadFileToCloudinary } from '../../utils/uploadToCloudinary.js';
 export const createService = async (req, res) => {
   try {
     const userId = req.user._id;
-    
+
     // Check if user is a service provider
     const user = await User.findById(userId);
     // Ensure this role name 'serviceProvider' matches exactly what's in your User model
@@ -55,7 +55,7 @@ export const createService = async (req, res) => {
           }
         }
       }
-      
+
       // Upload service documents
       if (req.files.service_docs) {
         for (const file of req.files.service_docs) {
@@ -74,7 +74,7 @@ export const createService = async (req, res) => {
     let parsedAddons = [];
     let parsedTags = [];
     // CORRECTED: Initialize as an empty array
-    let parsedCalendar = []; 
+    let parsedCalendar = [];
 
     try {
       if (location) {
@@ -154,7 +154,7 @@ export const getProviderServices = async (req, res) => {
     }
 
     const filter = { provider_id: userId };
-    
+
     if (status === 'active') {
       filter.active_status = true;
     } else if (status === 'inactive') {
@@ -321,7 +321,7 @@ export const updateService = async (req, res) => {
         }
         updateData.service_docs = uploadedDocs;
       }
-      
+
       if (req.files.images) {
         const uploadedImages = [];
         for (const file of req.files.images) {
@@ -534,17 +534,17 @@ export const getAllServices = async (req, res) => {
 
     // Build filter
     const filter = { active_status: true };
-    
+
     if (category) {
       filter.category = new RegExp(category, 'i');
     }
-    
+
     if (min_price || max_price) {
       filter.base_price = {};
       if (min_price) filter.base_price.$gte = Number(min_price);
       if (max_price) filter.base_price.$lte = Number(max_price);
     }
-    
+
     if (monositi_verified !== undefined) {
       filter.monositi_verified = monositi_verified === 'true';
     }
@@ -621,7 +621,7 @@ export const searchServices = async (req, res) => {
 
     // Build search filter
     const filter = { active_status: true };
-    
+
     // Text search
     if (query) {
       filter.$or = [
@@ -630,25 +630,25 @@ export const searchServices = async (req, res) => {
         { category: new RegExp(query, 'i') }
       ];
     }
-    
+
     // Category filter
     if (category) {
       filter.category = new RegExp(category, 'i');
     }
-    
+
     // Price range filter
     if (min_price || max_price) {
       filter.base_price = {};
       if (min_price) filter.base_price.$gte = Number(min_price);
       if (max_price) filter.base_price.$lte = Number(max_price);
     }
-    
+
     // Tags filter
     if (tags) {
       const tagArray = tags.split(',').map(tag => tag.trim());
       filter.tags = { $in: tagArray.map(tag => new RegExp(tag, 'i')) };
     }
-    
+
     // Monositi verified filter
     if (monositi_verified !== undefined) {
       filter.monositi_verified = monositi_verified === 'true';
@@ -661,7 +661,7 @@ export const searchServices = async (req, res) => {
         if (locationData.coordinates && locationData.coordinates.length === 2) {
           const [longitude, latitude] = locationData.coordinates;
           const maxDistance = locationData.maxDistance || 10000; // 10km default
-          
+
           filter.location = {
             $near: {
               $geometry: {
@@ -746,7 +746,7 @@ export const searchServices = async (req, res) => {
 export const getServiceCategories = async (req, res) => {
   try {
     const categories = await Service.distinct('category', { active_status: true });
-    
+
     res.status(200).json({
       success: true,
       count: categories.length,
@@ -1131,14 +1131,14 @@ export const rateService = async (req, res) => {
 
     // Update service average rating
     const service = await Service.findById(booking.service._id);
-    const allBookings = await ServiceBooking.find({ 
-      service: booking.service._id, 
-      customer_rating: { $exists: true } 
+    const allBookings = await ServiceBooking.find({
+      service: booking.service._id,
+      customer_rating: { $exists: true }
     });
-    
+
     const totalRating = allBookings.reduce((sum, b) => sum + b.customer_rating, 0);
     const averageRating = totalRating / allBookings.length;
-    
+
     service.ratings = Math.round(averageRating * 10) / 10; // Round to 1 decimal
     await service.save();
 
