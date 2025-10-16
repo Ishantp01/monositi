@@ -69,33 +69,64 @@ export const updateUserProfile = async (req, res) => {
 const otpStore = new Map();
 
 
+
 export const sendOtp = async (req, res) => {
   try {
     const { phone } = req.body;
-    if (!phone) return res.status(400).json({ success: false, message: "Phone number required" });
+    if (!phone) {
+      return res.status(400).json({ success: false, message: "Phone number is required" });
+    }
 
+    // Check if a user with this phone number already exists.
+    let user = await User.findOne({ phone });
+
+    // If the user does not exist, create a new one with dummy data.
+    if (!user) {
+      console.log(`User with phone ${phone} not found. Creating a new user.`);
+      // Create a unique email based on the phone number
+      const uniqueEmail = `${phone.replace('+', '')}@example.com`;
+
+      user = new User({
+        phone: phone,
+        name: 'New User', // Default dummy name
+        email: uniqueEmail, // Assign the unique email
+        // Other fields will automatically use the defaults from the schema
+      });
+      await user.save();
+      console.log(`New user created successfully with ID: ${user._id}`);
+    }
+
+    // Generate and store the OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     otpStore.set(phone, otp);
 
+    // Send OTP via Twilio
+    console.log(`Sending OTP ${otp} to ${phone}`);
     await twilioClient.messages.create({
       from: whatsappFrom,
       to: `whatsapp:${phone}`,
       body: `Your OTP for login is ${otp}. It will expire in 2 minutes.`,
     })
-    
     .then(msg => console.log("Message SID:", msg.sid))
-    .catch(err => console.error("Twilio error:", err));
-    console.log("Sending OTP to", otp);
+    .catch(err => console.error("Twilio error:", err)); // Log Twilio specific errors
 
+    // Set a timeout to delete the OTP after 2 minutes (120000 ms)
+    setTimeout(() => {
+      if (otpStore.get(phone) === otp) {
+        otpStore.delete(phone);
+        console.log(`OTP for ${phone} expired and was deleted.`);
+      }
+    }, 120000);
 
-    setTimeout(() => otpStore.delete(phone), 120000);
+    res.status(200).json({ success: true, message: "OTP sent successfully via WhatsApp" });
 
-    res.json({ success: true, message: "OTP sent via WhatsApp" });
   } catch (err) {
     console.error("Send OTP error:", err);
-    res.status(500).json({ success: false, message: "Failed to send OTP" });
+    res.status(500).json({ success: false, message: "Failed to send OTP due to a server error." });
   }
 };
+
+
 
  
 export const verifyOtp = async (req, res) => {
