@@ -9,7 +9,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const { isAuthenticated, user, role } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
@@ -75,7 +75,7 @@ const Navbar = () => {
           {!isAuthenticated ? (
             <>
               <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
-                <Link to="/login" className={buttonClass}>
+                <Link to="/auth" className={buttonClass}>
                   Login
                 </Link>
               </motion.div>
@@ -93,7 +93,7 @@ const Navbar = () => {
                   <User size={16} /> Profile
                 </Link>
               </motion.div>
-              
+
               <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
                 <button onClick={handleLogout} className={buttonClass}>
                   <LogOut size={16} /> Logout
@@ -167,7 +167,7 @@ const Navbar = () => {
                     <User size={16} />
                     Profile
                   </Link>
-                  
+
                   <button
                     onClick={() => {
                       handleLogout();

@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "./components/common/Login";
+import UnifiedPhoneAuth from "./components/common/UnifiedPhoneAuth";
+import AuthChoice from "./components/common/AuthChoice";
 import VerifyOtp from "./components/Authentication/VerifyOtp";
 import Home from "./pages/Home";
 import SaleList from "./pages/Buy/SaleList";
@@ -22,8 +24,8 @@ import PropertyTypeResults from "./pages/Properties/PropertyTypeResults";
 import SignUp from "./components/common/SignUp";
 import Services from "./pages/Services/Services";
 import TenantRequestsPage from "./pages/Services/ServiceRequestListTenant";
-import ManageUsers from "./components/Admin/ManageUsers";
-import AdminMonositi from "./components/Admin/AdminMonositi";
+// import ManageUsers from "./components/Admin/ManageUsers";
+// import AdminMonositi from "./components/Admin/AdminMonositi";
 import RentDetails from "./pages/Rent/RentDetails";
 import ServiceBookingForm from "./components/Services/ServiceBookingForm";
 
@@ -56,13 +58,15 @@ export default function App() {
         <Route path="/rentlist" element={<RentList />} />
         <Route path="/commercial" element={<CommercialList />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/login" element={<Login />} />
+        {/* <Route path="/login" element={<Auth />} /> */}
+        <Route path="/auth" element={<UnifiedPhoneAuth />} />
+        <Route path="/auth-choice" element={<AuthChoice />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/form-two" element={<ServiceBookingForm />} />
 
         {/* admin routes */}
-        <Route path="/admin/users" element={<ManageUsers />} />
-        <Route path="/admin/monositi" element={<AdminMonositi />} />
+        {/* <Route path="/admin/users" element={<ManageUsers />} />
+        <Route path="/admin/monositi" element={<AdminMonositi />} /> */}
         <Route
           path="/properties/type/:type"
           element={<PropertyTypeResults />}

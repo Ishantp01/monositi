@@ -171,7 +171,8 @@ export default function Login() {
         response.status === 403 ||
         response.message?.includes("Email not verified")
       ) {
-        toast.warning("Email not verified. Please check your inbox.");
+        toast.warning("Email not verified. Please verify your email first.");
+        setError("Please verify your email before logging in.");
         setLoading(false);
         return;
       }
