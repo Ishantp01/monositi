@@ -44,6 +44,8 @@ export default function Profile() {
   const [preferencesLoading, setPreferencesLoading] = useState(false);
   const [bookings, setBookings] = useState([]);
   const [bookingsLoading, setBookingsLoading] = useState(false);
+  const [services, setServices] = useState([]);
+  const [servicesLoading, setServicesLoading] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [rating, setRating] = useState(5);
@@ -82,6 +84,13 @@ export default function Profile() {
     fetchUserProfile();
     fetchBookings();
   }, [token]);
+
+  // Fetch services when user role is service_provider
+  useEffect(() => {
+    if (user && user.role === "service_provider") {
+      fetchServices();
+    }
+  }, [user]);
 
   // ---------------- User Handlers ----------------
   const handleInputChange = (e) => {
@@ -205,6 +214,56 @@ export default function Profile() {
       toast.error("Error fetching bookings");
     } finally {
       setBookingsLoading(false);
+    }
+  };
+
+  // ---------------- Services Handlers ----------------
+  const fetchServices = async () => {
+    setServicesLoading(true);
+    try {
+      const data = await serviceApi.getProviderServices();
+      if (data.success) {
+        setServices(data.services || []);
+      } else {
+        toast.error("Failed to fetch services");
+      }
+    } catch (error) {
+      console.error("Error fetching services:", error);
+      toast.error("Error fetching services");
+    } finally {
+      setServicesLoading(false);
+    }
+  };
+
+  const handleToggleServiceStatus = async (serviceId) => {
+    try {
+      const data = await serviceApi.toggleServiceStatus(serviceId);
+      if (data.success) {
+        toast.success("Service status updated successfully");
+        fetchServices(); // Refresh services
+      } else {
+        toast.error(data.message || "Failed to update service status");
+      }
+    } catch (error) {
+      console.error("Error toggling service status:", error);
+      toast.error("Error updating service status");
+    }
+  };
+
+  const handleDeleteService = async (serviceId) => {
+    if (!window.confirm("Are you sure you want to delete this service?")) return;
+
+    try {
+      const data = await serviceApi.deleteService(serviceId);
+      if (data.success) {
+        toast.success("Service deleted successfully");
+        fetchServices(); // Refresh services
+      } else {
+        toast.error(data.message || "Failed to delete service");
+      }
+    } catch (error) {
+      console.error("Error deleting service:", error);
+      toast.error("Error deleting service");
     }
   };
 
@@ -454,6 +513,20 @@ export default function Profile() {
                     <span>Preferences</span>
                   </div>
                 </button>
+                {user.role === "service_provider" && (
+                  <button
+                    onClick={() => setActiveTab("services")}
+                    className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${activeTab === "services"
+                      ? "border-[#f73c56] text-[#f73c56]"
+                      : "border-transparent text-gray-500 hover:text-gray-700"
+                      }`}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Settings className="w-4 h-4" />
+                      <span>My Services</span>
+                    </div>
+                  </button>
+                )}
                 <button
                   onClick={() => setActiveTab("bookings")}
                   className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${activeTab === "bookings"
@@ -835,6 +908,135 @@ export default function Profile() {
                       </div>
                     </div>
                   </div>
+                </motion.div>
+              )}
+
+              {activeTab === "services" && user.role === "service_provider" && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-6"
+                >
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-900">My Services</h3>
+                    <a
+                      href="/create-service"
+                      className="flex items-center space-x-2 px-4 py-2 bg-[#f73c56] text-white rounded-lg hover:bg-[#e9334e] transition-colors"
+                    >
+                      <Settings className="w-4 h-4" />
+                      <span>Create New Service</span>
+                    </a>
+                  </div>
+
+                  {servicesLoading ? (
+                    <div className="flex justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f73c56]"></div>
+                    </div>
+                  ) : services.length === 0 ? (
+                    <div className="text-center py-12 bg-gray-50 rounded-lg">
+                      <Settings className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No Services Yet</h3>
+                      <p className="text-gray-600 mb-4">Start by creating your first service to attract customers.</p>
+                      <a
+                        href="/create-service"
+                        className="inline-flex items-center space-x-2 px-6 py-3 bg-[#f73c56] text-white rounded-lg hover:bg-[#e9334e] transition-colors"
+                      >
+                        <Settings className="w-5 h-5" />
+                        <span>Create Service</span>
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {services.map((service) => (
+                        <div key={service._id} className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+                          <div className="flex items-start space-x-4">
+                            {/* Service Image */}
+                            <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                              {service.images && service.images[0] ? (
+                                <img
+                                  src={service.images[0]}
+                                  alt={service.service_name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <Settings className="w-6 h-6 text-gray-400" />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Service Details */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <h4 className="text-lg font-semibold text-gray-900 truncate">
+                                    {service.service_name}
+                                  </h4>
+                                  <p className="text-sm text-gray-600">{service.category}</p>
+                                </div>
+                                <div className="flex items-center space-x-2 ml-4">
+                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${service.monositi_verified
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-yellow-100 text-yellow-800'
+                                    }`}>
+                                    {service.monositi_verified ? 'Verified' : 'Pending'}
+                                  </span>
+                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${service.active_status
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : 'bg-gray-100 text-gray-800'
+                                    }`}>
+                                    {service.active_status ? 'Active' : 'Inactive'}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <p className="text-gray-600 text-sm mt-2 line-clamp-2">
+                                {service.description}
+                              </p>
+
+                              <div className="flex items-center justify-between mt-4">
+                                <div className="text-lg font-semibold text-[#f73c56]">
+                                  ₹{service.base_price}
+                                  {service.variable_price && (
+                                    <span className="text-sm text-gray-500 font-normal">
+                                      + ₹{service.variable_price}/hr
+                                    </span>
+                                  )}
+                                </div>
+
+                                <div className="flex items-center space-x-2">
+                                  <button
+                                    onClick={() => handleToggleServiceStatus(service._id)}
+                                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${service.active_status
+                                      ? 'bg-gray-500 text-white hover:bg-gray-600'
+                                      : 'bg-green-500 text-white hover:bg-green-600'
+                                      }`}
+                                  >
+                                    {service.active_status ? 'Deactivate' : 'Activate'}
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteService(service._id)}
+                                    className="px-3 py-1 bg-red-500 text-white rounded-lg text-xs font-medium hover:bg-red-600 transition-colors"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </div>
+
+                              {service.ratings && service.ratings.average > 0 && (
+                                <div className="flex items-center mt-2">
+                                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                                  <span className="text-sm text-gray-600 ml-1">
+                                    {service.ratings.average.toFixed(1)} ({service.ratings.count} reviews)
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </motion.div>
               )}
 

@@ -28,6 +28,8 @@ import TenantRequestsPage from "./pages/Services/ServiceRequestListTenant";
 // import AdminMonositi from "./components/Admin/AdminMonositi";
 import RentDetails from "./pages/Rent/RentDetails";
 import ServiceBookingForm from "./components/Services/ServiceBookingForm";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import CreateService from "./pages/Services/CreateService";
 
 const AdminRedirect = () => {
   const navigate = useNavigate();
@@ -37,9 +39,9 @@ const AdminRedirect = () => {
     const user = localStorage.getItem("user");
 
     if (token && user) {
-      navigate("/properties/type/Rent");
+      navigate("/admin");
     } else {
-      localStorage.setItem("redirectAfterLogin", "/properties/type/Rent");
+      localStorage.setItem("redirectAfterLogin", "/admin");
       navigate("/login");
     }
   }, [navigate]);
@@ -64,13 +66,11 @@ export default function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/form-two" element={<ServiceBookingForm />} />
 
-        {/* admin routes */}
-        {/* <Route path="/admin/users" element={<ManageUsers />} />
-        <Route path="/admin/monositi" element={<AdminMonositi />} /> */}
-        <Route
+
+        {/* <Route
           path="/properties/type/:type"
           element={<PropertyTypeResults />}
-        />
+        /> */}
 
         <Route path="/verify" element={<VerifyOtp />} />
         {/* <Route path="/property-details/:id" element={<Rent />} /> */}
@@ -94,8 +94,9 @@ export default function App() {
           element={<ServiceProviderDetail />}
         />
         <Route path="/service-request/new" element={<ServiceRequestForm />} />
+        <Route path="/create-service" element={<CreateService />} />
 
-        <Route path="/admin" element={<AdminRedirect />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/selling-pg-hostel" element={<SaleList />} />
       </Routes>
     </BrowserRouter>

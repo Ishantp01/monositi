@@ -52,11 +52,19 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center gap-3 ml-auto">
-          <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
-            <Link to="/add-property" className={buttonClass}>
-              Post Property
-            </Link>
-          </motion.div>
+          {role === "service_provider" ? (
+            <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+              <Link to="/create-service" className={buttonClass}>
+                Create Service
+              </Link>
+            </motion.div>
+          ) : (
+            <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+              <Link to="/add-property" className={buttonClass}>
+                Post Property
+              </Link>
+            </motion.div>
+          )}
 
           {isAuthenticated && role && (
             <div className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg font-medium">
@@ -115,13 +123,23 @@ const Navbar = () => {
             className="lg:hidden bg-white border-t border-gray-200"
           >
             <div className="flex flex-col items-center gap-3 py-4 px-4">
-              <Link
-                to="/add-property"
-                className="w-full text-center py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
-                onClick={() => setMenuOpen(false)}
-              >
-                Post Property
-              </Link>
+              {role === "service_provider" ? (
+                <Link
+                  to="/create-service"
+                  className="w-full text-center py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Create Service
+                </Link>
+              ) : (
+                <Link
+                  to="/add-property"
+                  className="w-full text-center py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Post Property
+                </Link>
+              )}
 
               {isAuthenticated && role && (
                 <div className="w-full text-center py-2.5 bg-blue-100 text-blue-800 font-medium rounded-lg">
