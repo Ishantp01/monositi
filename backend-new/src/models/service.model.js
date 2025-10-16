@@ -8,7 +8,20 @@ category: String, // e.g. "Plumbing", "Cleaning"
 description: String,
 base_price: Number,
 variable_price: Boolean,
-availability_calendar: [Date],
+availability_calendar: [{
+  day: {
+    type: String,
+    required: true
+  },
+  start_time: {
+    type: String,
+    required: true
+  },
+  end_time: {
+    type: String,
+    required: true
+  }
+}],
 service_docs: [String],
 location: {
 type: { type: String, enum: ['Point'], default: 'Point' },
@@ -24,4 +37,4 @@ monositi_verified: { type: Boolean, default: false }
 
 serviceSchema.index({ location: '2dsphere' });
 
-module.exports = mongoose.model('Service', serviceSchema);
+export default mongoose.model('Service', serviceSchema);

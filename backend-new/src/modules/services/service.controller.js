@@ -11,7 +11,8 @@ export const createService = async (req, res) => {
     
     // Check if user is a service provider
     const user = await User.findById(userId);
-    if (!user || user.role !== 'serviceProvider') {
+    // Ensure this role name 'serviceProvider' matches exactly what's in your User model
+    if (!user || user.role !== 'service_provider') {
       return res.status(403).json({
         success: false,
         message: 'Only service providers can create services'
@@ -72,7 +73,8 @@ export const createService = async (req, res) => {
     let parsedLocation = {};
     let parsedAddons = [];
     let parsedTags = [];
-    let parsedCalendar = [];
+    // CORRECTED: Initialize as an empty array
+    let parsedCalendar = []; 
 
     try {
       if (location) {
@@ -136,7 +138,6 @@ export const createService = async (req, res) => {
     });
   }
 };
-
 // Get all services for a specific provider
 export const getProviderServices = async (req, res) => {
   try {
@@ -145,7 +146,7 @@ export const getProviderServices = async (req, res) => {
 
     // Check if user is a service provider
     const user = await User.findById(userId);
-    if (!user || user.role !== 'serviceProvider') {
+    if (!user || user.role !== 'service_provider') {
       return res.status(403).json({
         success: false,
         message: 'Only service providers can view their services'
