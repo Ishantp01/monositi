@@ -130,37 +130,74 @@
 
 "use client";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import apiRequest from "../../utils/api";
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    role: "user",
     photo: "",
     otp: "",
   });
 
   const [otpSent, setOtpSent] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSendOtp = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    if (!formData.email) return alert("Please enter your email first!");
-    setOtpSent(true);
+    setLoading(true);
+
+    try {
+      const response = await apiRequest("/users/register", "POST", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        photo: formData.photo,
+      });
+
+      if (response.success) {
+        setOtpSent(true);
+        toast.success("Registration successful! Please check your email for OTP.");
+      } else {
+        toast.error(response.message || "Registration failed");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleVerifyOtp = (e) => {
+  const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    if (formData.otp === "1234") {
-      setIsVerified(true);
-      alert("✅ OTP Verified! You are signed up successfully.");
-    } else {
-      alert("❌ Invalid OTP. Try again.");
+    setLoading(true);
+
+    try {
+      const response = await apiRequest("/users/verify-email", "POST", {
+        email: formData.email,
+        otp: formData.otp,
+      });
+
+      if (response.success) {
+        toast.success("Email verified successfully! You can now login.");
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1500);
+      } else {
+        toast.error(response.message || "OTP verification failed");
+      }
+    } catch (error) {
+      console.error("OTP verification error:", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -190,7 +227,7 @@ export default function SignupPage() {
           </h2>
 
           {!otpSent ? (
-            <form onSubmit={handleSendOtp} className="space-y-5">
+            <form onSubmit={handleRegister} className="space-y-5">
 
               {/* Name */}
               <div>
@@ -227,7 +264,7 @@ export default function SignupPage() {
               {/* Password */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
+                  Password (min 6 characters)
                 </label>
                 <input
                   type="password"
@@ -236,60 +273,36 @@ export default function SignupPage() {
                   onChange={handleChange}
                   placeholder="Enter your password"
                   required
+                  minLength={6}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:outline-none"
                 />
               </div>
 
-              {/* Role */}
+              {/* Photo URL (Optional) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Select Role
+                  Profile Photo URL (Optional)
                 </label>
-                <select
-                  name="role"
-                  value={formData.role}
+                <input
+                  type="url"
+                  name="photo"
+                  value={formData.photo}
                   onChange={handleChange}
+                  placeholder="https://example.com/photo.jpg"
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:outline-none"
-                >
-                  <option value="user">User</option>
-                  <option value="tenant">Tenant</option>
-                  <option value="serviceProvider">Service Provider</option>
-                  <option value="admin">Admin</option>
-                  <option value="monositi-tenant">Monositi Tenant</option>
-                </select>
+                />
               </div>
 
-              {/* Photo */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Profile Photo
-                </label>
-                <div className="relative">
-                  <input
-                    type="file"
-                    name="photo"
-                    onChange={(e) =>
-                      setFormData({ ...formData, photo: e.target.files[0] })
-                    }
-                    className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 px-4 text-gray-700 cursor-pointer transition-all duration-300
-                 hover:border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200"
-                  />
-                  {/* Optional: display selected file name */}
-                  {formData.photo && (
-                    <p className="mt-1 text-sm text-gray-600">
-                      Selected file: {formData.photo.name}
-                    </p>
-                  )}
-                </div>
+              <div className="text-xs text-gray-600 bg-blue-50 p-3 rounded-lg">
+                <strong>Note:</strong> Your account will be created as a tenant by default. You'll receive an OTP via email for verification.
               </div>
-
-
 
               <button
                 type="submit"
-                className="w-full bg-[#f73c56] hover:bg-[#e9334e] text-white py-3 rounded-lg transition-all duration-300"
+                disabled={loading}
+                className="w-full bg-[#f73c56] hover:bg-[#e9334e] text-white py-3 rounded-lg transition-all duration-300 disabled:opacity-60"
               >
-                Send OTP
+                {loading ? "Creating Account..." : "Create Account"}
               </button>
             </form>
           ) : (
@@ -308,17 +321,19 @@ export default function SignupPage() {
                   name="otp"
                   value={formData.otp}
                   onChange={handleChange}
-                  placeholder="Enter the 4-digit code"
+                  placeholder="Enter the 6-digit code"
                   required
+                  maxLength={6}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-500 focus:outline-none text-center tracking-widest"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-[#f73c56] hover:bg-[#e9334e] text-white py-3 rounded-lg transition-all duration-300"
+                disabled={loading}
+                className="w-full bg-[#f73c56] hover:bg-[#e9334e] text-white py-3 rounded-lg transition-all duration-300 disabled:opacity-60"
               >
-                Verify & Sign Up
+                {loading ? "Verifying..." : "Verify & Complete Signup"}
               </button>
 
               <button
