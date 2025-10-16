@@ -11,7 +11,7 @@ export const createService = async (req, res) => {
 
     // Check if user is a service provider
     const user = await User.findById(userId);
-    // Ensure this role name 'serviceProvider' matches exactly what's in your User model
+    // Ensure this role name 'service_provider' matches exactly what's in your User model
     if (!user || user.role !== 'service_provider') {
       return res.status(403).json({
         success: false,
@@ -69,31 +69,83 @@ export const createService = async (req, res) => {
       }
     }
 
-    // Parse JSON fields if they are strings
+    // Parse fields - handle both JSON strings and plain strings from FormData
     let parsedLocation = {};
     let parsedAddons = [];
     let parsedTags = [];
-    // CORRECTED: Initialize as an empty array
     let parsedCalendar = [];
 
-    try {
-      if (location) {
-        parsedLocation = typeof location === 'string' ? JSON.parse(location) : location;
+    // For location - can be a string, address, or GeoJSON object
+    if (location) {
+      try {
+        if (typeof location === 'string' && location.startsWith('{')) {
+          const locationObj = JSON.parse(location);
+          // Check if it's a GeoJSON Point
+          if (locationObj.type === 'Point' && locationObj.coordinates) {
+            parsedLocation = {
+              type: 'Point',
+              coordinates: locationObj.coordinates
+            };
+          } else {
+            parsedLocation = { address: location };
+          }
+        } else {
+          parsedLocation = { address: location };
+        }
+      } catch (e) {
+        parsedLocation = { address: location }; // Use as plain string if JSON parsing fails
       }
-      if (addons) {
-        parsedAddons = typeof addons === 'string' ? JSON.parse(addons) : addons;
+    }
+
+    // For addons - convert to array of objects with name and price
+    if (addons) {
+      try {
+        if (typeof addons === 'string' && addons.startsWith('[')) {
+          parsedAddons = JSON.parse(addons);
+        } else {
+          // Convert comma-separated string to addon objects
+          parsedAddons = addons.split(',').map(a => ({
+            name: a.trim(),
+            price: 0 // Default price, can be updated later
+          })).filter(addon => addon.name);
+        }
+      } catch (e) {
+        parsedAddons = addons.split(',').map(a => ({
+          name: a.trim(),
+          price: 0
+        })).filter(addon => addon.name);
       }
-      if (tags) {
-        parsedTags = typeof tags === 'string' ? JSON.parse(tags) : tags;
+    }
+
+    // For tags - can be comma-separated string or JSON array
+    if (tags) {
+      try {
+        parsedTags = typeof tags === 'string' && tags.startsWith('[') ? JSON.parse(tags) : tags.split(',').map(t => t.trim()).filter(Boolean);
+      } catch (e) {
+        parsedTags = tags.split(',').map(t => t.trim()).filter(Boolean);
       }
-      if (availability_calendar) {
-        parsedCalendar = typeof availability_calendar === 'string' ? JSON.parse(availability_calendar) : availability_calendar;
+    }
+
+    // For availability_calendar - convert to proper calendar format
+    if (availability_calendar) {
+      try {
+        if (typeof availability_calendar === 'string' && availability_calendar.startsWith('[')) {
+          parsedCalendar = JSON.parse(availability_calendar);
+        } else {
+          // Convert simple string to basic calendar entry
+          parsedCalendar = [{
+            day: availability_calendar || 'Available',
+            start_time: '09:00',
+            end_time: '18:00'
+          }];
+        }
+      } catch (e) {
+        parsedCalendar = [{
+          day: availability_calendar || 'Available',
+          start_time: '09:00',
+          end_time: '18:00'
+        }];
       }
-    } catch (parseError) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid JSON format in request body'
-      });
     }
 
     // Create new service
@@ -103,7 +155,7 @@ export const createService = async (req, res) => {
       category,
       description,
       base_price: Number(base_price),
-      variable_price: variable_price === 'true' || variable_price === true,
+      variable_price: variable_price ? Number(variable_price) : undefined,
       availability_calendar: parsedCalendar,
       location: parsedLocation,
       addons: parsedAddons,
