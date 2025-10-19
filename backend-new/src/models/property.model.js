@@ -4,6 +4,7 @@ const propertySchema = new mongoose.Schema({
   owner_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   agent_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   type: { type: String, enum: ['residential', 'commercial'], required: true },
+  sub_category: { type: String, enum: ['Buy', 'Rent', 'Monositi'], required: true },
   status: { type: String, enum: ['active', 'pending', 'sold', 'rented'], default: 'pending' },
   address: { type: String, required: true },
   city: { type: String, required: true },
@@ -47,4 +48,4 @@ const propertySchema = new mongoose.Schema({
 
 propertySchema.index({ geo_location: '2dsphere' });
 
-export default mongoose.model('Property', propertySchema);    
+export default mongoose.model('Property', propertySchema);
