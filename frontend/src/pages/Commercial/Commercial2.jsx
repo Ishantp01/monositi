@@ -7,7 +7,7 @@ import ContactOwner from "../../components/Commercial/ContactOwner";
 import FlatOff from "../../components/Commercial/FlatOff";
 import MoreDetailsSec from "../../components/Commercial/MoreDetail";
 import PropertyCarousel from "../../components/Commercial/Propertycarousel";
-import avatar from "../assets/images/avatar2.jpg";
+import avatar from "../../assets/images/avatar2.jpg";
 // import PropertyCarousel from '../components/Carousel/PropertiesSlider'
 
 const Commercial = () => {
