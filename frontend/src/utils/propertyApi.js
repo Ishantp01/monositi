@@ -68,7 +68,7 @@ export const propertyApi = {
     try {
       // Use the correct endpoint for type-based property search
       const response = await fetch(
-        `${API_BASE_URL}/properties/properties/search/type?type=${type}`
+        `${API_BASE_URL}/properties/search/type?type=${type}`
       );
       const data = await response.json();
 
@@ -101,12 +101,12 @@ export const propertyApi = {
 
   // Property APIs
   getPropertyById: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/properties/properties/${id}`);
+    const response = await fetch(`${API_BASE_URL}/properties/${id}`);
     return await response.json();
   },
 
   getPropertyByLandlord: async () => {
-    const response = await fetch(`${API_BASE_URL}/properties/properties`, {
+    const response = await fetch(`${API_BASE_URL}/properties`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${getAuthToken()}`,
@@ -128,7 +128,7 @@ export const propertyApi = {
 
   updateProperty: async (id, formData) => {
     const response = await fetch(
-      `${API_BASE_URL}/properties/properties/${id}`,
+      `${API_BASE_URL}/properties/${id}`,
       {
         method: "PUT",
         body: formData,
@@ -150,7 +150,7 @@ export const propertyApi = {
 
   getPropertiesByTags: async (tags) => {
     const response = await fetch(
-      `${API_BASE_URL}/properties/properties/search/type?type=${tags}`
+      `${API_BASE_URL}/properties/search/type?type=${tags}`
     );
     const data = await response.json();
 
@@ -297,6 +297,7 @@ export const createPropertyFormData = (propertyData) => {
   // Map frontend fields to backend fields
   const fieldMapping = {
     type: 'type', // residential, commercial
+    sub_category: 'sub_category', // Buy, Rent, Monositi
     name: 'name',
     description: 'description',
     address: 'address',
@@ -305,8 +306,8 @@ export const createPropertyFormData = (propertyData) => {
     pincode: 'pincode',
     price: 'price',
     tags: 'tags', // will be processed as comma-separated
+    amenities: 'amenities', // amenities field
     contactNumber: 'contactNumber',
-    genderPreference: 'amenities', // map to amenities for now
     size: 'size',
     units: 'units',
     nearby_places: 'nearby_places',
@@ -319,17 +320,7 @@ export const createPropertyFormData = (propertyData) => {
     const value = propertyData[frontendKey];
 
     if (value !== null && value !== undefined && value !== '') {
-      if (frontendKey === 'type') {
-        // Map frontend types to backend types
-        const typeMapping = {
-          'Rent': 'residential',
-          'Buy': 'residential',
-          'Commercial': 'commercial'
-        };
-        formData.append(backendKey, typeMapping[value] || 'residential');
-      } else {
-        formData.append(backendKey, value);
-      }
+      formData.append(backendKey, value);
     }
   });
 
@@ -360,6 +351,39 @@ export const createPropertyFormData = (propertyData) => {
   formData.append('listing_visibility', 'public');
 
   return formData;
+};
+
+// Add search properties function
+propertyApi.searchProperties = async (filters = {}) => {
+  try {
+    const queryParams = new URLSearchParams(filters);
+    const response = await fetch(`${API_BASE_URL}/properties/search?${queryParams}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error searching properties:", error);
+    return {
+      success: false,
+      message: "Failed to search properties",
+      properties: [],
+    };
+  }
+};
+
+// Get property by ID (override the existing one with correct endpoint)
+propertyApi.getPropertyById = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/properties/${id}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching property by ID:", error);
+    return {
+      success: false,
+      message: "Failed to fetch property details",
+      property: null,
+    };
+  }
 };
 
 export default propertyApi;
