@@ -10,7 +10,7 @@ import Home from "./pages/Home";
 import SaleList from "./pages/Buy/SaleList";
 import RentList from "./pages/Rent/RentList";
 import CommercialList from "./pages/Commercial/CommercialList";
-import PropertyPage from "./components/PropertyDetails/PropertyPage";
+import BuyDetails from "./pages/Buy/BuyDetails";
 import ScrollToTop from "./components/common/ScrollToTop";
 import AddProperty from "./pages/Properties/AddProperty";
 import MyProperties from "./pages/Properties/MyProperties";
@@ -76,9 +76,9 @@ export default function App() {
         {/* <Route path="/property-details/:id" element={<Rent />} /> */}
         <Route path="/commercial-details/:id" element={<CommercialList />} />
 
-        <Route path="/buy-details" element={<PropertyPage />} />
+        <Route path="/buy-details/:id" element={<BuyDetails />} />
 
-        <Route path="/rent-details" element={<RentDetails />} />
+        <Route path="/rent-details/:id" element={<RentDetails />} />
 
         {/* Property Management Routes */}
         <Route path="/add-property" element={<AddProperty />} />
