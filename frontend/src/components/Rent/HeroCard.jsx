@@ -10,10 +10,10 @@ export default function HeroCard({ property }) {
 
   // Use property data if available, otherwise use default values
   const price = property ? formatINR(property.price) : "₹55,000";
-  const title = property ? `${property.bhk} ${property.area} ${property.unit || 'sqft'} Flat/Apartment For Rent in` : "2 BHK 1210 Sq-ft Flat/Apartment For Rent in";
-  const projectName = property ? property.title || "Prestige Housing" : "Prestige Housing";
-  const location = property ? property.location : "Jalpari Road , Jabalpur";
-  const image = property ? property.image : null;
+  const title = property ? `${property.property_features?.units || '2'} BHK ${property.property_features?.size || '1210'} Sq-ft ${property.type} For Rent in` : "2 BHK 1210 Sq-ft Flat/Apartment For Rent in";
+  const projectName = property ? property.name || "Prestige Housing" : "Prestige Housing";
+  const location = property ? `${property.address}, ${property.city}` : "Jalpari Road , Jabalpur";
+  const image = property ? property.property_features?.images?.[0] : null;
   return (
     <div className="border rounded-lg p-4 sm:p-6 mx-auto shadow-md bg-red-50 max-w-[90%] mb-6">
       {/* Price + Title Row */}
@@ -37,8 +37,8 @@ export default function HeroCard({ property }) {
         {/* Left Section - Images */}
         <div className="flex flex-col gap-2 flex-1">
           {image ? (
-            <img 
-              src={image} 
+            <img
+              src={image}
               alt={title}
               className="rounded-lg h-44 sm:h-56 md:h-64 w-full object-cover"
             />
