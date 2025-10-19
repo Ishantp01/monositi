@@ -1,68 +1,85 @@
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/layout/NavBar";
 import Footer from "../components/layout/Footer";
 import Carousel from "../components/Carousel/Carousel";
 import StandardPropertySlider from "../components/sliders/StandardPropertySlider";
-import DynamicFilterBar from "../components/Tabs/DynamicFilterBar";
 
 import PropertySearch from "../components/Tabs/Tabs";
-
-// Sample properties for demonstration
-const sampleProperties = [
-  {
-    _id: "1",
-    title: "Luxury Apartment with Sea View",
-    price: 25000,
-    address: { area: "Marine Drive", city: "Mumbai" },
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 1500,
-    isVerified: true,
-    photos: [
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    ],
-  },
-  {
-    _id: "2",
-    title: "Modern Villa with Private Pool",
-    price: 45000,
-    address: { area: "Jubilee Hills", city: "Hyderabad" },
-    bedrooms: 4,
-    bathrooms: 4,
-    area: 3200,
-    isVerified: true,
-    photos: [
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    ],
-  },
-  {
-    _id: "3",
-    title: "Spacious Penthouse in City Center",
-    price: 35000,
-    address: { area: "Koramangala", city: "Bangalore" },
-    bedrooms: 3,
-    bathrooms: 3,
-    area: 2100,
-    isVerified: true,
-    photos: [
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    ],
-  },
-  {
-    _id: "4",
-    title: "Cozy Studio Apartment",
-    price: 15000,
-    address: { area: "Indiranagar", city: "Bangalore" },
-    bedrooms: 1,
-    bathrooms: 1,
-    area: 600,
-    isVerified: false,
-    photos: [
-      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    ],
-  },
-];
+import { propertyApi } from "../utils/propertyApi";
+import { toast } from "react-toastify";
 
 const Home = () => {
+  const [properties, setProperties] = useState([]);
+  const [buyProperties, setBuyProperties] = useState([]);
+  const [rentProperties, setRentProperties] = useState([]);
+  const [commercialProperties, setCommercialProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProperties();
+  }, []);
+
+  const fetchProperties = async () => {
+    try {
+      setLoading(true);
+
+      // Fetch all properties
+      const allPropertiesResponse = await propertyApi.getAllProperties({ limit: 20 });
+
+      // Fetch Buy properties
+      const buyResponse = await propertyApi.searchProperties({ sub_category: 'Buy', limit: 10 });
+
+      // Fetch Rent properties  
+      const rentResponse = await propertyApi.searchProperties({ sub_category: 'Rent', limit: 10 });
+
+      // Fetch Commercial properties
+      const commercialResponse = await propertyApi.searchProperties({ type: 'commercial', limit: 10 });
+
+      if (allPropertiesResponse.success) {
+        setProperties(allPropertiesResponse.properties || []);
+      }
+
+      if (buyResponse.success) {
+        setBuyProperties(buyResponse.properties || []);
+      }
+
+      if (rentResponse.success) {
+        setRentProperties(rentResponse.properties || []);
+      }
+
+      if (commercialResponse.success) {
+        setCommercialProperties(commercialResponse.properties || []);
+      }
+
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+      toast.error("Failed to load properties");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Transform API properties to match slider component format
+  const transformProperties = (apiProperties) => {
+    return apiProperties.map(property => ({
+      _id: property._id,
+      title: property.name || `${property.type} Property in ${property.city}`,
+      price: property.price,
+      address: {
+        area: property.address,
+        city: property.city
+      },
+      bedrooms: property.property_features?.units || 1,
+      bathrooms: Math.ceil((property.property_features?.units || 1) / 2),
+      area: property.property_features?.size || 1000,
+      isVerified: property.monositi_verified,
+      photos: property.property_features?.images || [
+        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+      ],
+      type: property.type,
+      sub_category: property.sub_category
+    }));
+  };
   return (
     <>
       <Navbar />
@@ -79,13 +96,41 @@ const Home = () => {
         {/* Quick Categories */}
         {/* <QuickCategories /> */}
 
-        {/* Recent Properties */}
+        {/* Buy Properties */}
+        <div className="py-12 bg-white">
+          <div className="container mx-auto px-4">
+            <StandardPropertySlider
+              properties={transformProperties(buyProperties)}
+              title="Properties for Sale"
+              subtitle="Discover your dream home from our verified listings"
+              loading={loading}
+              viewAllLink="/salelist"
+            />
+          </div>
+        </div>
+
+        {/* Rent Properties */}
         <div className="py-12 bg-gray-50">
           <div className="container mx-auto px-4">
             <StandardPropertySlider
-              properties={sampleProperties}
-              title="Recent Properties"
-              subtitle="Explore the latest additions to our property listings"
+              properties={transformProperties(rentProperties)}
+              title="Properties for Rent"
+              subtitle="Find the perfect rental property for your needs"
+              loading={loading}
+              viewAllLink="/rentlist"
+            />
+          </div>
+        </div>
+
+        {/* Commercial Properties */}
+        <div className="py-12 bg-white">
+          <div className="container mx-auto px-4">
+            <StandardPropertySlider
+              properties={transformProperties(commercialProperties)}
+              title="Commercial Properties"
+              subtitle="Explore commercial spaces for your business"
+              loading={loading}
+              viewAllLink="/commercial"
             />
           </div>
         </div>
