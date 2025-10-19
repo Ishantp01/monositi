@@ -8,10 +8,10 @@ import { uploadFileToCloudinary } from '../../utils/uploadToCloudinary.js';
 export const createService = async (req, res) => {
   try {
     const userId = req.user._id;
-    
+
     // Check if user is a service provider
     const user = await User.findById(userId);
-    // Ensure this role name 'serviceProvider' matches exactly what's in your User model
+    // Ensure this role name 'service_provider' matches exactly what's in your User model
     if (!user || user.role !== 'service_provider') {
       return res.status(403).json({
         success: false,
@@ -55,7 +55,7 @@ export const createService = async (req, res) => {
           }
         }
       }
-      
+
       // Upload service documents
       if (req.files.service_docs) {
         for (const file of req.files.service_docs) {
@@ -69,31 +69,83 @@ export const createService = async (req, res) => {
       }
     }
 
-    // Parse JSON fields if they are strings
+    // Parse fields - handle both JSON strings and plain strings from FormData
     let parsedLocation = {};
     let parsedAddons = [];
     let parsedTags = [];
-    // CORRECTED: Initialize as an empty array
-    let parsedCalendar = []; 
+    let parsedCalendar = [];
 
-    try {
-      if (location) {
-        parsedLocation = typeof location === 'string' ? JSON.parse(location) : location;
+    // For location - can be a string, address, or GeoJSON object
+    if (location) {
+      try {
+        if (typeof location === 'string' && location.startsWith('{')) {
+          const locationObj = JSON.parse(location);
+          // Check if it's a GeoJSON Point
+          if (locationObj.type === 'Point' && locationObj.coordinates) {
+            parsedLocation = {
+              type: 'Point',
+              coordinates: locationObj.coordinates
+            };
+          } else {
+            parsedLocation = { address: location };
+          }
+        } else {
+          parsedLocation = { address: location };
+        }
+      } catch (e) {
+        parsedLocation = { address: location }; // Use as plain string if JSON parsing fails
       }
-      if (addons) {
-        parsedAddons = typeof addons === 'string' ? JSON.parse(addons) : addons;
+    }
+
+    // For addons - convert to array of objects with name and price
+    if (addons) {
+      try {
+        if (typeof addons === 'string' && addons.startsWith('[')) {
+          parsedAddons = JSON.parse(addons);
+        } else {
+          // Convert comma-separated string to addon objects
+          parsedAddons = addons.split(',').map(a => ({
+            name: a.trim(),
+            price: 0 // Default price, can be updated later
+          })).filter(addon => addon.name);
+        }
+      } catch (e) {
+        parsedAddons = addons.split(',').map(a => ({
+          name: a.trim(),
+          price: 0
+        })).filter(addon => addon.name);
       }
-      if (tags) {
-        parsedTags = typeof tags === 'string' ? JSON.parse(tags) : tags;
+    }
+
+    // For tags - can be comma-separated string or JSON array
+    if (tags) {
+      try {
+        parsedTags = typeof tags === 'string' && tags.startsWith('[') ? JSON.parse(tags) : tags.split(',').map(t => t.trim()).filter(Boolean);
+      } catch (e) {
+        parsedTags = tags.split(',').map(t => t.trim()).filter(Boolean);
       }
-      if (availability_calendar) {
-        parsedCalendar = typeof availability_calendar === 'string' ? JSON.parse(availability_calendar) : availability_calendar;
+    }
+
+    // For availability_calendar - convert to proper calendar format
+    if (availability_calendar) {
+      try {
+        if (typeof availability_calendar === 'string' && availability_calendar.startsWith('[')) {
+          parsedCalendar = JSON.parse(availability_calendar);
+        } else {
+          // Convert simple string to basic calendar entry
+          parsedCalendar = [{
+            day: availability_calendar || 'Available',
+            start_time: '09:00',
+            end_time: '18:00'
+          }];
+        }
+      } catch (e) {
+        parsedCalendar = [{
+          day: availability_calendar || 'Available',
+          start_time: '09:00',
+          end_time: '18:00'
+        }];
       }
-    } catch (parseError) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid JSON format in request body'
-      });
     }
 
     // Create new service
@@ -103,7 +155,7 @@ export const createService = async (req, res) => {
       category,
       description,
       base_price: Number(base_price),
-      variable_price: variable_price === 'true' || variable_price === true,
+      variable_price: variable_price ? Number(variable_price) : undefined,
       availability_calendar: parsedCalendar,
       location: parsedLocation,
       addons: parsedAddons,
@@ -154,7 +206,7 @@ export const getProviderServices = async (req, res) => {
     }
 
     const filter = { provider_id: userId };
-    
+
     if (status === 'active') {
       filter.active_status = true;
     } else if (status === 'inactive') {
@@ -321,7 +373,7 @@ export const updateService = async (req, res) => {
         }
         updateData.service_docs = uploadedDocs;
       }
-      
+
       if (req.files.images) {
         const uploadedImages = [];
         for (const file of req.files.images) {
@@ -534,17 +586,17 @@ export const getAllServices = async (req, res) => {
 
     // Build filter
     const filter = { active_status: true };
-    
+
     if (category) {
       filter.category = new RegExp(category, 'i');
     }
-    
+
     if (min_price || max_price) {
       filter.base_price = {};
       if (min_price) filter.base_price.$gte = Number(min_price);
       if (max_price) filter.base_price.$lte = Number(max_price);
     }
-    
+
     if (monositi_verified !== undefined) {
       filter.monositi_verified = monositi_verified === 'true';
     }
@@ -621,7 +673,7 @@ export const searchServices = async (req, res) => {
 
     // Build search filter
     const filter = { active_status: true };
-    
+
     // Text search
     if (query) {
       filter.$or = [
@@ -630,25 +682,25 @@ export const searchServices = async (req, res) => {
         { category: new RegExp(query, 'i') }
       ];
     }
-    
+
     // Category filter
     if (category) {
       filter.category = new RegExp(category, 'i');
     }
-    
+
     // Price range filter
     if (min_price || max_price) {
       filter.base_price = {};
       if (min_price) filter.base_price.$gte = Number(min_price);
       if (max_price) filter.base_price.$lte = Number(max_price);
     }
-    
+
     // Tags filter
     if (tags) {
       const tagArray = tags.split(',').map(tag => tag.trim());
       filter.tags = { $in: tagArray.map(tag => new RegExp(tag, 'i')) };
     }
-    
+
     // Monositi verified filter
     if (monositi_verified !== undefined) {
       filter.monositi_verified = monositi_verified === 'true';
@@ -661,7 +713,7 @@ export const searchServices = async (req, res) => {
         if (locationData.coordinates && locationData.coordinates.length === 2) {
           const [longitude, latitude] = locationData.coordinates;
           const maxDistance = locationData.maxDistance || 10000; // 10km default
-          
+
           filter.location = {
             $near: {
               $geometry: {
@@ -746,7 +798,7 @@ export const searchServices = async (req, res) => {
 export const getServiceCategories = async (req, res) => {
   try {
     const categories = await Service.distinct('category', { active_status: true });
-    
+
     res.status(200).json({
       success: true,
       count: categories.length,
@@ -1131,14 +1183,14 @@ export const rateService = async (req, res) => {
 
     // Update service average rating
     const service = await Service.findById(booking.service._id);
-    const allBookings = await ServiceBooking.find({ 
-      service: booking.service._id, 
-      customer_rating: { $exists: true } 
+    const allBookings = await ServiceBooking.find({
+      service: booking.service._id,
+      customer_rating: { $exists: true }
     });
-    
+
     const totalRating = allBookings.reduce((sum, b) => sum + b.customer_rating, 0);
     const averageRating = totalRating / allBookings.length;
-    
+
     service.ratings = Math.round(averageRating * 10) / 10; // Round to 1 decimal
     await service.save();
 

@@ -116,7 +116,7 @@ export const propertyApi = {
   },
 
   createProperty: async (formData) => {
-    const response = await fetch(`${API_BASE_URL}/properties/properties`, {
+    const response = await fetch(`${API_BASE_URL}/properties`, {
       method: "POST",
       body: formData,
       headers: {
@@ -290,25 +290,74 @@ export const formatPropertyForForm = (property) => {
   };
 };
 
-// Create FormData
+// Create FormData for new backend API
 export const createPropertyFormData = (propertyData) => {
   const formData = new FormData();
 
-  Object.keys(propertyData).forEach((key) => {
-    if (
-      key !== "photos" &&
-      propertyData[key] !== null &&
-      propertyData[key] !== undefined
-    ) {
-      formData.append(key, propertyData[key]);
+  // Map frontend fields to backend fields
+  const fieldMapping = {
+    type: 'type', // residential, commercial
+    name: 'name',
+    description: 'description',
+    address: 'address',
+    city: 'city',
+    state: 'state',
+    pincode: 'pincode',
+    price: 'price',
+    tags: 'tags', // will be processed as comma-separated
+    contactNumber: 'contactNumber',
+    genderPreference: 'amenities', // map to amenities for now
+    size: 'size',
+    units: 'units',
+    nearby_places: 'nearby_places',
+    listing_visibility: 'listing_visibility'
+  };
+
+  // Add basic fields
+  Object.keys(fieldMapping).forEach((frontendKey) => {
+    const backendKey = fieldMapping[frontendKey];
+    const value = propertyData[frontendKey];
+
+    if (value !== null && value !== undefined && value !== '') {
+      if (frontendKey === 'type') {
+        // Map frontend types to backend types
+        const typeMapping = {
+          'Rent': 'residential',
+          'Buy': 'residential',
+          'Commercial': 'commercial'
+        };
+        formData.append(backendKey, typeMapping[value] || 'residential');
+      } else {
+        formData.append(backendKey, value);
+      }
     }
   });
 
+  // Add photos
   if (propertyData.photos && propertyData.photos.length > 0) {
-    propertyData.photos.forEach((photo, index) => {
+    propertyData.photos.forEach((photo) => {
       formData.append("photos", photo);
     });
   }
+
+  // Add property documents if any
+  if (propertyData.propertyDocs && propertyData.propertyDocs.length > 0) {
+    propertyData.propertyDocs.forEach((doc) => {
+      formData.append("propertyDocs", doc);
+    });
+  }
+
+  // Add geo location if available
+  if (propertyData.geo_location && propertyData.geo_location.coordinates && propertyData.geo_location.coordinates.length === 2) {
+    const geoData = {
+      lng: propertyData.geo_location.coordinates[0],
+      lat: propertyData.geo_location.coordinates[1]
+    };
+    formData.append('geo', JSON.stringify(geoData));
+  }
+
+  // Add default values
+  formData.append('listing_visibility', 'public');
 
   return formData;
 };

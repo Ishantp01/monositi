@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
+import apiRequest from "../../utils/api";
 
 // Tab-specific filter configurations (unchanged)
 const FILTER_CONFIGS = {
@@ -14,6 +16,7 @@ const FILTER_CONFIGS = {
         "Under Construction",
         "New Builder Projects",
       ],
+      "Price Range": ["Under 50L", "50L-1Cr", "1Cr-2Cr", "2Cr-5Cr", "Above 5Cr"],
     },
     additionalOptions: ["New Builder Projects"],
   },
@@ -28,6 +31,7 @@ const FILTER_CONFIGS = {
         "Within 30 days",
         "Flexible",
       ],
+      "Price Range": ["Under 10K", "10K-25K", "25K-50K", "50K-1L", "Above 1L"],
     },
   },
   "PG/Hostel": {
@@ -55,11 +59,30 @@ const FILTER_CONFIGS = {
         "Godown/Warehouse",
         "Other business",
       ],
+      "Price Range": ["Under 50K", "50K-1L", "1L-5L", "5L-10L", "Above 10L"],
+    },
+  },
+  Services: {
+    searchPlaceholder: "Search for services, providers, or categories",
+    categories: ["All Services", "Home Services", "Professional Services"],
+    filters: {
+      "Service Type": [
+        "Plumbing",
+        "Electrical",
+        "Cleaning",
+        "Carpentry",
+        "Painting",
+        "Gardening",
+        "Appliance Repair",
+        "Other Services",
+      ],
+      "Price Range": ["Under 500", "500-1000", "1000-2500", "2500-5000", "Above 5000"],
+      "Availability": ["Available Now", "Within 24 hours", "Within 3 days", "Flexible"],
     },
   },
 };
 
-const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F" }) => {
+const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F", onSearchResults }) => {
   const config = FILTER_CONFIGS[activeTab] || FILTER_CONFIGS.Buy;
   const [expandedFilters, setExpandedFilters] = useState({});
   const [searchValue, setSearchValue] = useState("");
@@ -67,6 +90,9 @@ const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F" }) => {
     config.categories[0]
   );
   const [selectedFilters, setSelectedFilters] = useState({});
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchHistory, setSearchHistory] = useState([]);
   const filterRefs = useRef({});
   const searchInputRef = useRef(null);
 
@@ -102,23 +128,119 @@ const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F" }) => {
   };
 
   const handleFilterSelect = (filterName, value) => {
-    setSelectedFilters((prev) => ({
-      ...prev,
-      [filterName]: value,
-    }));
+    setSelectedFilters((prev) => {
+      const newFilters = { ...prev };
+      if (value === null) {
+        delete newFilters[filterName];
+      } else {
+        newFilters[filterName] = value;
+      }
+      return newFilters;
+    });
     setExpandedFilters((prev) => ({
       ...prev,
       [filterName]: false,
     }));
   };
 
-  const handleSearch = () => {
-    console.log("Search:", {
-      tab: activeTab,
-      searchValue,
-      selectedCategory,
-      selectedFilters,
-    });
+  const handleSearch = async () => {
+    if (!searchValue.trim() && Object.keys(selectedFilters).length === 0) {
+      toast.warning("Please enter a search term or select filters");
+      return;
+    }
+
+    setIsSearching(true);
+
+    try {
+      let results = [];
+
+      if (activeTab === "Services") {
+        // Search services
+        const searchParams = new URLSearchParams();
+        if (searchValue.trim()) searchParams.append('query', searchValue.trim());
+        if (selectedFilters['Service Type']) searchParams.append('category', selectedFilters['Service Type']);
+        if (selectedFilters['Price Range']) {
+          const [min, max] = selectedFilters['Price Range'].split('-');
+          if (min) searchParams.append('min_price', min);
+          if (max) searchParams.append('max_price', max);
+        }
+
+        const response = await apiRequest(`/services/search?${searchParams.toString()}`, "GET");
+        if (response.success) {
+          results = response.services || [];
+          toast.success(`Found ${results.length} services`);
+        }
+      } else {
+        // Search properties (Buy, Rent, Commercial)
+        const searchParams = new URLSearchParams();
+        if (searchValue.trim()) searchParams.append('q', searchValue.trim());
+        if (selectedCategory && selectedCategory !== "Full House") {
+          searchParams.append('type', selectedCategory);
+        }
+        if (selectedFilters['BHK Type']) {
+          // Extract number from BHK Type (e.g., "2 BHK" -> "2")
+          const bhk = selectedFilters['BHK Type'].split(' ')[0];
+          searchParams.append('bhk', bhk);
+        }
+        if (selectedFilters['Price Range']) {
+          const [min, max] = selectedFilters['Price Range'].split('-');
+          if (min) searchParams.append('minPrice', min);
+          if (max) searchParams.append('maxPrice', max);
+        }
+
+        const response = await apiRequest(`/properties/search?${searchParams.toString()}`, "GET");
+        if (response.success) {
+          results = response.properties || [];
+          toast.success(`Found ${results.length} properties`);
+        }
+      }
+
+      setSearchResults(results);
+
+      // Add to search history
+      const searchEntry = {
+        query: searchValue,
+        filters: selectedFilters,
+        category: selectedCategory,
+        timestamp: new Date(),
+        resultsCount: results.length
+      };
+      setSearchHistory(prev => [searchEntry, ...prev.slice(0, 4)]); // Keep last 5 searches
+
+      // Call parent callback if provided
+      if (onSearchResults) {
+        onSearchResults(results, {
+          query: searchValue,
+          filters: selectedFilters,
+          category: selectedCategory,
+          tab: activeTab
+        });
+      }
+
+    } catch (error) {
+      console.error("Search error:", error);
+      toast.error("Search failed. Please try again.");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Handle Enter key press in search input
+  const handleSearchKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSearch();
+    }
+  };
+
+  // Clear search results
+  const clearSearch = () => {
+    setSearchValue("");
+    setSelectedFilters({});
+    setSearchResults([]);
+    if (onSearchResults) {
+      onSearchResults([], null);
+    }
   };
 
   // Generate gradient for theme
@@ -158,10 +280,10 @@ const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F" }) => {
         >
           <div
             className="flex items-center border border-gray-200 rounded-full px-4 py-3 bg-white shadow-inner focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-theme-primary transition-all duration-300"
-            // style={{
-            //   ...gradientStyle,
-            //   boxShadow: "inset 0 2px 4px rgba(0,0,0,0.05)",
-            // }}
+          // style={{
+          //   ...gradientStyle,
+          //   boxShadow: "inset 0 2px 4px rgba(0,0,0,0.05)",
+          // }}
           >
             <input
               ref={searchInputRef}
@@ -169,18 +291,25 @@ const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F" }) => {
               placeholder={config.searchPlaceholder}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
+              onKeyPress={handleSearchKeyPress}
               className="flex-1 outline-none text-sm bg-transparent text-gray-800 placeholder-gray-400"
-              aria-label="Search for properties"
+              aria-label={`Search for ${activeTab.toLowerCase()}`}
+              disabled={isSearching}
             />
             <motion.button
               onClick={handleSearch}
-              className="p-2 rounded-full text-white"
+              disabled={isSearching}
+              className="p-2 rounded-full text-white disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ backgroundColor: themeColor }}
-              whileHover={{ scale: 1.1, backgroundColor: `${themeColor}CC` }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: isSearching ? 1 : 1.1, backgroundColor: isSearching ? themeColor : `${themeColor}CC` }}
+              whileTap={{ scale: isSearching ? 1 : 0.9 }}
               aria-label="Search"
             >
-              <Search size={18} />
+              {isSearching ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : (
+                <Search size={18} />
+              )}
             </motion.button>
           </div>
         </motion.div>
@@ -197,11 +326,10 @@ const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F" }) => {
           <motion.button
             key={category}
             onClick={() => setSelectedCategory(category)}
-            className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-              selectedCategory === category
-                ? "text-white shadow-lg"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
+            className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${selectedCategory === category
+              ? "text-white shadow-lg"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
             whileHover={{
               scale: 1.05,
               boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
@@ -261,11 +389,10 @@ const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F" }) => {
                       <motion.button
                         key={option}
                         onClick={() => handleFilterSelect(filterName, option)}
-                        className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all duration-200 ${
-                          selectedFilters[filterName] === option
-                            ? "text-white"
-                            : "text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`w-full text-left px-4 py-2 text-sm rounded-md transition-all duration-200 ${selectedFilters[filterName] === option
+                          ? "text-white"
+                          : "text-gray-700 hover:bg-gray-100"
+                          }`}
                         whileHover={{
                           scale: 1.02,
                           backgroundColor:
@@ -325,18 +452,91 @@ const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F" }) => {
           transition={{ duration: 0.3 }}
           className="mt-6 pt-4 border-t border-gray-200"
         >
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-medium text-gray-600">Selected:</span>
             {Object.entries(selectedFilters).map(([filterName, value]) => (
               <motion.span
                 key={`${filterName}-${value}`}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="px-3 py-1 text-white rounded-full text-xs font-medium"
+                className="px-3 py-1 text-white rounded-full text-xs font-medium flex items-center gap-1"
                 style={gradientStyle}
               >
                 {filterName}: {value}
+                <button
+                  onClick={() => handleFilterSelect(filterName, null)}
+                  className="ml-1 text-white hover:text-gray-200"
+                  aria-label={`Remove ${filterName} filter`}
+                >
+                  ×
+                </button>
               </motion.span>
+            ))}
+            <button
+              onClick={clearSearch}
+              className="text-sm text-gray-500 hover:text-gray-700 underline"
+            >
+              Clear all
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Search Results Summary */}
+      {searchResults.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mt-6 pt-4 border-t border-gray-200"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-600">
+                Found {searchResults.length} {activeTab.toLowerCase()}
+              </span>
+              {searchValue && (
+                <span className="text-xs text-gray-500">
+                  for "{searchValue}"
+                </span>
+              )}
+            </div>
+            <button
+              onClick={clearSearch}
+              className="text-sm text-gray-500 hover:text-gray-700 underline"
+            >
+              Clear results
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Search History */}
+      {searchHistory.length > 0 && !searchValue && Object.keys(selectedFilters).length === 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mt-6 pt-4 border-t border-gray-200"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm font-medium text-gray-600">Recent searches:</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {searchHistory.slice(0, 3).map((search, index) => (
+              <motion.button
+                key={index}
+                onClick={() => {
+                  setSearchValue(search.query);
+                  setSelectedFilters(search.filters);
+                  setSelectedCategory(search.category);
+                }}
+                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs hover:bg-gray-200 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {search.query || 'Filter search'} ({search.resultsCount} results)
+              </motion.button>
             ))}
           </div>
         </motion.div>

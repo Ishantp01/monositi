@@ -291,8 +291,8 @@ const AddProperty = () => {
                                 <button
                                     onClick={() => setActiveTab("basic")}
                                     className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${activeTab === "basic"
-                                            ? "border-[#f73c56] text-[#f73c56]"
-                                            : "border-transparent text-gray-500 hover:text-gray-700"
+                                        ? "border-[#f73c56] text-[#f73c56]"
+                                        : "border-transparent text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
                                     <div className="flex items-center space-x-2">
@@ -303,8 +303,8 @@ const AddProperty = () => {
                                 <button
                                     onClick={() => setActiveTab("location")}
                                     className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${activeTab === "location"
-                                            ? "border-[#f73c56] text-[#f73c56]"
-                                            : "border-transparent text-gray-500 hover:text-gray-700"
+                                        ? "border-[#f73c56] text-[#f73c56]"
+                                        : "border-transparent text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
                                     <div className="flex items-center space-x-2">
@@ -315,8 +315,8 @@ const AddProperty = () => {
                                 <button
                                     onClick={() => setActiveTab("features")}
                                     className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${activeTab === "features"
-                                            ? "border-[#f73c56] text-[#f73c56]"
-                                            : "border-transparent text-gray-500 hover:text-gray-700"
+                                        ? "border-[#f73c56] text-[#f73c56]"
+                                        : "border-transparent text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
                                     <div className="flex items-center space-x-2">
@@ -327,8 +327,8 @@ const AddProperty = () => {
                                 <button
                                     onClick={() => setActiveTab("media")}
                                     className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${activeTab === "media"
-                                            ? "border-[#f73c56] text-[#f73c56]"
-                                            : "border-transparent text-gray-500 hover:text-gray-700"
+                                        ? "border-[#f73c56] text-[#f73c56]"
+                                        : "border-transparent text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
                                     <div className="flex items-center space-x-2">
@@ -362,8 +362,8 @@ const AddProperty = () => {
                                                     />
                                                     <div
                                                         className={`p-4 rounded-lg border-2 text-center transition-all ${formData.type === type
-                                                                ? "border-[#f73c56] bg-red-50 text-[#f73c56]"
-                                                                : "border-gray-200 hover:border-[#f73c56] hover:bg-gray-50"
+                                                            ? "border-[#f73c56] bg-red-50 text-[#f73c56]"
+                                                            : "border-gray-200 hover:border-[#f73c56] hover:bg-gray-50"
                                                             }`}
                                                     >
                                                         <div className="mb-2 flex justify-center">{icon}</div>

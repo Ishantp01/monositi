@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { X, Calendar, MapPin, DollarSign, FileText, Camera } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, Calendar, MapPin, DollarSign, FileText, Camera, Navigation, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { serviceApi } from "../../utils/serviceApi";
 
-const ServiceBookingForm = ({ isOpen, onClose, serviceProvider }) => {
+const ServiceBookingForm = ({ isOpen, onClose, service }) => {
     const [formData, setFormData] = useState({
         scheduled_for: "",
         total_amount: "",
@@ -12,11 +12,17 @@ const ServiceBookingForm = ({ isOpen, onClose, serviceProvider }) => {
             street: "",
             city: "",
             state: "",
-            zipCode: ""
+            pincode: "",
+            coordinates: {
+                type: "Point",
+                coordinates: [] // [longitude, latitude]
+            }
         }
     });
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [locationLoading, setLocationLoading] = useState(false);
+    const [hasLocation, setHasLocation] = useState(false);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -42,6 +48,95 @@ const ServiceBookingForm = ({ isOpen, onClose, serviceProvider }) => {
         setImages(files);
     };
 
+    // Get user's current location
+    const getCurrentLocation = () => {
+        setLocationLoading(true);
+
+        if (!navigator.geolocation) {
+            toast.error("Geolocation is not supported by this browser");
+            setLocationLoading(false);
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+
+                setFormData(prev => ({
+                    ...prev,
+                    service_address: {
+                        ...prev.service_address,
+                        coordinates: {
+                            type: "Point",
+                            coordinates: [longitude, latitude]
+                        }
+                    }
+                }));
+
+                setHasLocation(true);
+                setLocationLoading(false);
+                toast.success("Location captured successfully!");
+
+                // Try to get address from coordinates using reverse geocoding
+                reverseGeocode(latitude, longitude);
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+                let errorMessage = "Unable to get location";
+
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = "Location access denied by user";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = "Location information unavailable";
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = "Location request timed out";
+                        break;
+                }
+
+                toast.error(errorMessage);
+                setLocationLoading(false);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000
+            }
+        );
+    };
+
+    // Reverse geocoding to get address from coordinates
+    const reverseGeocode = async (latitude, longitude) => {
+        try {
+            // Using a free geocoding service (you can replace with your preferred service)
+            const response = await fetch(
+                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+
+                setFormData(prev => ({
+                    ...prev,
+                    service_address: {
+                        ...prev.service_address,
+                        street: data.locality || prev.service_address.street,
+                        city: data.city || prev.service_address.city,
+                        state: data.principalSubdivision || prev.service_address.state,
+                        pincode: data.postcode || prev.service_address.pincode
+                    }
+                }));
+
+                toast.info("Address auto-filled from location");
+            }
+        } catch (error) {
+            console.error("Reverse geocoding error:", error);
+            // Don't show error to user as this is optional
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -58,8 +153,8 @@ const ServiceBookingForm = ({ isOpen, onClose, serviceProvider }) => {
             // Create FormData object
             const bookingFormData = new FormData();
 
-            // Add service provider ID
-            bookingFormData.append('service_id', serviceProvider._id);
+            // Add service ID
+            bookingFormData.append('service_id', service._id);
 
             // Add form fields
             bookingFormData.append('scheduled_for', formData.scheduled_for);
@@ -88,10 +183,15 @@ const ServiceBookingForm = ({ isOpen, onClose, serviceProvider }) => {
                         street: "",
                         city: "",
                         state: "",
-                        zipCode: ""
+                        pincode: "",
+                        coordinates: {
+                            type: "Point",
+                            coordinates: []
+                        }
                     }
                 });
                 setImages([]);
+                setHasLocation(false);
             } else {
                 toast.error(response.message || "Failed to create booking");
             }
@@ -113,7 +213,10 @@ const ServiceBookingForm = ({ isOpen, onClose, serviceProvider }) => {
                     <div>
                         <h2 className="text-xl font-semibold text-gray-800">Book Service</h2>
                         <p className="text-sm text-gray-600 mt-1">
-                            {serviceProvider?.name} - {serviceProvider?.category}
+                            {service?.service_name} - {service?.category}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                            Provider: {service?.provider?.name}
                         </p>
                     </div>
                     <button
@@ -145,10 +248,37 @@ const ServiceBookingForm = ({ isOpen, onClose, serviceProvider }) => {
 
                     {/* Service Address */}
                     <div className="space-y-4">
-                        <label className="flex items-center text-sm font-medium text-gray-700">
-                            <MapPin className="w-4 h-4 mr-2" />
-                            Service Address
-                        </label>
+                        <div className="flex items-center justify-between">
+                            <label className="flex items-center text-sm font-medium text-gray-700">
+                                <MapPin className="w-4 h-4 mr-2" />
+                                Service Address
+                            </label>
+                            <button
+                                type="button"
+                                onClick={getCurrentLocation}
+                                disabled={locationLoading}
+                                className="flex items-center space-x-2 px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 text-sm"
+                            >
+                                {locationLoading ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <Navigation className="w-4 h-4" />
+                                )}
+                                <span>{locationLoading ? "Getting..." : "Use My Location"}</span>
+                            </button>
+                        </div>
+
+                        {hasLocation && (
+                            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                                <div className="flex items-center space-x-2">
+                                    <MapPin className="w-4 h-4 text-green-600" />
+                                    <span className="text-sm text-green-700">
+                                        Location captured: {formData.service_address.coordinates.coordinates[1]?.toFixed(6)}, {formData.service_address.coordinates.coordinates[0]?.toFixed(6)}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="grid grid-cols-1 gap-3">
                             <input
                                 type="text"
@@ -181,13 +311,17 @@ const ServiceBookingForm = ({ isOpen, onClose, serviceProvider }) => {
                             </div>
                             <input
                                 type="text"
-                                name="service_address.zipCode"
-                                placeholder="ZIP Code"
-                                value={formData.service_address.zipCode}
+                                name="service_address.pincode"
+                                placeholder="PIN Code"
+                                value={formData.service_address.pincode}
                                 onChange={handleInputChange}
                                 required
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-red-500"
                             />
+                        </div>
+
+                        <div className="text-xs text-gray-500">
+                            <strong>Tip:</strong> Click "Use My Location" to automatically fill your address and provide accurate coordinates for the service provider.
                         </div>
                     </div>
 
@@ -200,7 +334,7 @@ const ServiceBookingForm = ({ isOpen, onClose, serviceProvider }) => {
                         <input
                             type="number"
                             name="total_amount"
-                            placeholder="Enter estimated amount"
+                            placeholder={`Base price: ₹${service?.base_price || 0}`}
                             value={formData.total_amount}
                             onChange={handleInputChange}
                             required
