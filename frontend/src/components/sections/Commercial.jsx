@@ -1,128 +1,148 @@
-import GradientHeading from "../common/GradientHeading";
+import React, { useState, useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import PropertyCarousel from "../Carousel/PropertiesSlider";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import GradientHeading from "../common/GradientHeading";
+import PropertyCard from "../PropertyCard";
+import { propertyApi } from "../../utils/propertyApi";
 
 const Commercial = () => {
-  return (
-    <>
-      <div className="w-full h-16"></div>
-      <GradientHeading text={"Properties by Owners"} />
-      <div className="my-8 md:my-16">
-        <PropertyCarousel tags={"Commercial"} />
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetchCommercialProperties();
+  }, []);
+
+  const fetchCommercialProperties = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await propertyApi.searchProperties({
+        type: 'commercial',
+        limit: 12
+      });
+
+      if (response.success) {
+        setProperties(response.properties || []);
+      } else {
+        setError("Failed to fetch commercial properties");
+      }
+    } catch (err) {
+      console.error("Error fetching commercial properties:", err);
+      setError("Something went wrong while fetching properties");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="text-center py-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#f73c56] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading commercial properties...</p>
+        </div>
+      );
+    }
+
+    if (error) {
+      return <div className="text-center text-red-600 py-8">{error}</div>;
+    }
+
+    if (!properties.length) {
+      return (
+        <div className="text-center py-8">
+          <p className="text-gray-600">No commercial properties available</p>
+        </div>
+      );
+    }
+
+    // If 4 or fewer properties, show them in a grid
+    if (properties.length <= 4) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
+          {properties.map((property) => (
+            <PropertyCard
+              key={property._id}
+              property={property}
+            />
+          ))}
+        </div>
+      );
+    }
+
+    // If more than 4 properties, show carousel
+    return (
+      <div className="relative mx-auto max-w-[95%]">
+        {/* Navigation Arrows */}
+        <button className="commercial-prev-btn absolute top-1/2 -left-4 sm:-left-6 z-10 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-[#f73c56] rounded-full flex items-center justify-center shadow-lg hover:bg-[#e9334e] transition-colors">
+          <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+        </button>
+        <button className="commercial-next-btn absolute top-1/2 -right-4 sm:-right-6 z-10 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-[#f73c56] rounded-full flex items-center justify-center shadow-lg hover:bg-[#e9334e] transition-colors">
+          <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+        </button>
+
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay]}
+          spaceBetween={20}
+          slidesPerView={1}
+          navigation={{
+            nextEl: ".commercial-next-btn",
+            prevEl: ".commercial-prev-btn"
+          }}
+          pagination={{
+            clickable: true,
+            dynamicBullets: true
+          }}
+          autoplay={{
+            delay: 5000,
+            disableOnInteraction: false
+          }}
+          breakpoints={{
+            640: { slidesPerView: 2 },
+            768: { slidesPerView: 3 },
+            1024: { slidesPerView: 4 },
+          }}
+          className="commercial-properties-swiper"
+        >
+          {properties.map((property) => (
+            <SwiperSlide key={property._id}>
+              <PropertyCard property={property} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
-      <div className="w-full h-16"></div>
-    </>
+    );
+  };
+
+  return (
+    <div className="py-8">
+      <GradientHeading text="Commercial Properties" />
+
+      <div className="my-8 md:my-16">
+        {renderContent()}
+      </div>
+
+      {/* Show All Projects Button */}
+      <div className="text-center mt-8">
+        <Link
+          to="/commercial"
+          className="inline-flex items-center px-8 py-3 bg-[#f73c56] text-white font-semibold rounded-lg hover:bg-[#e9334e] transition-colors shadow-md"
+        >
+          Show All Projects
+          <ChevronRight className="w-5 h-5 ml-2" />
+        </Link>
+      </div>
+    </div>
   );
 };
 export default Commercial;
 
-export const officeSpaces = [
-  {
-    title: "Office Space",
-    price: 83000,
-    seats: "14-20 Seats",
-    locality: "Block 4th Tilwara",
-    posted: "Jun 08, '25",
-    owner: "Hemant Kumar",
-    image:
-      "https://allmakes.com/wp-content/uploads/2017/10/office-space-planning.jpg",
-  },
-  {
-    title: "Corporate Office",
-    price: 65000,
-    seats: "10-15 Seats",
-    locality: "Civil Lines",
-    posted: "May 15, '25",
-    owner: "Priya Sharma",
-    image:
-      "https://tse1.mm.bing.net/th/id/OIP.qVKqQlLUZWc26HN5vPHSdQHaE6?pid=Api&P=0&h=180",
-  },
-  {
-    title: "Startup Office",
-    price: 50000,
-    seats: "8-12 Seats",
-    locality: "Napier Town",
-    posted: "Apr 20, '25",
-    owner: "Rohit Verma",
-    image:
-      "https://s3.mortarr.com/images/project_gallery_images/open-concept-office-space-designs.jpeg",
-  },
-  {
-    title: "Shared Office",
-    price: 42000,
-    seats: "6-10 Seats",
-    locality: "Ganjipura",
-    posted: "Mar 18, '25",
-    owner: "Anita Yadav",
-    image:
-      "https://tse4.mm.bing.net/th/id/OIP.Q2ylHisUnojXVMEF7As4SAHaE8?pid=Api&P=0&h=180",
-  },
-  {
-    title: "Premium Office",
-    price: 120000,
-    seats: "20-30 Seats",
-    locality: "Wright Town",
-    posted: "Feb 28, '25",
-    owner: "Manoj Gupta",
-    image:
-      "https://tse4.mm.bing.net/th/id/OIP.PEKbcy8t_2rqLBuzDsaM-gHaFf?pid=Api&P=0&h=180",
-  },
-];
 
-export const showrooms = [
-  {
-    title: "Showroom",
-    price: "₹7.3 Lac",
-    area: "4830 sqft",
-    locality: "Block 4th Tilwara",
-    mainRoadFacing: true,
-    owner: "Hemant Kumar",
-    posted: "Jun 08, '25",
-    image:
-      "https://tse1.mm.bing.net/th/id/OIP.85Plp5YZzSiHkpi4JMo-ygHaE8?pid=Api&P=0&h=180",
-  },
-  {
-    title: "Retail Showroom",
-    price: "₹5.8 Lac",
-    area: "3500 sqft",
-    locality: "Civil Lines",
-    mainRoadFacing: true,
-    owner: "Priya Sharma",
-    posted: "May 15, '25",
-    image:
-      "https://tse3.mm.bing.net/th/id/OIP.lAfOiRKWvTC70FvyEr3ukQHaFj?pid=Api&P=0&h=180",
-  },
-  {
-    title: "Luxury Showroom",
-    price: "₹9.2 Lac",
-    area: "5200 sqft",
-    locality: "Napier Town",
-    mainRoadFacing: true,
-    owner: "Rohit Verma",
-    posted: "Apr 20, '25",
-    image:
-      "https://tse2.mm.bing.net/th/id/OIP.1dAmMu1CWi8s7KwWOWka4AHaE8?pid=Api&P=0&h=180",
-  },
-  {
-    title: "Car Showroom",
-    price: "₹6.5 Lac",
-    area: "4000 sqft",
-    locality: "Ganjipura",
-    mainRoadFacing: true,
-    owner: "Anita Yadav",
-    posted: "Mar 18, '25",
-    image:
-      "https://tse4.mm.bing.net/th/id/OIP.PrmoqJX5qNDOOwH0VFYLZwHaFj?pid=Api&P=0&h=180",
-  },
-  {
-    title: "Premium Showroom",
-    price: "₹10.0 Lac",
-    area: "6000 sqft",
-    locality: "Wright Town",
-    mainRoadFacing: true,
-    owner: "Manoj Gupta",
-    posted: "Feb 28, '25",
-    image:
-      "https://tse1.mm.bing.net/th/id/OIP.zp3UWJDS4WCzDYy_HHVCWAHaE8?pid=Api&P=0&h=180",
-  },
-];
