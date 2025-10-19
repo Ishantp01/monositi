@@ -23,9 +23,10 @@ export const createPropertyListing = async (req, res) => {
       return res.status(401).json({ success: false, message: "Not authenticated" });
     }
 
-    // Extract fields from request body
+    // UPDATED: Extract fields from request body
     const {
       type,
+      sub_category, // ADDED
       name,
       description,
       address,
@@ -43,12 +44,21 @@ export const createPropertyListing = async (req, res) => {
       geo // optional JSON string or fields lng/lat
     } = req.body;
 
-    // Basic validation
+    // UPDATED: Basic validation
     const allowedTypes = ["residential", "commercial"];
     if (!type || !allowedTypes.includes(type)) {
       return res.status(400).json({
         success: false,
         message: `type is required and must be one of ${allowedTypes.join(", ")}`
+      });
+    }
+
+    // ADDED: sub_category validation
+    const allowedSubCategories = ["Buy", "Rent", "Monositi"];
+    if (!sub_category || !allowedSubCategories.includes(sub_category)) {
+      return res.status(400).json({
+        success: false,
+        message: `sub_category is required and must be one of ${allowedSubCategories.join(", ")}`
       });
     }
 
@@ -131,10 +141,11 @@ export const createPropertyListing = async (req, res) => {
       }
     }
 
-    // Build property document according to model schema
+    // UPDATED: Build property document according to model schema
     const propertyPayload = {
       owner_id: user._id,
       type,
+      sub_category, // ADDED
       status: "pending",
       name: name || `${type} Property in ${city}`,
       address,
@@ -184,6 +195,7 @@ export const createPropertyListing = async (req, res) => {
       console.error("Error cleaning up files:", cleanupError);
     }
 
+    // UPDATED: Return response
     return res.status(201).json({
       success: true,
       message: "Property created successfully (pending verification)",
@@ -191,6 +203,7 @@ export const createPropertyListing = async (req, res) => {
         _id: property._id,
         name: property.name,
         type: property.type,
+        sub_category: property.sub_category, // ADDED
         address: property.address,
         city: property.city,
         state: property.state,
@@ -238,8 +251,10 @@ export const createPropertyListing = async (req, res) => {
  */
 export const getProperties = async (req, res) => {
   try {
+    // UPDATED: Destructure query params
     const {
       type,
+      sub_category, // ADDED
       city,
       state,
       minPrice,
@@ -251,13 +266,14 @@ export const getProperties = async (req, res) => {
       sort = '-createdAt'
     } = req.query;
 
-    // Build filter object
+    // UPDATED: Build filter object
     const filter = {
       status: 'active',
       verification_status: 'verified'
     };
 
     if (type) filter.type = type;
+    if (sub_category) filter.sub_category = sub_category; // ADDED
     if (city) filter.city = { $regex: city, $options: 'i' };
     if (state) filter.state = { $regex: state, $options: 'i' };
 
@@ -368,7 +384,7 @@ export const updateProperty = async (req, res) => {
       });
     }
 
-    // Extract updatable fields
+    // UPDATED: Extract updatable fields
     const {
       name,
       description,
@@ -377,6 +393,7 @@ export const updateProperty = async (req, res) => {
       state,
       pincode,
       price,
+      sub_category, // ADDED
       tags,
       amenities,
       size,
@@ -387,7 +404,7 @@ export const updateProperty = async (req, res) => {
       geo
     } = req.body;
 
-    // Update basic fields
+    // UPDATED: Update basic fields
     if (name) property.name = name;
     if (description) property.description = description;
     if (address) property.address = address;
@@ -395,6 +412,15 @@ export const updateProperty = async (req, res) => {
     if (state) property.state = state;
     if (pincode) property.pincode = pincode;
     if (price) property.price = Number(price);
+
+    // ADDED: Update sub_category with validation
+    if (sub_category) {
+      const allowedSubCategories = ["Buy", "Rent", "Monositi"];
+      if (allowedSubCategories.includes(sub_category)) {
+        property.sub_category = sub_category;
+      }
+    }
+
 
     // Update property features
     if (property.property_features) {
@@ -501,21 +527,24 @@ export const getOwnerProperties = async (req, res) => {
       return res.status(401).json({ success: false, message: "Not authenticated" });
     }
 
+    // UPDATED: Destructure query params
     const {
       status,
       type,
+      sub_category, // ADDED
       page = 1,
       limit = 20,
       sort = "-createdAt"
     } = req.query;
 
-    // Build filter
+    // UPDATED: Build filter
     const filter = {
       owner_id: user._id
     };
 
     if (status) filter.status = status;
     if (type) filter.type = type;
+    if (sub_category) filter.sub_category = sub_category; // ADDED
 
     // Pagination
     const skip = (Number(page) - 1) * Number(limit);
@@ -614,18 +643,20 @@ export const getNearbyProperties = async (req, res) => {
 
 export const searchProperties = async (req, res) => {
   try {
-    const { q, city, type, minPrice, maxPrice, limit = 20, page = 1, sort } = req.query;
+    // UPDATED: Destructure query params
+    const { q, city, type, sub_category, minPrice, maxPrice, limit = 20, page = 1, sort } = req.query;
 
-    // Trim all string parameters to remove extra spaces
+    // UPDATED: Trim all string parameters to remove extra spaces
     const trimmedCity = city ? city.trim() : null;
     const trimmedType = type ? type.trim() : null;
+    const trimmedSubCategory = sub_category ? sub_category.trim() : null; // ADDED
     const trimmedQ = q ? q.trim() : null;
 
     // Validate and set default sort
     const validSortFields = ['createdAt', '-createdAt', 'price', '-price', 'name', '-name'];
     const sortField = sort && validSortFields.includes(sort) ? sort : '-createdAt';
 
-    // Build filter object
+    // UPDATED: Build filter object
     const filter = {
       status: 'active',
       verification_status: 'verified'
@@ -634,6 +665,7 @@ export const searchProperties = async (req, res) => {
     // Add filters
     if (trimmedCity) filter.city = { $regex: trimmedCity, $options: 'i' };
     if (trimmedType) filter.type = trimmedType;
+    if (trimmedSubCategory) filter.sub_category = trimmedSubCategory; // ADDED
 
     // Price range filter
     if (minPrice || maxPrice) {
@@ -667,6 +699,7 @@ export const searchProperties = async (req, res) => {
 
     const total = await Property.countDocuments(filter);
 
+    // UPDATED: Return response
     return res.status(200).json({
       success: true,
       message: `Found ${properties.length} properties matching your search`,
@@ -681,6 +714,7 @@ export const searchProperties = async (req, res) => {
         query: trimmedQ || null,
         city: trimmedCity || null,
         type: trimmedType || null,
+        sub_category: trimmedSubCategory || null, // ADDED
         minPrice: minPrice || null,
         maxPrice: maxPrice || null,
         sort: sortField
