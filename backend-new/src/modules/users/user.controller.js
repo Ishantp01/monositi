@@ -119,7 +119,7 @@ export const sendOtp = async (req, res) => {
         }, 120000);
 
         res.status(200).json({ success: true, message: "OTP sent successfully via WhatsApp" });
-        res.status(200).json({ success: true, message: "OTP sent successfully" });  
+        res.status(200).json({ success: true, message: `OTP sent successfully ${otp}`  });  
 
     } catch (err) {
         console.error("Send OTP error:", err);
