@@ -54,7 +54,7 @@ export default function UnifiedPhoneAuth() {
                 // Show OTP in alert for testing purposes
                 if (response.otp) {
                     // Console log for developers
-                    console.log(`🔐 TESTING MODE - OTP: ${response.otp} for phone: ${formattedPhone}`);
+                    console.log(`TESTING MODE - OTP: ${response.otp} for phone: ${formattedPhone}`);
 
                     // Alert for testers
                     alert(`TESTING MODE - OTP RECEIVED\n\n` +
