@@ -46,7 +46,7 @@ const Services = () => {
         setLoading(true);
         const token = localStorage.getItem("token"); // assuming token stored in localStorage
         const response = await axios.get(
-          "http://localhost:5000/api/services/services/requests/provider",
+          "https://monositi.onrender.com/api/services/services/requests/provider",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -131,12 +131,12 @@ const Services = () => {
                               {req.category?.toLowerCase().includes("plumb")
                                 ? "🔧"
                                 : req.category?.toLowerCase().includes("elect")
-                                ? "⚡"
-                                : req.category?.toLowerCase().includes("clean")
-                                ? "🧽"
-                                : req.category?.toLowerCase().includes("repair")
-                                ? "🔨"
-                                : "🛠️"}
+                                  ? "⚡"
+                                  : req.category?.toLowerCase().includes("clean")
+                                    ? "🧽"
+                                    : req.category?.toLowerCase().includes("repair")
+                                      ? "🔨"
+                                      : "🛠️"}
                             </div>
                             <div>
                               <h3 className="font-bold text-lg text-gray-800">

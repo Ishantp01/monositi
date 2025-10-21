@@ -21,6 +21,7 @@ import {
 const AddProperty = () => {
     const [formData, setFormData] = useState({
         type: "",
+        sub_category: "",
         name: "",
         description: "",
         address: "",
@@ -217,6 +218,7 @@ const AddProperty = () => {
                 // Reset form
                 setFormData({
                     type: "",
+                    sub_category: "",
                     name: "",
                     description: "",
                     address: "",
@@ -291,8 +293,8 @@ const AddProperty = () => {
                                 <button
                                     onClick={() => setActiveTab("basic")}
                                     className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${activeTab === "basic"
-                                            ? "border-[#f73c56] text-[#f73c56]"
-                                            : "border-transparent text-gray-500 hover:text-gray-700"
+                                        ? "border-[#f73c56] text-[#f73c56]"
+                                        : "border-transparent text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
                                     <div className="flex items-center space-x-2">
@@ -303,8 +305,8 @@ const AddProperty = () => {
                                 <button
                                     onClick={() => setActiveTab("location")}
                                     className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${activeTab === "location"
-                                            ? "border-[#f73c56] text-[#f73c56]"
-                                            : "border-transparent text-gray-500 hover:text-gray-700"
+                                        ? "border-[#f73c56] text-[#f73c56]"
+                                        : "border-transparent text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
                                     <div className="flex items-center space-x-2">
@@ -315,8 +317,8 @@ const AddProperty = () => {
                                 <button
                                     onClick={() => setActiveTab("features")}
                                     className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${activeTab === "features"
-                                            ? "border-[#f73c56] text-[#f73c56]"
-                                            : "border-transparent text-gray-500 hover:text-gray-700"
+                                        ? "border-[#f73c56] text-[#f73c56]"
+                                        : "border-transparent text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
                                     <div className="flex items-center space-x-2">
@@ -327,8 +329,8 @@ const AddProperty = () => {
                                 <button
                                     onClick={() => setActiveTab("media")}
                                     className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${activeTab === "media"
-                                            ? "border-[#f73c56] text-[#f73c56]"
-                                            : "border-transparent text-gray-500 hover:text-gray-700"
+                                        ? "border-[#f73c56] text-[#f73c56]"
+                                        : "border-transparent text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
                                     <div className="flex items-center space-x-2">
@@ -362,8 +364,8 @@ const AddProperty = () => {
                                                     />
                                                     <div
                                                         className={`p-4 rounded-lg border-2 text-center transition-all ${formData.type === type
-                                                                ? "border-[#f73c56] bg-red-50 text-[#f73c56]"
-                                                                : "border-gray-200 hover:border-[#f73c56] hover:bg-gray-50"
+                                                            ? "border-[#f73c56] bg-red-50 text-[#f73c56]"
+                                                            : "border-gray-200 hover:border-[#f73c56] hover:bg-gray-50"
                                                             }`}
                                                     >
                                                         <div className="mb-2 flex justify-center">{icon}</div>
@@ -373,6 +375,131 @@ const AddProperty = () => {
                                             ))}
                                         </div>
                                     </div>
+
+                                    {/* Sub Category Selection */}
+                                    {formData.type && (
+                                        <div className="space-y-4">
+                                            <h3 className="text-lg font-semibold text-gray-900">Property Category</h3>
+                                            <div className="grid grid-cols-3 gap-4">
+                                                {formData.type === 'residential' ? (
+                                                    <>
+                                                        <label className="relative cursor-pointer">
+                                                            <input
+                                                                type="radio"
+                                                                name="sub_category"
+                                                                value="Buy"
+                                                                checked={formData.sub_category === "Buy"}
+                                                                onChange={handleInputChange}
+                                                                className="sr-only"
+                                                            />
+                                                            <div
+                                                                className={`p-4 rounded-lg border-2 text-center transition-all ${formData.sub_category === "Buy"
+                                                                    ? "border-[#f73c56] bg-red-50 text-[#f73c56]"
+                                                                    : "border-gray-200 hover:border-[#f73c56] hover:bg-gray-50"
+                                                                    }`}
+                                                            >
+                                                                <span className="font-medium text-sm">Buy</span>
+                                                            </div>
+                                                        </label>
+                                                        <label className="relative cursor-pointer">
+                                                            <input
+                                                                type="radio"
+                                                                name="sub_category"
+                                                                value="Rent"
+                                                                checked={formData.sub_category === "Rent"}
+                                                                onChange={handleInputChange}
+                                                                className="sr-only"
+                                                            />
+                                                            <div
+                                                                className={`p-4 rounded-lg border-2 text-center transition-all ${formData.sub_category === "Rent"
+                                                                    ? "border-[#f73c56] bg-red-50 text-[#f73c56]"
+                                                                    : "border-gray-200 hover:border-[#f73c56] hover:bg-gray-50"
+                                                                    }`}
+                                                            >
+                                                                <span className="font-medium text-sm">Rent</span>
+                                                            </div>
+                                                        </label>
+                                                        <label className="relative cursor-pointer">
+                                                            <input
+                                                                type="radio"
+                                                                name="sub_category"
+                                                                value="Monositi"
+                                                                checked={formData.sub_category === "Monositi"}
+                                                                onChange={handleInputChange}
+                                                                className="sr-only"
+                                                            />
+                                                            <div
+                                                                className={`p-4 rounded-lg border-2 text-center transition-all ${formData.sub_category === "Monositi"
+                                                                    ? "border-[#f73c56] bg-red-50 text-[#f73c56]"
+                                                                    : "border-gray-200 hover:border-[#f73c56] hover:bg-gray-50"
+                                                                    }`}
+                                                            >
+                                                                <span className="font-medium text-sm">Monositi</span>
+                                                            </div>
+                                                        </label>
+                                                    </>
+                                                ) : (
+                                                    // For commercial, show all categories
+                                                    <>
+                                                        <label className="relative cursor-pointer">
+                                                            <input
+                                                                type="radio"
+                                                                name="sub_category"
+                                                                value="Buy"
+                                                                checked={formData.sub_category === "Buy"}
+                                                                onChange={handleInputChange}
+                                                                className="sr-only"
+                                                            />
+                                                            <div
+                                                                className={`p-4 rounded-lg border-2 text-center transition-all ${formData.sub_category === "Buy"
+                                                                    ? "border-[#f73c56] bg-red-50 text-[#f73c56]"
+                                                                    : "border-gray-200 hover:border-[#f73c56] hover:bg-gray-50"
+                                                                    }`}
+                                                            >
+                                                                <span className="font-medium text-sm">Buy</span>
+                                                            </div>
+                                                        </label>
+                                                        <label className="relative cursor-pointer">
+                                                            <input
+                                                                type="radio"
+                                                                name="sub_category"
+                                                                value="Rent"
+                                                                checked={formData.sub_category === "Rent"}
+                                                                onChange={handleInputChange}
+                                                                className="sr-only"
+                                                            />
+                                                            <div
+                                                                className={`p-4 rounded-lg border-2 text-center transition-all ${formData.sub_category === "Rent"
+                                                                    ? "border-[#f73c56] bg-red-50 text-[#f73c56]"
+                                                                    : "border-gray-200 hover:border-[#f73c56] hover:bg-gray-50"
+                                                                    }`}
+                                                            >
+                                                                <span className="font-medium text-sm">Rent</span>
+                                                            </div>
+                                                        </label>
+                                                        <label className="relative cursor-pointer">
+                                                            <input
+                                                                type="radio"
+                                                                name="sub_category"
+                                                                value="Monositi"
+                                                                checked={formData.sub_category === "Monositi"}
+                                                                onChange={handleInputChange}
+                                                                className="sr-only"
+                                                            />
+                                                            <div
+                                                                className={`p-4 rounded-lg border-2 text-center transition-all ${formData.sub_category === "Monositi"
+                                                                    ? "border-[#f73c56] bg-red-50 text-[#f73c56]"
+                                                                    : "border-gray-200 hover:border-[#f73c56] hover:bg-gray-50"
+                                                                    }`}
+                                                            >
+                                                                <span className="font-medium text-sm">Monositi</span>
+                                                            </div>
+                                                        </label>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
 
                                     {/* Basic Information */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

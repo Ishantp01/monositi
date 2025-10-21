@@ -10,13 +10,14 @@ export default function RentCard({
   price, // "₹25,000"
   pricePer, // "₹25 per sqft"
   rightCta1 = "Enquire Now",
-  rightCta2 = "Get No.",
+  rightCta2 = "View Details",
   ownerName, // "Satpal Singh"
   since, // "2018"
   features = [],
+  _id, // Property ID for navigation
 }) {
   return (
-    <Link to={"/rent-details"}>
+    <Link to={_id ? `/rent-details/${_id}` : "/rent-details"}>
       <div className="w-full rounded-xl border border-brand-red shadow-card overflow-hidden">
         <div className="flex flex-col md:flex-row">
           {/* Left Image */}

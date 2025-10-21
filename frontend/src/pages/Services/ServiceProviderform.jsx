@@ -47,7 +47,7 @@ const ServiceProviderForm = () => {
         data.append(key, formData[key]);
       });
 
-      await axios.post("http://localhost:5000/api/services/m", data, {
+      await axios.post("https://monositi.onrender.com/api/services/m", data, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,

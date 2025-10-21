@@ -147,7 +147,7 @@ export default function Profile() {
         formData.append('kycDocs', file);
       });
 
-      const response = await fetch(`${'http://localhost:5000/api'}/users/me/kyc`, {
+      const response = await fetch(`${'https://monositi.onrender.com/api'}/users/me/kyc`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,

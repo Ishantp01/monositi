@@ -1,107 +1,143 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import RentCard from "../../components/Cards/RentCard";
 import Navbar from "../../components/layout/NavBar";
-import avatar from "../../assets/images/avatar2.jpg";
 import Footer from "../../components/layout/Footer";
+import { MapPinned, Loader2 } from "lucide-react";
 import DynamicFilterBar from "../../components/Tabs/DynamicFilterBar";
+import { propertyApi } from "../../utils/propertyApi";
+import { toast } from "react-toastify";
 
-const rentData = [
-  {
-    image:
-      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=1200",
-    title: "2 BHK Flat for Rent in Green Park",
-    subtitle: "Urban Homes",
-    description:
-      "A modern 2 BHK flat with spacious interiors and proximity to shopping centers, schools, and parks.",
-    price: "₹25,000",
-    pricePer: "₹25 per sqft",
-    ownerName: "Ramesh Kumar",
-    since: "2020",
-    features: [
-      { label: "Carpet Area", value: "1000 sqft" },
-      { label: "Availability", value: "Immediately" },
-      { label: "Facing", value: "North-East" },
-      { label: "Furnishing", value: "Semi-Furnished" },
-      { label: "Tenant Preference", value: "Family" },
-      { label: "Bathroom", value: "2" },
-    ],
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1200",
-    title: "1 BHK Studio in City Center",
-    subtitle: "BlueSky Rentals",
-    description:
-      "Compact and cozy 1 BHK studio with great connectivity and modern facilities, ideal for bachelors.",
-    price: "₹12,000",
-    pricePer: "₹30 per sqft",
-    ownerName: "Neha Gupta",
-    since: "2019",
-    features: [
-      { label: "Carpet Area", value: "400 sqft" },
-      { label: "Availability", value: "From 1st Sept" },
-      { label: "Facing", value: "East" },
-      { label: "Furnishing", value: "Fully Furnished" },
-      { label: "Tenant Preference", value: "Bachelors" },
-      { label: "Bathroom", value: "1" },
-    ],
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200",
-    title: "3 BHK Apartment in Palm Residency",
-    subtitle: "Palm Residency",
-    description:
-      "Luxury 3 BHK apartment with premium amenities including swimming pool, gym, and kids' play area.",
-    price: "₹40,000",
-    pricePer: "₹28 per sqft",
-    ownerName: "Vikram Singh",
-    since: "2018",
-    features: [
-      { label: "Carpet Area", value: "1450 sqft" },
-      { label: "Availability", value: "Immediately" },
-      { label: "Facing", value: "South-West" },
-      { label: "Furnishing", value: "Non-Furnished" },
-      { label: "Tenant Preference", value: "Family" },
-      { label: "Bathroom", value: "3" },
-    ],
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200",
-    title: "1 RK for Rent in Shivaji Nagar",
-    subtitle: "City Edge Homes",
-    description:
-      "Affordable 1 RK home, perfect for students and working professionals, with nearby metro access.",
-    price: "₹8,500",
-    pricePer: "₹32 per sqft",
-    ownerName: "Rajeev Mehta",
-    since: "2017",
-    features: [
-      { label: "Carpet Area", value: "270 sqft" },
-      { label: "Availability", value: "From 15th Aug" },
-      { label: "Facing", value: "West" },
-      { label: "Furnishing", value: "Fully Furnished" },
-      { label: "Tenant Preference", value: "Bachelors" },
-      { label: "Bathroom", value: "1" },
-    ],
-  },
-  // Add 6+ more entries with variations
-];
+const RentList = () => {
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({
+    sub_category: 'Rent',
+    type: 'residential'
+  });
 
-export default function RentList() {
+  useEffect(() => {
+    fetchRentProperties();
+  }, [filters]);
+
+  const fetchRentProperties = async () => {
+    try {
+      setLoading(true);
+      const response = await propertyApi.searchProperties(filters);
+
+      if (response.success) {
+        setProperties(response.properties || []);
+      } else {
+        toast.error("Failed to load rental properties");
+      }
+    } catch (error) {
+      console.error("Error fetching rent properties:", error);
+      toast.error("Error loading properties");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Transform API properties to match RentCard component format
+  const transformPropertyForRentCard = (property) => ({
+    image: property.property_features?.images?.[0] || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200",
+    title: property.name || `${property.type} Property in ${property.city}`,
+    subtitle: property.address,
+    description: property.description || `A beautiful ${property.type} property available for rent in ${property.city}, ${property.state}`,
+    price: `₹${property.price.toLocaleString()}/month`,
+    pricePer: property.property_features?.size ? `₹${Math.round(property.price / property.property_features.size)} per sqft` : "Price on request",
+    ownerName: property.owner_id?.name || "Property Owner",
+    since: new Date(property.createdAt).getFullYear().toString(),
+    features: [
+      { label: "Super Area", value: property.property_features?.size ? `${property.property_features.size} sqft` : "N/A" },
+      { label: "Status", value: property.verification_status === 'verified' ? "Verified" : "Pending" },
+      { label: "Transaction", value: property.sub_category },
+      { label: "Type", value: property.type },
+      { label: "Units", value: property.property_features?.units?.toString() || "1" },
+      { label: "Location", value: `${property.city}, ${property.state}` },
+    ],
+    _id: property._id,
+    contactNumber: property.contactNumber,
+    owner: property.owner_id
+  });
+
+  const rentData = properties.map(transformPropertyForRentCard);
+
   return (
     <>
-      <Navbar bgColor="light" avatarUrl={avatar} />
-      <div className="max-w-6xl mx-auto p-4 space-y-8 font-inter">
-        {/* Dynamic Filter Bar for Rent */}
-        <DynamicFilterBar activeTab="Rent" />
+      <Navbar />
+      <div className="min-h-screen bg-gray-50 pt-20">
+        <div className="container mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Properties for Rent
+            </h1>
+            <p className="text-gray-600">
+              Find the perfect rental property for your needs
+            </p>
+          </div>
 
-        {rentData.map((item, index) => (
-          <RentCard key={index} {...item} />
-        ))}
+          {/* Filter Bar */}
+          <div className="mb-8">
+            <DynamicFilterBar
+              activeTab="Rent"
+              onSearchResults={(results, searchData) => {
+                if (results && results.length > 0) {
+                  setProperties(results);
+                } else if (searchData) {
+                  // Update filters based on search data
+                  setFilters(prev => ({
+                    ...prev,
+                    ...searchData.filters
+                  }));
+                }
+              }}
+            />
+          </div>
+
+          {/* Loading State */}
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="text-center">
+                <Loader2 className="w-12 h-12 animate-spin text-[#f73c56] mx-auto mb-4" />
+                <p className="text-gray-600">Loading rental properties...</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Properties Grid */}
+              {rentData.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {rentData.map((property, index) => (
+                    <RentCard key={property._id || index} {...property} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-20">
+                  <MapPinned className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No Rental Properties Found</h3>
+                  <p className="text-gray-600">Try adjusting your filters to see more results.</p>
+                </div>
+              )}
+
+              {/* Load More Button */}
+              {rentData.length > 0 && (
+                <div className="text-center mt-12">
+                  <button
+                    onClick={fetchRentProperties}
+                    className="bg-[#f73c56] text-white px-8 py-3 rounded-lg hover:bg-[#e9334e] transition-colors"
+                  >
+                    Refresh Properties
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
       <Footer />
     </>
   );
-}
+};
+
+export default RentList;

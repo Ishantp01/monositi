@@ -17,17 +17,17 @@ export default function MoreDetailsSec({ property }) {
           ["Security Deposit", property ? formatINR(property.price * 2) : "₹10.0 Lac"],
           [
             "Address",
-            property ? property.location : "Embassy Lake Terraces, 61A, Service Road, Subramani Nagar, Hebbal Kempapura, Hebbal, Bangalore - North, Karnataka",
+            property ? `${property.address}, ${property.city}, ${property.state}` : "Embassy Lake Terraces, 61A, Service Road, Subramani Nagar, Hebbal Kempapura, Hebbal, Bangalore - North, Karnataka",
           ],
-          ["Landmarks", property ? property.location.split(',')[0] : "Hebbal"],
-          ["Furnishing", property?.furnished || "Semi-Furnished"],
-          ["Flooring", "Marbonite"],
-          ["Overlooking", "Garden/Park, Pool"],
-          ["Age of Construction", property?.age || "New Construction"],
-          ["Additional Rooms", "Puja Room, Study, Servant Room"],
-          ["Water Availability", property?.waterSupply || "24 Hours Available"],
-          ["Status of Electricity", property?.powerBackup === "Yes" ? "No/Rare Powercut" : "Regular Powercut"],
-          ["Floors allowed for construction", property?.totalFloors || "15"],
+          ["Landmarks", property ? property.city : "Hebbal"],
+          ["Property Type", property?.type || "Residential"],
+          ["Size", property?.property_features?.size ? `${property.property_features.size} sqft` : "1200 sqft"],
+          ["Units", property?.property_features?.units || "2 BHK"],
+          ["Verification Status", property?.verification_status === 'verified' ? "Verified" : "Pending Verification"],
+          ["Monositi Verified", property?.monositi_verified ? "Yes" : "No"],
+          ["Property Status", property?.status || "Active"],
+          ["Listing Type", property?.listing_visibility || "Public"],
+          ["Contact Number", property?.contactNumber || "Not Available"],
           ["Lift", "3"],
         ].map(([label, value], i) => (
           <div key={i} className="flex">
@@ -46,6 +46,30 @@ export default function MoreDetailsSec({ property }) {
           </span>
         </p>
       </div>
+
+      {/* Amenities */}
+      {property?.property_features?.amenities?.length > 0 && (
+        <div className="mt-4">
+          <p className="text-sm">
+            <span className="font-semibold text-gray-900">Amenities:</span>{" "}
+            <span className="text-gray-700">
+              {property.property_features.amenities.join(", ")}
+            </span>
+          </p>
+        </div>
+      )}
+
+      {/* Nearby Places */}
+      {property?.property_features?.nearby_places?.length > 0 && (
+        <div className="mt-4">
+          <p className="text-sm">
+            <span className="font-semibold text-gray-900">Nearby Places:</span>{" "}
+            <span className="text-gray-700">
+              {property.property_features.nearby_places.join(", ")}
+            </span>
+          </p>
+        </div>
+      )}
 
       {/* Button */}
       <div className="pt-6">

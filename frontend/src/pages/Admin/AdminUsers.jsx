@@ -10,7 +10,7 @@ export default function AdminUsers() {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5000/api/users", {
+        const res = await fetch("https://monositi.onrender.com/api/users", {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -81,9 +81,8 @@ export default function AdminUsers() {
                     </td>
                     <td className="px-4 py-2 text-sm">
                       <span
-                        className={`px-2 py-1 rounded-full text-white ${
-                          u.role === "admin" ? "bg-red-600" : "bg-gray-600"
-                        }`}
+                        className={`px-2 py-1 rounded-full text-white ${u.role === "admin" ? "bg-red-600" : "bg-gray-600"
+                          }`}
                       >
                         {u.role}
                       </span>

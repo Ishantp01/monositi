@@ -10,7 +10,12 @@ const amenities = [
   { name: "Banquet Hall", icon: Utensils },
 ];
 
-const Amenities = () => {
+const Amenities = ({ property }) => {
+  // Use property amenities if available, otherwise use default
+  const propertyAmenities = property?.property_features?.amenities || [];
+  const displayAmenities = propertyAmenities.length > 0
+    ? propertyAmenities.map(name => ({ name, icon: Building }))
+    : amenities;
   return (
     <div className="bg-white rounded-lg p-4 sm:p-6 mx-auto shadow-md mb-8 max-w-[90%] border border-red-100">
       <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">
@@ -18,7 +23,7 @@ const Amenities = () => {
       </h3>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-6 text-sm text-gray-700">
-        {amenities.map((amenity, index) => {
+        {displayAmenities.map((amenity, index) => {
           const Icon = amenity.icon;
           return (
             <div key={index} className="flex items-center gap-2">

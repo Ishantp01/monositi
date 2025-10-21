@@ -21,6 +21,7 @@ const router = express.Router();
  */
 router.get("/", getProperties);
 router.get("/search", searchProperties);
+router.get("/search/type", searchProperties); // Add this route for type-based search
 router.get("/nearby", getNearbyProperties);
 
 /**

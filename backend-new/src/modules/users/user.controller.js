@@ -118,8 +118,12 @@ export const sendOtp = async (req, res) => {
             }
         }, 120000);
 
-        res.status(200).json({ success: true, message: "OTP sent successfully via WhatsApp" });
-        res.status(200).json({ success: true, message: "OTP sent successfully" });  
+        // For testing purposes, include OTP in response (remove in production)
+        res.status(200).json({
+            success: true,
+            message: "OTP sent successfully via WhatsApp",
+            otp: otp // Include OTP for testing - REMOVE IN PRODUCTION
+        });
 
     } catch (err) {
         console.error("Send OTP error:", err);
@@ -203,7 +207,7 @@ export const getMyProfile = async (req, res) => {
  */
 export const updateMyProfile = async (req, res) => {
     try {
-        const { name, email, profile_img,role } = req.body;
+        const { name, email, profile_img, role } = req.body;
         const updateFields = {};
         if (name) updateFields.name = name;
         if (email) updateFields.email = email;

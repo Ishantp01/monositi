@@ -4,14 +4,11 @@ import ServiceBooking from '../../models/booking.model.js';
 import mongoose from 'mongoose';
 import { uploadFileToCloudinary } from '../../utils/uploadToCloudinary.js';
 
-// Create a new service (for verified service providers)
 export const createService = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    // Check if user is a service provider
     const user = await User.findById(userId);
-    // Ensure this role name 'service_provider' matches exactly what's in your User model
     if (!user || user.role !== 'service_provider') {
       return res.status(403).json({
         success: false,
@@ -39,12 +36,10 @@ export const createService = async (req, res) => {
       });
     }
 
-    // Handle file uploads with Cloudinary
     const images = [];
     const serviceDocs = [];
 
     if (req.files) {
-      // Upload service images
       if (req.files.images) {
         for (const file of req.files.images) {
           const uploadResult = await uploadFileToCloudinary(file.path, 'monositi/services');
@@ -56,7 +51,6 @@ export const createService = async (req, res) => {
         }
       }
 
-      // Upload service documents
       if (req.files.service_docs) {
         for (const file of req.files.service_docs) {
           const uploadResult = await uploadFileToCloudinary(file.path, 'monositi/service_docs');
@@ -69,18 +63,15 @@ export const createService = async (req, res) => {
       }
     }
 
-    // Parse fields - handle both JSON strings and plain strings from FormData
     let parsedLocation = {};
     let parsedAddons = [];
     let parsedTags = [];
     let parsedCalendar = [];
 
-    // For location - can be a string, address, or GeoJSON object
     if (location) {
       try {
         if (typeof location === 'string' && location.startsWith('{')) {
           const locationObj = JSON.parse(location);
-          // Check if it's a GeoJSON Point
           if (locationObj.type === 'Point' && locationObj.coordinates) {
             parsedLocation = {
               type: 'Point',
@@ -97,16 +88,14 @@ export const createService = async (req, res) => {
       }
     }
 
-    // For addons - convert to array of objects with name and price
     if (addons) {
       try {
         if (typeof addons === 'string' && addons.startsWith('[')) {
           parsedAddons = JSON.parse(addons);
         } else {
-          // Convert comma-separated string to addon objects
           parsedAddons = addons.split(',').map(a => ({
             name: a.trim(),
-            price: 0 // Default price, can be updated later
+            price: 0
           })).filter(addon => addon.name);
         }
       } catch (e) {
@@ -117,7 +106,6 @@ export const createService = async (req, res) => {
       }
     }
 
-    // For tags - can be comma-separated string or JSON array
     if (tags) {
       try {
         parsedTags = typeof tags === 'string' && tags.startsWith('[') ? JSON.parse(tags) : tags.split(',').map(t => t.trim()).filter(Boolean);

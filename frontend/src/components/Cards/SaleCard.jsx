@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import FeaturesBox from "../Features/FeatureBox";
 
 export default function SaleCard({
@@ -9,11 +10,19 @@ export default function SaleCard({
   price, // e.g. "₹1.10 Cr"
   pricePer, // e.g. "₹9345 per sqft"
   rightCta1 = "Request Callback",
-  rightCta2 = "Get Info",
+  rightCta2 = "View Details",
   builderName, // e.g. "Provident Housi..."
   since, // e.g. "2018"
   features = [], // [{label, value}, ...]
+  _id, // Property ID for navigation
 }) {
+  const navigate = useNavigate();
+
+  const handleViewDetails = () => {
+    if (_id) {
+      navigate(`/buy-details/${_id}`);
+    }
+  };
   return (
     <div className="w-full rounded-xl border border-brand-border shadow-card overflow-hidden">
       <div className="flex flex-col md:flex-row">
@@ -46,7 +55,10 @@ export default function SaleCard({
             <button className="w-full rounded-full border border-brand-red text-brand-red py-2 text-sm font-medium hover:bg-white transition">
               {rightCta1}
             </button>
-            <button className="w-full rounded-full bg-brand-red text-white py-2 text-sm font-medium hover:bg-red-700 transition">
+            <button
+              onClick={handleViewDetails}
+              className="w-full rounded-full bg-brand-red text-white py-2 text-sm font-medium hover:bg-red-700 transition"
+            >
               {rightCta2}
             </button>
 

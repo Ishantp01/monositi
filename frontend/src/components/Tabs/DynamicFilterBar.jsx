@@ -293,7 +293,7 @@ const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F", onSearchResults }
               onChange={(e) => setSearchValue(e.target.value)}
               onKeyPress={handleSearchKeyPress}
               className="flex-1 outline-none text-sm bg-transparent text-gray-800 placeholder-gray-400"
-              aria-label={`Search for ${activeTab.toLowerCase()}`}
+              aria-label={`Search for ${activeTab?.toLowerCase() || 'properties'}`}
               disabled={isSearching}
             />
             <motion.button
@@ -493,7 +493,7 @@ const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F", onSearchResults }
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-600">
-                Found {searchResults.length} {activeTab.toLowerCase()}
+                Found {searchResults.length} {activeTab?.toLowerCase() || 'results'}
               </span>
               {searchValue && (
                 <span className="text-xs text-gray-500">
