@@ -50,6 +50,20 @@ export default function UnifiedPhoneAuth() {
                 setFormData(prev => ({ ...prev, phone: formattedPhone }));
                 setStep("otp");
                 toast.success("OTP sent to your WhatsApp!");
+
+                // Show OTP in alert for testing purposes
+                if (response.otp) {
+                    // Console log for developers
+                    console.log(`🔐 TESTING MODE - OTP: ${response.otp} for phone: ${formattedPhone}`);
+
+                    // Alert for testers
+                    alert(`TESTING MODE - OTP RECEIVED\n\n` +
+                        `Your OTP is: ${response.otp}\n\n` +
+                        `Phone: ${formattedPhone}\n` +
+                        `Valid for: 2 minutes\n\n` +
+                        `Note: This alert is for testing purposes only.\n` +
+                        `In production, OTP will only be sent via WhatsApp.`);
+                }
             } else {
                 setError(response.message || "Failed to send OTP");
                 toast.error(response.message || "Failed to send OTP");
