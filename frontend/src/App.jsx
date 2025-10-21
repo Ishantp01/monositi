@@ -98,6 +98,7 @@ export default function App() {
 
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/selling-pg-hostel" element={<SaleList />} />
+        {/* <Route path="/selling-pg-hostel" element={<SaleList />} /> */}
       </Routes>
     </BrowserRouter>
   );
