@@ -8,6 +8,7 @@ import propertyRoutes from "../modules/properties/property.routes.js";
 import providerRoutes from "../modules/services/provider.routes.js";
 import serviceRoutes from "../modules/services/service.routes.js";
 import adminRoutes from "../modules/services/admin.routes.js";
+import monositiRoutes from "../modules/Monositi/monositi.routes.js";
 
 
 router.use("/auth", authRoutes);
@@ -16,5 +17,6 @@ router.use("/properties", propertyRoutes);
 router.use("/services/provider", providerRoutes);
 router.use("/services", serviceRoutes);
 router.use("/admin", adminRoutes);
+router.use("/monositi", monositiRoutes);
 
 export default router;

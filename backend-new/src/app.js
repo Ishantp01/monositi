@@ -7,19 +7,30 @@ const app = express();
 // CORS configuration
 const corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigins = process.env.CORS_ORIGIN 
+    // Default allowed origins (always included)
+    const defaultOrigins = [
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'https://monositi-frntend.onrender.com'
+    ];
+    
+    // Merge with environment variable origins if provided
+    const envOrigins = process.env.CORS_ORIGIN 
       ? process.env.CORS_ORIGIN.split(',').map(url => url.trim())
-      : [
-          'http://localhost:3000',
-          'http://localhost:5173',
-          'https://monositi-frntend.onrender.com'
-        ];
+      : [];
+    
+    const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
+    
+    // Debug logging
+    console.log('CORS Check - Origin:', origin);
+    console.log('CORS Check - Allowed Origins:', allowedOrigins);
     
     // Allow requests with no origin (like mobile apps, Postman, or same-origin)
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      console.log('✓ CORS Allowed');
       callback(null, true);
     } else {
-      console.log('Blocked by CORS:', origin);
+      console.log('✗ Blocked by CORS:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
