@@ -90,11 +90,6 @@ const Home = () => {
         {/* <HeroSearchBar /> */}
         <PropertySearch />
 
-        {/* Featured Properties */}
-        {/* <FeaturedProperties /> */}
-
-        {/* Quick Categories */}
-        {/* <QuickCategories /> */}
 
         {/* Buy Properties */}
         <div className="py-12 bg-white">
@@ -123,7 +118,7 @@ const Home = () => {
         </div>
 
         {/* Commercial Properties */}
-        <div className="py-12 bg-white">
+        {/* <div className="py-12 bg-white">
           <div className="container mx-auto px-4">
             <StandardPropertySlider
               properties={transformProperties(commercialProperties)}
@@ -133,13 +128,9 @@ const Home = () => {
               viewAllLink="/commercial"
             />
           </div>
-        </div>
+        </div> */}
 
-        {/* Services Teaser */}
-        {/* <ServicesTeaser /> */}
 
-        {/* Testimonials */}
-        {/* <Testimonials /> */}
 
         <Footer />
       </div>

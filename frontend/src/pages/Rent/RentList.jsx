@@ -107,7 +107,7 @@ const RentList = () => {
             <>
               {/* Properties Grid */}
               {rentData.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
                   {rentData.map((property, index) => (
                     <RentCard key={property._id || index} {...property} />
                   ))}
