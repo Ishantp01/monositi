@@ -20,6 +20,16 @@ const FILTER_CONFIGS = {
     },
     additionalOptions: ["New Builder Projects"],
   },
+  Monositi: {
+    searchPlaceholder: "Search hostels, commercial spaces, or land plots",
+    categories: ["commercial", "hostel_pg", "land_plot"],
+    filters: {
+      "Property Type": ["Commercial", "Hostel/PG", "Land Plot"],
+      "Price Range": ["Under 10K", "10K-50K", "50K-1L", "1L-5L", "Above 5L"],
+      "Availability": ["Available", "Booked", "Full House"],
+      "Verification": ["Verified", "Unverified"],
+    },
+  },
   Rent: {
     searchPlaceholder: "Search upto 3 localities or landmarks",
     categories: ["Full House", "PG/Hostel", "Flatmates"],
@@ -169,6 +179,29 @@ const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F", onSearchResults }
         if (response.success) {
           results = response.services || [];
           toast.success(`Found ${results.length} services`);
+        }
+      } else if (activeTab === "Monositi") {
+        // Search Monositi listings
+        const searchParams = new URLSearchParams();
+        if (searchValue.trim()) searchParams.append('q', searchValue.trim());
+        if (selectedCategory && selectedCategory !== "all") {
+          searchParams.append('category', selectedCategory);
+        }
+        if (selectedFilters['Price Range']) {
+          const [min, max] = selectedFilters['Price Range'].split('-');
+          if (min) searchParams.append('minPrice', min);
+          if (max) searchParams.append('maxPrice', max);
+        }
+        if (selectedFilters['Verification']) {
+          searchParams.append('verified', selectedFilters['Verification'] === 'Verified' ? 'true' : 'false');
+        }
+
+        // Use monositiApi for Monositi search
+        const { monositiApi } = await import('../../utils/monositiApi');
+        const response = await monositiApi.getPublicListings(Object.fromEntries(searchParams));
+        if (response.success) {
+          results = response.data || [];
+          toast.success(`Found ${results.length} Monositi listings`);
         }
       } else {
         // Search properties (Buy, Rent, Commercial)

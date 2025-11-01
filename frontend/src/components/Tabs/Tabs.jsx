@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Search } from "lucide-react";
 import Buy from "../sections/Buy";
 import Rent from "../sections/Rent";
-import Commercial from "../sections/Commercial";
 import Services from "../sections/Services";
 import DynamicFilterBar from "./DynamicFilterBar";
+import Monositi from "../sections/Monositi";
 
-const tabOptions = ["Buy", "Rent", "Monositi", "Commercial", "Services"];
+const tabOptions = ["Buy", "Rent", "Monositi", "Services"];
 
 const tabContent = {
   Buy: <Buy />,
   Rent: <Rent />,
-  // Monositi: <PgHotel />,
-  Commercial: <Commercial />,
+  Monositi: <Monositi />,
+  // Commercial: <Commercial />,
   Services: <Services />,
 };
 
@@ -20,7 +19,6 @@ const tabToHash = {
   Buy: "buy",
   Rent: "rent",
   Monositi: "monositi",
-  Commercial: "commercial",
   Services: "services",
 };
 
@@ -28,7 +26,6 @@ const hashToTab = {
   buy: "Buy",
   rent: "Rent",
   monositi: "Monositi",
-  commercial: "Commercial",
   services: "Services",
 };
 
