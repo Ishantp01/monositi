@@ -92,7 +92,7 @@ const Home = () => {
 
 
         {/* Buy Properties */}
-        <div className="py-12 bg-white">
+        {/* <div className="py-12 bg-white">
           <div className="container mx-auto px-4">
             <StandardPropertySlider
               properties={transformProperties(buyProperties)}
@@ -102,10 +102,10 @@ const Home = () => {
               viewAllLink="/salelist"
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Rent Properties */}
-        <div className="py-12 bg-gray-50">
+        {/* <div className="py-12 bg-gray-50">
           <div className="container mx-auto px-4">
             <StandardPropertySlider
               properties={transformProperties(rentProperties)}
@@ -115,7 +115,7 @@ const Home = () => {
               viewAllLink="/rentlist"
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Commercial Properties */}
         {/* <div className="py-12 bg-white">
