@@ -553,6 +553,18 @@ const AdminDashboard = () => {
                                         <span>Services</span>
                                     </div>
                                 </button>
+                                <button
+                                    onClick={() => setActiveTab("monositi")}
+                                    className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === "monositi"
+                                        ? "border-[#f73c56] text-[#f73c56]"
+                                        : "border-transparent text-gray-500 hover:text-gray-700"
+                                        }`}
+                                >
+                                    <div className="flex items-center space-x-2">
+                                        <Building className="w-4 h-4" />
+                                        <span>Monositi</span>
+                                    </div>
+                                </button>
                             </nav>
                         </div>
 
@@ -1253,6 +1265,122 @@ const AdminDashboard = () => {
                                                 </div>
                                             ))
                                         )}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* Monositi Tab */}
+                            {activeTab === "monositi" && (
+                                <motion.div
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="space-y-6"
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <h2 className="text-2xl font-bold text-gray-900">Monositi Management</h2>
+                                        <a
+                                            href="/admin/monositi"
+                                            className="inline-flex items-center px-4 py-2 bg-[#f73c56] text-white rounded-lg hover:bg-[#e9334e] transition-colors"
+                                        >
+                                            <Building className="w-4 h-4 mr-2" />
+                                            Manage Monositi
+                                        </a>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div className="bg-white border border-gray-200 rounded-xl p-6">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-gray-500 text-sm">Total Listings</p>
+                                                    <p className="text-2xl font-bold text-gray-900">0</p>
+                                                </div>
+                                                <Building className="w-8 h-8 text-blue-500" />
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-white border border-gray-200 rounded-xl p-6">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-gray-500 text-sm">Verified Listings</p>
+                                                    <p className="text-2xl font-bold text-gray-900">0</p>
+                                                </div>
+                                                <CheckCircle className="w-8 h-8 text-green-500" />
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-white border border-gray-200 rounded-xl p-6">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-gray-500 text-sm">Pending Verification</p>
+                                                    <p className="text-2xl font-bold text-gray-900">0</p>
+                                                </div>
+                                                <Clock className="w-8 h-8 text-yellow-500" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white border border-gray-200 rounded-xl p-6">
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                            <a
+                                                href="/admin/monositi/create"
+                                                className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-[#f73c56] hover:bg-[#f73c56]/5 transition-colors"
+                                            >
+                                                <div className="text-center">
+                                                    <Building className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                                                    <p className="text-sm font-medium text-gray-600">Create New Listing</p>
+                                                </div>
+                                            </a>
+
+                                            <a
+                                                href="/admin/monositi?verified=false"
+                                                className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-yellow-500 hover:bg-yellow-50 transition-colors"
+                                            >
+                                                <div className="text-center">
+                                                    <Clock className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                                                    <p className="text-sm font-medium text-gray-600">Pending Verifications</p>
+                                                </div>
+                                            </a>
+
+                                            <a
+                                                href="/admin/monositi?category=hostel_pg"
+                                                className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors"
+                                            >
+                                                <div className="text-center">
+                                                    <Users className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                                                    <p className="text-sm font-medium text-gray-600">Hostel/PG Listings</p>
+                                                </div>
+                                            </a>
+
+                                            <a
+                                                href="/admin/monositi?category=commercial"
+                                                className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors"
+                                            >
+                                                <div className="text-center">
+                                                    <Home className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                                                    <p className="text-sm font-medium text-gray-600">Commercial Spaces</p>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white border border-gray-200 rounded-xl p-6">
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                                        <div className="space-y-3">
+                                            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                                                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                                    <Building className="w-5 h-5 text-blue-600" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-medium text-gray-900">
+                                                        No recent Monositi activity
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">
+                                                        Create your first listing to get started
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </motion.div>
                             )}
