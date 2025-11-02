@@ -42,6 +42,36 @@ const Rent = () => {
     }
   };
 
+  // Transform API properties to match PropertyCard component format
+  const transformProperties = (apiProperties) => {
+    return apiProperties.map(property => {
+      // Debug logging for images
+      console.log('Property images:', property.property_features?.images);
+
+      return {
+        _id: property._id,
+        title: property.name || `${property.type} Property in ${property.city}`,
+        price: property.price,
+        propertyType: property.type,
+        address: {
+          area: property.address,
+          city: property.city
+        },
+        bedrooms: property.property_features?.units || 1,
+        bathrooms: Math.ceil((property.property_features?.units || 1) / 2),
+        area: property.property_features?.size || 1000,
+        isVerified: property.monositi_verified,
+        photos: property.property_features?.images && property.property_features.images.length > 0
+          ? property.property_features.images
+          : [
+            "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+          ],
+        type: property.type,
+        sub_category: property.sub_category
+      };
+    });
+  };
+
   const renderContent = () => {
     if (loading) {
       return (
@@ -64,11 +94,14 @@ const Rent = () => {
       );
     }
 
+    // Transform properties for PropertyCard component
+    const transformedProperties = transformProperties(properties);
+
     // If 4 or fewer properties, show them in a grid
-    if (properties.length <= 4) {
+    if (transformedProperties.length <= 4) {
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
-          {properties.map((property) => (
+          {transformedProperties.map((property) => (
             <PropertyCard
               key={property._id}
               property={property}
@@ -112,7 +145,7 @@ const Rent = () => {
           }}
           className="rent-properties-swiper"
         >
-          {properties.map((property) => (
+          {transformedProperties.map((property) => (
             <SwiperSlide key={property._id}>
               <PropertyCard property={property} />
             </SwiperSlide>

@@ -27,6 +27,13 @@ const PropertyCard = ({ property, variant = 'default' }) => {
           src={photos?.[0] || 'https://via.placeholder.com/300x200?text=No+Image'}
           alt={title}
           className={`w-full object-cover ${isCompact ? 'h-40' : 'h-52'}`}
+          onError={(e) => {
+            console.log('Image failed to load:', photos?.[0]);
+            e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+          }}
+          onLoad={() => {
+            console.log('Image loaded successfully:', photos?.[0]);
+          }}
         />
 
         {/* Badges */}

@@ -18,7 +18,7 @@ export default function RentCard({
 }) {
   return (
     <Link to={_id ? `/rent-details/${_id}` : "/rent-details"}>
-      <div className="w-full rounded-xl border border-brand-red shadow-card overflow-hidden">
+      <div className="max-w-7xl rounded-xl border border-brand-red shadow-card overflow-hidden">
         <div className="flex flex-col md:flex-row">
           {/* Left Image */}
           <div className="md:w-80 h-60 md:h-auto shrink-0 px-4 md:px-8 py-4 ">

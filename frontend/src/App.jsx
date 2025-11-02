@@ -30,6 +30,10 @@ import RentDetails from "./pages/Rent/RentDetails";
 import ServiceBookingForm from "./components/Services/ServiceBookingForm";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import CreateService from "./pages/Services/CreateService";
+import MonositiList from "./pages/Monositi/MonositiList";
+import MonositiDetails from "./pages/Monositi/MonositiDetails";
+import AdminMonositi from "./pages/Admin/AdminMonositi";
+import CreateMonositiListing from "./pages/Admin/CreateMonositiListing";
 
 const AdminRedirect = () => {
   const navigate = useNavigate();
@@ -67,13 +71,7 @@ export default function App() {
         <Route path="/form-two" element={<ServiceBookingForm />} />
 
 
-        {/* <Route
-          path="/properties/type/:type"
-          element={<PropertyTypeResults />}
-        /> */}
-
         <Route path="/verify" element={<VerifyOtp />} />
-        {/* <Route path="/property-details/:id" element={<Rent />} /> */}
         <Route path="/commercial-details/:id" element={<CommercialList />} />
 
         <Route path="/buy-details/:id" element={<BuyDetails />} />
@@ -97,6 +95,16 @@ export default function App() {
         <Route path="/create-service" element={<CreateService />} />
 
         <Route path="/admin" element={<AdminDashboard />} />
+
+        {/* Monositi Routes */}
+        <Route path="/monositi" element={<MonositiList />} />
+        <Route path="/monositi-details/:id" element={<MonositiDetails />} />
+
+        {/* Admin Monositi Routes */}
+        <Route path="/admin/monositi" element={<AdminMonositi />} />
+        <Route path="/admin/monositi/create" element={<CreateMonositiListing />} />
+        <Route path="/admin/monositi/edit/:id" element={<CreateMonositiListing />} />
+
         <Route path="/selling-pg-hostel" element={<SaleList />} />
       </Routes>
     </BrowserRouter>

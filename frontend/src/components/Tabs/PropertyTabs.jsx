@@ -76,11 +76,10 @@ const PropertySearch = () => {
           <button
             key={tab}
             onClick={() => handleTabClick(tab)}
-            className={`pb-1 border-b-2 ${
-              activeTab === tab
-                ? "text-theme-primary border-theme-primary"
-                : "text-black border-transparent hover:border-gray-400"
-            } transition-all`}
+            className={`pb-1 border-b-2 ${activeTab === tab
+              ? "text-theme-primary border-theme-primary"
+              : "text-black border-transparent hover:border-gray-400"
+              } transition-all`}
           >
             {tab}
           </button>

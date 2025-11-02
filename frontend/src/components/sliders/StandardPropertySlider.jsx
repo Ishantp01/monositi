@@ -8,10 +8,10 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-const StandardPropertySlider = ({ 
-  properties, 
-  title = "Properties", 
-  subtitle = "", 
+const StandardPropertySlider = ({
+  properties,
+  title = "Properties",
+  subtitle = "",
   autoplay = true,
   slidesPerView = { base: 1, sm: 2, md: 3, lg: 4 }
 }) => {
@@ -24,7 +24,7 @@ const StandardPropertySlider = ({
   }
 
   return (
-    <div className="py-8">
+    <div className="py-8 max-w-7xl">
       {/* Section Header */}
       <div className="mb-6 text-center">
         <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
