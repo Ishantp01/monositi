@@ -9,6 +9,7 @@ import providerRoutes from "../modules/services/provider.routes.js";
 import serviceRoutes from "../modules/services/service.routes.js";
 import adminRoutes from "../modules/services/admin.routes.js";
 import monositiRoutes from "../modules/Monositi/monositi.routes.js";
+import builderRoutes from "../modules/builders/builder.routes.js";
 
 
 router.use("/auth", authRoutes);
@@ -18,5 +19,6 @@ router.use("/services/provider", providerRoutes);
 router.use("/services", serviceRoutes);
 router.use("/admin", adminRoutes);
 router.use("/monositi", monositiRoutes);
+router.use("/builders", builderRoutes);
 
 export default router;
