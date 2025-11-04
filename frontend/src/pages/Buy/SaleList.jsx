@@ -14,6 +14,7 @@ const SaleList = () => {
     sub_category: 'Buy',
     type: 'residential'
   });
+  
 
   useEffect(() => {
     fetchBuyProperties();
