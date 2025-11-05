@@ -6,6 +6,21 @@ import apiRequest from "../../utils/api";
 
 // Tab-specific filter configurations (unchanged)
 const FILTER_CONFIGS = {
+  "Real Estate": {
+    searchPlaceholder: "Search properties for buy, sell, or rent",
+    categories: ["Buy", "Sell", "Rent"],
+    filters: {
+      "Property Type": ["Residential", "Commercial"],
+      "BHK Type": ["1 BHK", "2 BHK", "3 BHK", "4 BHK", "5+ BHK"],
+      "Property Status": [
+        "Ready to Move",
+        "Under Construction",
+        "New Builder Projects",
+      ],
+      "Price Range": ["Under 50L", "50L-1Cr", "1Cr-2Cr", "2Cr-5Cr", "Above 5Cr"],
+    },
+    additionalOptions: ["New Builder Projects"],
+  },
   Buy: {
     searchPlaceholder: "Search upto 3 localities or landmarks",
     categories: ["Full House", "Land/Plot"],
@@ -22,9 +37,9 @@ const FILTER_CONFIGS = {
   },
   Monositi: {
     searchPlaceholder: "Search hostels, commercial spaces, or land plots",
-    categories: ["commercial", "hostel_pg", "land_plot"],
+    categories: ["Commercial Space", "Hostel & PG", "Land & Plot"],
     filters: {
-      "Property Type": ["Commercial", "Hostel/PG", "Land Plot"],
+      "Property Type": ["Commercial Space", "Hostel & PG", "Land & Plot"],
       "Price Range": ["Under 10K", "10K-50K", "50K-1L", "1L-5L", "Above 5L"],
       "Availability": ["Available", "Booked", "Full House"],
       "Verification": ["Verified", "Unverified"],
@@ -93,7 +108,7 @@ const FILTER_CONFIGS = {
 };
 
 const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F", onSearchResults }) => {
-  const config = FILTER_CONFIGS[activeTab] || FILTER_CONFIGS.Buy;
+  const config = FILTER_CONFIGS[activeTab] || FILTER_CONFIGS["Real Estate"];
   const [expandedFilters, setExpandedFilters] = useState({});
   const [searchValue, setSearchValue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(
@@ -185,7 +200,26 @@ const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F", onSearchResults }
         const searchParams = new URLSearchParams();
         if (searchValue.trim()) searchParams.append('q', searchValue.trim());
         if (selectedCategory && selectedCategory !== "all") {
-          searchParams.append('category', selectedCategory);
+          // Map display names back to category values
+          const categoryMap = {
+            "Commercial Space": "commercial",
+            "Hostel & PG": "hostel_pg",
+            "Land & Plot": "land_plot"
+          };
+          const categoryValue = categoryMap[selectedCategory] || selectedCategory.toLowerCase().replace(/\s+/g, '_');
+          searchParams.append('category', categoryValue);
+        }
+        if (selectedFilters['Property Type']) {
+          const typeMap = {
+            "Commercial Space": "commercial",
+            "Hostel & PG": "hostel_pg",
+            "Land & Plot": "land_plot"
+          };
+          const typeValue = typeMap[selectedFilters['Property Type']] || selectedFilters['Property Type'].toLowerCase().replace(/\s+/g, '_');
+          // Only set category if not already set from selectedCategory
+          if (!selectedCategory || selectedCategory === "all" || !searchParams.has('category')) {
+            searchParams.set('category', typeValue);
+          }
         }
         if (selectedFilters['Price Range']) {
           const [min, max] = selectedFilters['Price Range'].split('-');
@@ -202,6 +236,42 @@ const DynamicFilterBar = ({ activeTab, themeColor = "#E34F4F", onSearchResults }
         if (response.success) {
           results = response.data || [];
           toast.success(`Found ${results.length} Monositi listings`);
+        }
+      } else if (activeTab === "Real Estate") {
+        // Search Real Estate properties (Buy, Sell, Rent)
+        const searchParams = new URLSearchParams();
+        if (searchValue.trim()) searchParams.append('q', searchValue.trim());
+        
+        // Map category to sub_category
+        if (selectedCategory && selectedCategory !== "all") {
+          const categoryMap = {
+            "Buy": "Buy",
+            "Sell": "Buy", // Sell uses Buy sub_category for now
+            "Rent": "Rent"
+          };
+          const subCategory = categoryMap[selectedCategory] || selectedCategory;
+          searchParams.append('sub_category', subCategory);
+        }
+        
+        if (selectedFilters['Property Type']) {
+          searchParams.append('type', selectedFilters['Property Type'].toLowerCase());
+        }
+        
+        if (selectedFilters['BHK Type']) {
+          const bhk = selectedFilters['BHK Type'].split(' ')[0];
+          searchParams.append('bedrooms', bhk);
+        }
+        
+        if (selectedFilters['Price Range']) {
+          const [min, max] = selectedFilters['Price Range'].split('-');
+          if (min) searchParams.append('minPrice', min);
+          if (max) searchParams.append('maxPrice', max);
+        }
+
+        const response = await apiRequest(`/properties/search?${searchParams.toString()}`, "GET");
+        if (response.success) {
+          results = response.properties || [];
+          toast.success(`Found ${results.length} properties`);
         }
       } else {
         // Search properties (Buy, Rent, Commercial)
