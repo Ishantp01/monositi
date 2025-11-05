@@ -35,6 +35,7 @@ import MonositiDetails from "./pages/Monositi/MonositiDetails";
 import AdminMonositi from "./pages/Admin/AdminMonositi";
 import CreateMonositiListing from "./pages/Admin/CreateMonositiListing";
 import CreateBuilderProject from "./pages/Admin/CreateBuilderProject";
+import AdminBuilderDetail from "./pages/Admin/AdminBuilderDetail";
 import BuilderDetail from "./pages/Builders/BuilderDetail";
 import ProjectDetail from "./pages/Projects/ProjectDetail";
 import ForSale from "./pages/RealEstate/ForSale";
@@ -112,6 +113,7 @@ export default function App() {
 
         {/* Builders Routes */}
         <Route path="/admin/builders/create-project" element={<CreateBuilderProject />} />
+        <Route path="/admin/builders/:id" element={<AdminBuilderDetail />} />
         <Route path="/builder/:id" element={<BuilderDetail />} />
         <Route path="/project/:id" element={<ProjectDetail />} />
 
