@@ -80,11 +80,11 @@ const MonositiDetails = () => {
     const getCategoryLabel = (category) => {
         switch (category) {
             case 'hostel_pg':
-                return 'Hostel/PG';
+                return 'Hostel & PG';
             case 'commercial':
                 return 'Commercial Space';
             case 'land_plot':
-                return 'Land Plot';
+                return 'Land & Plot';
             default:
                 return category;
         }
