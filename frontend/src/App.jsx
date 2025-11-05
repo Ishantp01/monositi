@@ -34,6 +34,11 @@ import MonositiList from "./pages/Monositi/MonositiList";
 import MonositiDetails from "./pages/Monositi/MonositiDetails";
 import AdminMonositi from "./pages/Admin/AdminMonositi";
 import CreateMonositiListing from "./pages/Admin/CreateMonositiListing";
+import CreateBuilderProject from "./pages/Admin/CreateBuilderProject";
+import BuilderDetail from "./pages/Builders/BuilderDetail";
+import ProjectDetail from "./pages/Projects/ProjectDetail";
+import ForSale from "./pages/RealEstate/ForSale";
+import ForRent from "./pages/RealEstate/ForRent";
 
 const AdminRedirect = () => {
   const navigate = useNavigate();
@@ -104,6 +109,15 @@ export default function App() {
         <Route path="/admin/monositi" element={<AdminMonositi />} />
         <Route path="/admin/monositi/create" element={<CreateMonositiListing />} />
         <Route path="/admin/monositi/edit/:id" element={<CreateMonositiListing />} />
+
+        {/* Builders Routes */}
+        <Route path="/admin/builders/create-project" element={<CreateBuilderProject />} />
+        <Route path="/builder/:id" element={<BuilderDetail />} />
+        <Route path="/project/:id" element={<ProjectDetail />} />
+
+        {/* Real Estate Routes */}
+        <Route path="/for-sale" element={<ForSale />} />
+        <Route path="/for-rent" element={<ForRent />} />
 
         <Route path="/selling-pg-hostel" element={<SaleList />} />
       </Routes>
