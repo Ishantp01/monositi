@@ -92,11 +92,11 @@ const AdminMonositi = () => {
     const getCategoryLabel = (category) => {
         switch (category) {
             case 'hostel_pg':
-                return 'Hostel/PG';
+                return 'Hostel & PG';
             case 'commercial':
-                return 'Commercial';
+                return 'Commercial Space';
             case 'land_plot':
-                return 'Land Plot';
+                return 'Land & Plot';
             default:
                 return category;
         }
@@ -153,9 +153,9 @@ const AdminMonositi = () => {
                                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#f73c56] focus:border-transparent"
                             >
                                 <option value="">All Categories</option>
-                                <option value="commercial">Commercial</option>
-                                <option value="hostel_pg">Hostel/PG</option>
-                                <option value="land_plot">Land Plot</option>
+                                <option value="commercial">Commercial Space</option>
+                                <option value="hostel_pg">Hostel & PG</option>
+                                <option value="land_plot">Land & Plot</option>
                             </select>
 
                             <select
