@@ -1,36 +1,32 @@
 import React, { useEffect, useState } from "react";
-import Buy from "../sections/Buy";
-import Rent from "../sections/Rent";
+import RealEstate from "../sections/RealEstate";
 import Services from "../sections/Services";
 import DynamicFilterBar from "./DynamicFilterBar";
 import Monositi from "../sections/Monositi";
 
-const tabOptions = ["Buy", "Rent", "Monositi", "Services"];
+const tabOptions = ["Real Estate", "Monositi", "Services"];
 
 const tabContent = {
-  Buy: <Buy />,
-  Rent: <Rent />,
+  "Real Estate": <RealEstate />,
   Monositi: <Monositi />,
-  // Commercial: <Commercial />,
   Services: <Services />,
 };
 
 const tabToHash = {
-  Buy: "buy",
-  Rent: "rent",
+  "Real Estate": "real-estate",
   Monositi: "monositi",
   Services: "services",
 };
 
 const hashToTab = {
-  buy: "Buy",
-  rent: "Rent",
+  "real-estate": "Real Estate",
+  realestate: "Real Estate",
   monositi: "Monositi",
   services: "Services",
 };
 
 const PropertySearch = () => {
-  const [activeTab, setActiveTab] = useState("Buy");
+  const [activeTab, setActiveTab] = useState("Real Estate");
 
   // Set tab based on hash on mount
   useEffect(() => {
@@ -77,10 +73,11 @@ const PropertySearch = () => {
           <button
             key={tab}
             onClick={() => handleTabChange(tab)}
-            className={`pb-1 border-b-2 ${activeTab === tab
-              ? "text-theme-primary border-theme-primary"
-              : "text-black border-transparent hover:border-gray-400"
-              } transition-all`}
+            className={`pb-1 border-b-2 ${
+              activeTab === tab
+                ? "text-theme-primary border-theme-primary"
+                : "text-black border-transparent hover:border-gray-400"
+            } transition-all`}
           >
             {tab}
           </button>
