@@ -8,12 +8,22 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import GradientHeading from "../common/GradientHeading";
 import MonositiCard from "../Cards/MonositiCard";
+import HostelsPGCard from "../Cards/HostelsPGCard";
 import { monositiApi } from "../../utils/monositiApi";
 
 const Monositi = () => {
+    const [activeCategory, setActiveCategory] = useState("all");
     const [listings, setListings] = useState([]);
+    const [filteredListings, setFilteredListings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
+    const categories = [
+        { id: "all", label: "All" },
+        { id: "commercial", label: "Commercial" },
+        { id: "hostel_pg", label: "Hostels & PG" },
+        { id: "land_plot", label: "Land & Plot" }
+    ];
 
     useEffect(() => {
         fetchMonositiListings();
@@ -43,6 +53,15 @@ const Monositi = () => {
         }
     };
 
+    // Filter listings by category
+    useEffect(() => {
+        if (activeCategory === "all") {
+            setFilteredListings(listings);
+        } else {
+            setFilteredListings(listings.filter(listing => listing.category === activeCategory));
+        }
+    }, [activeCategory, listings]);
+
 
 
     const renderContent = () => {
@@ -59,28 +78,33 @@ const Monositi = () => {
             return <div className="text-center text-red-600 py-8">{error}</div>;
         }
 
-        if (!listings.length) {
+        if (!filteredListings.length) {
             return (
                 <div className="text-center py-8">
                     <div className="max-w-md mx-auto">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Monositi Listings Yet</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No {categories.find(c => c.id === activeCategory)?.label || ''} Listings Yet</h3>
                         <p className="text-gray-600 mb-4">
-                            Admin-created Monositi properties will appear here. These include hostels, PG accommodations, commercial spaces, and land plots.
-                        </p>
-                        <p className="text-sm text-gray-500">
-                            Contact an admin to create Monositi listings.
+                            {activeCategory === "all" 
+                                ? "Admin-created Monositi properties will appear here. These include hostels, PG accommodations, commercial spaces, and land plots."
+                                : `No ${categories.find(c => c.id === activeCategory)?.label} listings available at the moment.`
+                            }
                         </p>
                     </div>
                 </div>
             );
         }
 
+        // Use HostelsPGCard for hostel_pg category, MonositiCard for others
+        const CardComponent = activeCategory === "hostel_pg" ? HostelsPGCard : MonositiCard;
+
         // If 4 or fewer listings, show them in a grid
-        if (listings.length <= 4) {
+        if (filteredListings.length <= 4) {
             return (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
-                    {listings.map((listing) => (
-                        <MonositiCard key={listing._id} listing={listing} />
+                    {filteredListings.map((listing) => (
+                        <div key={listing._id} className="flex">
+                            <CardComponent listing={listing} />
+                        </div>
                     ))}
                 </div>
             );
@@ -120,9 +144,9 @@ const Monositi = () => {
                     }}
                     className="monositi-listings-swiper"
                 >
-                    {listings.map((listing) => (
+                    {filteredListings.map((listing) => (
                         <SwiperSlide key={listing._id}>
-                            <MonositiCard listing={listing} />
+                            <CardComponent listing={listing} />
                         </SwiperSlide>
                     ))}
                 </Swiper>
@@ -133,6 +157,23 @@ const Monositi = () => {
     return (
         <div className="py-8">
             <GradientHeading text="Monositi Listings" />
+            
+            {/* Category Tabs */}
+            <div className="flex justify-center gap-4 mb-8 px-4 flex-wrap">
+                {categories.map((category) => (
+                    <button
+                        key={category.id}
+                        onClick={() => setActiveCategory(category.id)}
+                        className={`px-6 py-2 rounded-full font-semibold transition-all duration-200 ${
+                            activeCategory === category.id
+                                ? "bg-[#f73c56] text-white shadow-md"
+                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                    >
+                        {category.label}
+                    </button>
+                ))}
+            </div>
 
             <div className="my-8 md:my-16">
                 {renderContent()}
