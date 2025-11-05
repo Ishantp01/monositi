@@ -35,12 +35,12 @@ import upload from "../../config/multer.js";
 
 // Get verified builders
 router.get("/public", getPublicBuilders);
-
-// Get builder details with projects
-router.get("/public/:id", getPublicBuilderById);
-
 // Get verified projects (for Buy section)
 router.get("/public/projects", getPublicProjects);
+// Get builder details with projects
+
+
+router.get("/public/:id", getPublicBuilderById);
 
 // Get upcoming projects (MUST be before /:projectId route)
 router.get("/public/projects/upcoming", getUpcomingProjects);
@@ -64,9 +64,6 @@ router.post("/", upload.fields([{ name: "logo", maxCount: 1 }]), createBuilder);
 
 // Get all builders
 router.get("/", getAllBuilders);
-
-// Get single builder details
-router.get("/:id", getBuilderById);
 
 // Update builder details
 router.put("/:id", upload.fields([{ name: "logo", maxCount: 1 }]), updateBuilder);
@@ -118,6 +115,10 @@ router.patch("/projects/:projectId/units", updateProjectUnits);
 
 // Delete a project
 router.delete("/projects/:projectId", deleteProject);
+
+// Get single builder details
+// NOTE: placed after the /projects routes to avoid route param conflicts
+router.get("/:id", getBuilderById);
 
 export default router;
 
