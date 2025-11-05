@@ -9,6 +9,7 @@ const getAuthHeaders = (isJSON = true) => {
   const headers = {};
   const token = getAuthToken();
   if (token) headers["Authorization"] = `Bearer ${token}`;
+  // Don't set Content-Type for FormData - browser will set it with boundary
   if (isJSON) headers["Content-Type"] = "application/json";
   return headers;
 };
