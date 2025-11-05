@@ -96,7 +96,9 @@ const MonositiList = () => {
                             {displayListings.length > 0 ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {displayListings.map((listing) => (
-                                        <MonositiCard key={listing._id} listing={listing} />
+                                        <div key={listing._id} className="flex">
+                                            <MonositiCard listing={listing} />
+                                        </div>
                                     ))}
                                 </div>
                             ) : (
