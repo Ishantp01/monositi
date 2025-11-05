@@ -42,23 +42,17 @@ const AdminBuilderDetail = () => {
   const fetchBuilderDetails = async () => {
     try {
       setLoading(true);
-      const response = await buildersApi.getAllBuilders();
+      const response = await buildersApi.getBuilderById(id);
       if (response.success) {
-        const foundBuilder = response.data.find((b) => b._id === id);
-        if (foundBuilder) {
-          setBuilder(foundBuilder);
-        } else {
-          toast.error("Builder not found");
-          navigate("/admin");
-        }
+        setBuilder(response.data);
       } else {
-        toast.error("Failed to fetch builder");
-        navigate("/admin");
+        toast.error(response.message || "Builder not found");
+        navigate("/admin/builders");
       }
     } catch (error) {
       console.error("Error fetching builder details:", error);
       toast.error("Error loading builder details");
-      navigate("/admin");
+      navigate("/admin/builders");
     } finally {
       setLoading(false);
     }
@@ -89,6 +83,25 @@ const AdminBuilderDetail = () => {
     } catch (error) {
       console.error("Error verifying builder:", error);
       toast.error("Failed to verify builder");
+    }
+  };
+
+  const handleDeleteBuilder = async () => {
+    if (!window.confirm("Are you sure you want to delete this builder? This will also delete all associated projects.")) {
+      return;
+    }
+
+    try {
+      const response = await buildersApi.deleteBuilder(id);
+      if (response.success) {
+        toast.success("Builder deleted successfully");
+        navigate("/admin/builders");
+      } else {
+        toast.error(response.message || "Failed to delete builder");
+      }
+    } catch (error) {
+      console.error("Error deleting builder:", error);
+      toast.error("Failed to delete builder");
     }
   };
 
@@ -187,7 +200,14 @@ const AdminBuilderDetail = () => {
                 <ChevronLeft className="w-4 h-4" />
                 Back to Admin
               </button>
-              <div className="flex gap-3">
+              <div className="flex gap-3 flex-wrap">
+                <Link
+                  to={`/admin/builders/${id}/edit`}
+                  className="flex items-center gap-2 px-4 py-2 border border-[#f73c56] text-[#f73c56] rounded-lg hover:bg-[#f73c56]/5 transition-colors"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  Edit Builder
+                </Link>
                 <Link
                   to={`/admin/builders/create-project?builder=${id}`}
                   className="flex items-center gap-2 px-4 py-2 bg-[#f73c56] text-white rounded-lg hover:bg-[#e9334e] transition-colors"
@@ -214,6 +234,13 @@ const AdminBuilderDetail = () => {
                       Verify
                     </>
                   )}
+                </button>
+                <button
+                  onClick={handleDeleteBuilder}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete
                 </button>
               </div>
             </div>
