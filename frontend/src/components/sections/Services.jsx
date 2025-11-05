@@ -259,67 +259,87 @@ const Services = () => {
               {services.map((service) => (
                 <div
                   key={service._id}
-                  className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white"
+                  className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all duration-300 flex flex-col h-full"
                 >
-                  {service.images && service.images.length > 0 ? (
-                    <img
-                      src={service.images[0]}
-                      alt={service.service_name}
-                      className="w-full h-48 object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                      <span className="text-gray-500">No Image</span>
-                    </div>
-                  )}
-
-                  <div className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="text-lg font-semibold line-clamp-1">{service.service_name}</h3>
-                      {service.monositi_verified && (
-                        <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                  {/* Service Image */}
+                  <div className="relative h-48 overflow-hidden bg-gray-100">
+                    {service.images && service.images.length > 0 ? (
+                      <img
+                        src={service.images[0]}
+                        alt={service.service_name}
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                        onError={(e) => {
+                          e.target.src = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                        <span className="text-gray-500 text-sm">No Image</span>
+                      </div>
+                    )}
+                    
+                    {/* Verified Badge */}
+                    {service.monositi_verified && (
+                      <div className="absolute top-3 right-3">
+                        <span className="bg-emerald-600 text-white text-xs font-semibold px-2.5 py-1.5 rounded-full shadow-md flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
                           Verified
                         </span>
-                      )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Service Details */}
+                  <div className="p-5 flex flex-col flex-grow">
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="font-semibold text-gray-900 text-base leading-snug line-clamp-2 flex-1">
+                        {service.service_name}
+                      </h3>
                     </div>
 
-                    <p className="text-sm text-gray-600 mb-2">{service.category}</p>
+                    <p className="text-sm text-[#f73c56] font-medium mb-3">{service.category}</p>
 
-                    <div className="flex items-center mb-2">
-                      <MapPin className="w-4 h-4 text-gray-400 mr-1" />
-                      <span className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-600 flex items-center mb-3">
+                      <MapPin className="w-4 h-4 mr-1.5 flex-shrink-0 text-gray-400" />
+                      <span className="line-clamp-1">
                         {service.provider?.name || 'Service Provider'}
                       </span>
                     </div>
 
-                    <div className="flex items-center mb-3">
-                      <DollarSign className="w-4 h-4 text-gray-400 mr-1" />
-                      <span className="text-lg font-semibold text-green-600">₹{service.base_price}</span>
-                      {service.variable_price && (
-                        <span className="text-sm text-gray-500 ml-1">+ variables</span>
-                      )}
-                    </div>
-
-                    {service.ratings > 0 && (
-                      <div className="flex items-center mb-3">
-                        <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                        <span className="text-sm font-medium">{service.ratings}</span>
-                        <span className="text-sm text-gray-500 ml-1">rating</span>
-                      </div>
+                    {service.description && (
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+                        {service.description}
+                      </p>
                     )}
 
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                      {service.description}
-                    </p>
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleBookService(service)}
-                        className="flex-1 px-4 py-2 bg-[#f73c56] text-white rounded-md hover:bg-[#e9334e] transition-colors text-sm font-medium"
-                      >
-                        Book Now
-                      </button>
+                    {/* Price and Rating */}
+                    <div className="mb-4 pt-3 border-t border-gray-100 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <DollarSign className="w-4 h-4 text-gray-400 mr-1" />
+                          <span className="text-lg font-bold text-[#f73c56]">₹{service.base_price}</span>
+                          {service.variable_price && (
+                            <span className="text-xs text-gray-500 ml-1">+ variables</span>
+                          )}
+                        </div>
+                        {service.ratings > 0 && (
+                          <div className="flex items-center">
+                            <Star className="w-4 h-4 text-yellow-500 mr-1 fill-yellow-500" />
+                            <span className="text-sm font-medium text-gray-700">{service.ratings}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
+
+                    {/* Book Button */}
+                    <button
+                      onClick={() => handleBookService(service)}
+                      className="mt-auto w-full text-center bg-[#f73c56] text-white py-2.5 px-4 rounded-lg hover:bg-[#e9334e] transition-all duration-200 text-sm font-semibold shadow-sm hover:shadow-md"
+                    >
+                      Book Now
+                    </button>
                   </div>
                 </div>
               ))}
