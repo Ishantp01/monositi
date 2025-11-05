@@ -339,8 +339,8 @@ const CreateMonositiListing = () => {
                                         >
                                             <option value="">Select Category</option>
                                             <option value="commercial">Commercial Space</option>
-                                            <option value="hostel_pg">Hostel/PG</option>
-                                            <option value="land_plot">Land Plot</option>
+                                            <option value="hostel_pg">Hostel & PG</option>
+                                            <option value="land_plot">Land & Plot</option>
                                         </select>
                                     </div>
 
