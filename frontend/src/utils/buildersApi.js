@@ -169,6 +169,121 @@ export const buildersApi = {
       };
     }
   },
+
+  // Get builder by ID (admin)
+  getBuilderById: async (id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/builders/${id}`, {
+        headers: getAuthHeaders(),
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching builder:", error);
+      return {
+        success: false,
+        message: "Failed to fetch builder",
+        data: null,
+      };
+    }
+  },
+
+  // Update builder
+  updateBuilder: async (id, formData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/builders/${id}`, {
+        method: "PUT",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${getAuthToken()}`,
+        },
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error updating builder:", error);
+      return {
+        success: false,
+        message: "Failed to update builder",
+      };
+    }
+  },
+
+  // Delete builder
+  deleteBuilder: async (id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/builders/${id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error deleting builder:", error);
+      return {
+        success: false,
+        message: "Failed to delete builder",
+      };
+    }
+  },
+
+  // Get project by ID (admin)
+  getProjectById: async (projectId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/builders/projects/${projectId}`, {
+        headers: getAuthHeaders(),
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching project:", error);
+      return {
+        success: false,
+        message: "Failed to fetch project",
+        data: null,
+      };
+    }
+  },
+
+  // Update project
+  updateProject: async (projectId, formData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/builders/projects/${projectId}`, {
+        method: "PUT",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${getAuthToken()}`,
+        },
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error updating project:", error);
+      return {
+        success: false,
+        message: "Failed to update project",
+      };
+    }
+  },
+
+  // Update project units
+  updateProjectUnits: async (projectId, unitData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/builders/projects/${projectId}/units`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(unitData),
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error updating project units:", error);
+      return {
+        success: false,
+        message: "Failed to update project units",
+      };
+    }
+  },
 };
 
 export default buildersApi;
