@@ -11,8 +11,8 @@ const RentList = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
-    sub_category: 'Rent',
-    type: 'residential'
+    sub_category: "Rent",
+    type: "residential",
   });
 
   useEffect(() => {
@@ -39,25 +39,45 @@ const RentList = () => {
 
   // Transform API properties to match RentCard component format
   const transformPropertyForRentCard = (property) => ({
-    image: property.property_features?.images?.[0] || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200",
+    image:
+      property.property_features?.images?.[0] ||
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200",
     title: property.name || `${property.type} Property in ${property.city}`,
     subtitle: property.address,
-    description: property.description || `A beautiful ${property.type} property available for rent in ${property.city}, ${property.state}`,
+    description:
+      property.description ||
+      `A beautiful ${property.type} property available for rent in ${property.city}, ${property.state}`,
     price: `₹${property.price.toLocaleString()}/month`,
-    pricePer: property.property_features?.size ? `₹${Math.round(property.price / property.property_features.size)} per sqft` : "Price on request",
+    pricePer: property.property_features?.size
+      ? `₹${Math.round(
+          property.price / property.property_features.size
+        )} per sqft`
+      : "Price on request",
     ownerName: property.owner_id?.name || "Property Owner",
     since: new Date(property.createdAt).getFullYear().toString(),
     features: [
-      { label: "Super Area", value: property.property_features?.size ? `${property.property_features.size} sqft` : "N/A" },
-      { label: "Status", value: property.verification_status === 'verified' ? "Verified" : "Pending" },
+      {
+        label: "Super Area",
+        value: property.property_features?.size
+          ? `${property.property_features.size} sqft`
+          : "N/A",
+      },
+      {
+        label: "Status",
+        value:
+          property.verification_status === "verified" ? "Verified" : "Pending",
+      },
       { label: "Transaction", value: property.sub_category },
       { label: "Type", value: property.type },
-      { label: "Units", value: property.property_features?.units?.toString() || "1" },
+      {
+        label: "Units",
+        value: property.property_features?.units?.toString() || "1",
+      },
       { label: "Location", value: `${property.city}, ${property.state}` },
     ],
     _id: property._id,
     contactNumber: property.contactNumber,
-    owner: property.owner_id
+    owner: property.owner_id,
   });
 
   const rentData = properties.map(transformPropertyForRentCard);
@@ -66,13 +86,13 @@ const RentList = () => {
     <>
       <Navbar />
       <div className="min-h-screen bg-gray-50 pt-20">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto max-w-7xl px-4 lg:px-6 py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
               Properties for Rent
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 lg:text-lg">
               Find the perfect rental property for your needs
             </p>
           </div>
@@ -86,9 +106,9 @@ const RentList = () => {
                   setProperties(results);
                 } else if (searchData) {
                   // Update filters based on search data
-                  setFilters(prev => ({
+                  setFilters((prev) => ({
                     ...prev,
-                    ...searchData.filters
+                    ...searchData.filters,
                   }));
                 }
               }}
@@ -107,7 +127,7 @@ const RentList = () => {
             <>
               {/* Properties Grid */}
               {rentData.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
+                <div className="grid grid-cols-1 gap-6 lg:gap-8">
                   {rentData.map((property, index) => (
                     <RentCard key={property._id || index} {...property} />
                   ))}
@@ -115,8 +135,12 @@ const RentList = () => {
               ) : (
                 <div className="text-center py-20">
                   <MapPinned className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No Rental Properties Found</h3>
-                  <p className="text-gray-600">Try adjusting your filters to see more results.</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    No Rental Properties Found
+                  </h3>
+                  <p className="text-gray-600">
+                    Try adjusting your filters to see more results.
+                  </p>
                 </div>
               )}
 
