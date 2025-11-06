@@ -1,5 +1,6 @@
 import MonositiListing from "../../models/MonositiListing.model.js";
 import MonositiRoom from "../../models/MonositiRoom.model.js";
+import MonositiEnquiry from "../../models/MonositiEnquiry.model.js";
 import { uploadFileToCloudinary } from "../../utils/uploadToCloudinary.js";
 import fs from "fs";
 
@@ -750,6 +751,153 @@ export const getPublicListingById = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch listing",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Send enquiry about a listing
+ * @route POST /api/monositi/public/listings/:id/enquiry
+ * @access Public
+ */
+export const sendEnquiry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, phone, message, enquiry_type } = req.body;
+
+    // Validation
+    if (!name || !email || !phone || !message) {
+      return res.status(400).json({
+        success: false,
+        message: "name, email, phone, and message are required",
+      });
+    }
+
+    // Check if listing exists
+    const listing = await MonositiListing.findById(id);
+    if (!listing) {
+      return res.status(404).json({
+        success: false,
+        message: "Listing not found",
+      });
+    }
+
+    // Create enquiry
+    const enquiry = new MonositiEnquiry({
+      listing: id,
+      user: req.user ? req.user._id : null, // If user is logged in
+      name,
+      email,
+      phone,
+      message,
+      enquiry_type: enquiry_type || "general",
+      status: "pending",
+    });
+
+    await enquiry.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "Enquiry sent successfully. We will contact you soon.",
+      data: enquiry,
+    });
+  } catch (error) {
+    console.error("Send enquiry error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send enquiry",
+      error: error.message,
+    });
+  }
+};
+
+//================================================================
+// D. ENQUIRY MANAGEMENT (Admin Only)
+//================================================================
+
+/**
+ * Get all enquiries with filters
+ * @route GET /api/monositi/enquiries?listing=&status=
+ * @access Admin only
+ */
+export const getAllEnquiries = async (req, res) => {
+  try {
+    const { listing, status } = req.query;
+
+    // Build filter object
+    const filter = {};
+    if (listing) filter.listing = listing;
+    if (status) filter.status = status;
+
+    const enquiries = await MonositiEnquiry.find(filter)
+      .populate("listing", "title category location images")
+      .populate("user", "name email phone")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: enquiries.length,
+      data: enquiries,
+    });
+  } catch (error) {
+    console.error("Get all enquiries error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch enquiries",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Update enquiry status
+ * @route PATCH /api/monositi/enquiries/:enquiryId/status
+ * @access Admin only
+ */
+export const updateEnquiryStatus = async (req, res) => {
+  try {
+    const { enquiryId } = req.params;
+    const { status, admin_notes } = req.body;
+
+    const enquiry = await MonositiEnquiry.findById(enquiryId);
+    if (!enquiry) {
+      return res.status(404).json({
+        success: false,
+        message: "Enquiry not found",
+      });
+    }
+
+    // Update status
+    if (status) {
+      enquiry.status = status;
+      
+      // Update timestamps based on status
+      if (status === "contacted" && !enquiry.contacted_at) {
+        enquiry.contacted_at = new Date();
+      }
+      if (status === "resolved" && !enquiry.resolved_at) {
+        enquiry.resolved_at = new Date();
+      }
+    }
+
+    // Update admin notes if provided
+    if (admin_notes) {
+      enquiry.admin_notes = admin_notes;
+    }
+
+    await enquiry.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Enquiry updated successfully",
+      data: enquiry,
+    });
+  } catch (error) {
+    console.error("Update enquiry status error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update enquiry",
       error: error.message,
     });
   }
