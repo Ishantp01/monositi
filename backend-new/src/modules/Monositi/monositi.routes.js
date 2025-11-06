@@ -19,6 +19,10 @@ import {
   // Public APIs
   getPublicListings,
   getPublicListingById,
+  sendEnquiry,
+  // Enquiry Management
+  getAllEnquiries,
+  updateEnquiryStatus,
 } from "./monositi.controller.js";
 
 import { protect, adminOnly } from "../../middlewares/authMiddleware.js";
@@ -33,6 +37,9 @@ router.get("/public/listings", getPublicListings);
 
 // Get public listing details with rooms
 router.get("/public/listings/:id", getPublicListingById);
+
+// Send enquiry about a listing (public - no auth required)
+router.post("/public/listings/:id/enquiry", sendEnquiry);
 
 //================================================================
 // ADMIN-ONLY ROUTES (Authentication + Admin role required)
@@ -84,6 +91,16 @@ router.patch("/rooms/:roomId/status", updateRoomStatus);
 
 // Delete a room
 router.delete("/rooms/:roomId", deleteRoom);
+
+//----------------------------------------------------------------
+// C. ENQUIRY MANAGEMENT
+//----------------------------------------------------------------
+
+// Get all enquiries with filters
+router.get("/enquiries", getAllEnquiries);
+
+// Update enquiry status
+router.patch("/enquiries/:enquiryId/status", updateEnquiryStatus);
 
 export default router;
 
