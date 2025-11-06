@@ -829,6 +829,22 @@ export const createBooking = async (req, res) => {
       });
     }
 
+    // Check user status - rejected tenants cannot book services
+    const customer = await User.findById(customerId);
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    if (customer.status === 'rejected' || customer.status === 'banned') {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account has been ' + customer.status + '. You cannot book services at this time.'
+      });
+    }
+
     // Check if service exists and is active
     const service = await Service.findById(service_id).populate('provider_id', 'name phone email');
     if (!service) {
