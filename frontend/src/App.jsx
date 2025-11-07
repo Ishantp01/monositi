@@ -7,7 +7,7 @@ import UnifiedPhoneAuth from "./components/common/UnifiedPhoneAuth";
 import AuthChoice from "./components/common/AuthChoice";
 import VerifyOtp from "./components/Authentication/VerifyOtp";
 import Home from "./pages/Home";
-import SaleList from "./pages/Buy/SaleList";
+import BuyList from "./pages/Buy/BuyList";
 import RentList from "./pages/Rent/RentList";
 import CommercialList from "./pages/Commercial/CommercialList";
 import BuyDetails from "./pages/Buy/BuyDetails";
@@ -21,7 +21,6 @@ import ServiceProviderDetail from "./pages/Services/ServiceProviderDetail";
 import ServiceRequestForm from "./pages/Services/ServiceRequestForm";
 import Profile from "./pages/Profile";
 import PropertyTypeResults from "./pages/Properties/PropertyTypeResults";
-import SignUp from "./components/common/SignUp";
 import Services from "./pages/Services/Services";
 import TenantRequestsPage from "./pages/Services/ServiceRequestListTenant";
 // import ManageUsers from "./components/Admin/ManageUsers";
@@ -40,9 +39,12 @@ import EditBuilder from "./pages/Admin/EditBuilder";
 import AdminBuilderDetail from "./pages/Admin/AdminBuilderDetail";
 import AdminBuilders from "./pages/Admin/AdminBuilders";
 import BuilderDetail from "./pages/Builders/BuilderDetail";
+import BuildersList from "./pages/Builders/BuildersList";
+import ProjectsList from "./pages/Builders/ProjectsList";
 import ProjectDetail from "./pages/Projects/ProjectDetail";
 import ForSale from "./pages/RealEstate/ForSale";
 import ForRent from "./pages/RealEstate/ForRent";
+import TermsConditions from "./pages/TermsConditions";
 
 const AdminRedirect = () => {
   const navigate = useNavigate();
@@ -69,16 +71,14 @@ export default function App() {
       <ToastContainer />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/salelist" element={<SaleList />} />
+        <Route path="/buylist" element={<BuyList />} />
         <Route path="/rentlist" element={<RentList />} />
         <Route path="/commercial" element={<CommercialList />} />
-        <Route path="/signup" element={<SignUp />} />
         {/* <Route path="/login" element={<Auth />} /> */}
         <Route path="/auth" element={<UnifiedPhoneAuth />} />
         <Route path="/auth-choice" element={<AuthChoice />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/form-two" element={<ServiceBookingForm />} />
-
 
         <Route path="/verify" element={<VerifyOtp />} />
         <Route path="/commercial-details/:id" element={<CommercialList />} />
@@ -104,30 +104,42 @@ export default function App() {
         <Route path="/create-service" element={<CreateService />} />
 
         <Route path="/admin" element={<AdminDashboard />} />
-
+        {/* <Route path="/buylist" element={<BuyList />} /> */}
         {/* Monositi Routes */}
         <Route path="/monositi" element={<MonositiList />} />
         <Route path="/monositi-details/:id" element={<MonositiDetails />} />
 
         {/* Admin Monositi Routes */}
         <Route path="/admin/monositi" element={<AdminMonositi />} />
-        <Route path="/admin/monositi/create" element={<CreateMonositiListing />} />
-        <Route path="/admin/monositi/edit/:id" element={<CreateMonositiListing />} />
+        <Route
+          path="/admin/monositi/create"
+          element={<CreateMonositiListing />}
+        />
+        <Route
+          path="/admin/monositi/edit/:id"
+          element={<CreateMonositiListing />}
+        />
 
         {/* Builders Routes */}
         <Route path="/admin/builders" element={<AdminBuilders />} />
         <Route path="/admin/builders/create" element={<CreateBuilder />} />
-        <Route path="/admin/builders/create-project" element={<CreateBuilderProject />} />
+        <Route
+          path="/admin/builders/create-project"
+          element={<CreateBuilderProject />}
+        />
         <Route path="/admin/builders/:id/edit" element={<EditBuilder />} />
         <Route path="/admin/builders/:id" element={<AdminBuilderDetail />} />
         <Route path="/builder/:id" element={<BuilderDetail />} />
+        <Route path="/builders-list" element={<BuildersList />} />
+        <Route path="/projects-list" element={<ProjectsList />} />
         <Route path="/project/:id" element={<ProjectDetail />} />
 
         {/* Real Estate Routes */}
         <Route path="/for-sale" element={<ForSale />} />
         <Route path="/for-rent" element={<ForRent />} />
 
-        <Route path="/selling-pg-hostel" element={<SaleList />} />
+        {/* Legal Pages */}
+        <Route path="/terms" element={<TermsConditions />} />
       </Routes>
     </BrowserRouter>
   );

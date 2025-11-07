@@ -17,12 +17,11 @@ const RealEstate = () => {
   const [activeCategory, setActiveCategory] = useState("Buy");
   const [buyProperties, setBuyProperties] = useState([]);
   const [rentProperties, setRentProperties] = useState([]);
-  const [sellProperties, setSellProperties] = useState([]);
   const [builderProjects, setBuilderProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const categories = ["Buy", "Sell", "Rent"];
+  const categories = ["Buy", "Rent"];
 
   useEffect(() => {
     fetchProperties();
@@ -45,12 +44,6 @@ const RealEstate = () => {
         limit: 12,
       });
 
-      // Fetch Sell properties (same as Buy for now, or you can filter differently)
-      const sellResponse = await propertyApi.searchProperties({
-        sub_category: "Buy",
-        limit: 12,
-      });
-
       // Fetch Builder Projects (verified projects created by admin)
       const projectsResponse = await buildersApi.getPublicProjects({
         limit: 12,
@@ -61,9 +54,6 @@ const RealEstate = () => {
       }
       if (rentResponse.success) {
         setRentProperties(rentResponse.properties || []);
-      }
-      if (sellResponse.success) {
-        setSellProperties(sellResponse.properties || []);
       }
       if (projectsResponse.success) {
         setBuilderProjects(projectsResponse.data || []);
@@ -131,8 +121,6 @@ const RealEstate = () => {
           builder_name: project.builder?.name || project.builder_name,
         }));
         return [...buyProps, ...buyProjects];
-      case "Sell":
-        return transformProperties(sellProperties);
       case "Rent":
         return transformProperties(rentProperties);
       default:
@@ -197,6 +185,7 @@ const RealEstate = () => {
           modules={[Navigation, Pagination, Autoplay]}
           spaceBetween={20}
           slidesPerView={1}
+          loop={true}
           navigation={{
             nextEl: `.${activeCategory.toLowerCase()}-next-btn`,
             prevEl: `.${activeCategory.toLowerCase()}-prev-btn`,
@@ -206,8 +195,9 @@ const RealEstate = () => {
             dynamicBullets: true,
           }}
           autoplay={{
-            delay: 4000,
+            delay: 3500,
             disableOnInteraction: false,
+            pauseOnMouseEnter: true,
           }}
           breakpoints={{
             640: { slidesPerView: 2 },
@@ -257,7 +247,7 @@ const RealEstate = () => {
       {/* Show All Button */}
       <div className="text-center mt-8">
         <Link
-          to={activeCategory === "Rent" ? "/for-rent" : "/for-sale"}
+          to={activeCategory === "Rent" ? "/rentlist" : "/buylist"}
           className="inline-flex items-center px-8 py-3 bg-[#f73c56] text-white font-semibold rounded-lg hover:bg-[#e9334e] transition-colors shadow-md"
         >
           Show All {activeCategory} Properties

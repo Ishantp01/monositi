@@ -4,9 +4,11 @@ import { Menu, X, Settings, LogOut, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../redux/slices/authSlice";
+import ConfirmDialog from "../common/ConfirmDialog";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -15,6 +17,10 @@ const Navbar = () => {
   const handleLogout = () => {
     dispatch(logout());
     navigate("/");
+  };
+
+  const handleLogoutClick = () => {
+    setShowLogoutDialog(true);
   };
 
   const buttonClass =
@@ -51,19 +57,28 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center gap-3 ml-auto">
-          <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+          >
             <Link to="/monositi" className={buttonClass}>
               Monositi
             </Link>
           </motion.div>
           {role === "service_provider" ? (
-            <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
               <Link to="/create-service" className={buttonClass}>
                 Create Service
               </Link>
             </motion.div>
           ) : (
-            <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
               <Link to="/add-property" className={buttonClass}>
                 Post Property
               </Link>
@@ -77,7 +92,10 @@ const Navbar = () => {
           )}
 
           {isAuthenticated && role === "admin" && (
-            <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
               <Link to="/admin" className={buttonClass}>
                 <Settings size={16} /> Admin
               </Link>
@@ -86,13 +104,19 @@ const Navbar = () => {
 
           {!isAuthenticated ? (
             <>
-              <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
                 <Link to="/auth" className={buttonClass}>
                   Login
                 </Link>
               </motion.div>
 
-              <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
                 <Link to="/signup" className={buttonClass}>
                   Sign Up
                 </Link>
@@ -100,14 +124,20 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
                 <Link to="/profile" className={buttonClass}>
                   <User size={16} /> Profile
                 </Link>
               </motion.div>
 
-              <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
-                <button onClick={handleLogout} className={buttonClass}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
+                <button onClick={handleLogoutClick} className={buttonClass}>
                   <LogOut size={16} /> Logout
                 </button>
               </motion.div>
@@ -199,7 +229,7 @@ const Navbar = () => {
 
                   <button
                     onClick={() => {
-                      handleLogout();
+                      handleLogoutClick();
                       setMenuOpen(false);
                     }}
                     className="w-full flex items-center justify-center gap-2 py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
@@ -213,6 +243,19 @@ const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Logout Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showLogoutDialog}
+        onClose={() => setShowLogoutDialog(false)}
+        onConfirm={handleLogout}
+        title="Logout Confirmation"
+        message="Are you sure you want to logout? You will need to login again to access your account."
+        confirmText="Yes, Logout"
+        cancelText="Cancel"
+        confirmButtonClass="bg-red-600 hover:bg-red-700"
+        icon={LogOut}
+      />
     </motion.nav>
   );
 };
