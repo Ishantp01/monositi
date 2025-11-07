@@ -16,6 +16,7 @@ export default function VerifyOtp() {
       inputsRef.current[i + 1]?.focus();
     }
   };
+  
 
   const handleKeyDown = (i, e) => {
     if (e.key === "Backspace" && !otp[i] && i > 0) {
