@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { X, Calendar, MapPin, DollarSign, FileText, Camera, Navigation, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { serviceApi } from "../../utils/serviceApi";
+import { useAuth } from "../../context/AuthContext";
 
 const ServiceBookingForm = ({ isOpen, onClose, service }) => {
+    const { user } = useAuth();
     const [formData, setFormData] = useState({
         scheduled_for: "",
         total_amount: "",
@@ -139,6 +141,27 @@ const ServiceBookingForm = ({ isOpen, onClose, service }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Check user status before allowing booking
+        if (!user) {
+            toast.error("Please login to book a service");
+            return;
+        }
+
+        if (user.is_active === false) {
+            toast.error("Your account has been suspended. Please contact support.");
+            return;
+        }
+
+        if (user.verification_status === 'rejected') {
+            toast.error("Your account verification was rejected. Please contact support.");
+            return;
+        }
+
+        if (user.verification_status === 'pending') {
+            toast.warning("Your account is pending verification. You can still book services.");
+        }
+
         setLoading(true);
 
         try {

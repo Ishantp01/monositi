@@ -103,25 +103,14 @@ const Navbar = () => {
           )}
 
           {!isAuthenticated ? (
-            <>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Link to="/auth" className={buttonClass}>
-                  Login
-                </Link>
-              </motion.div>
-
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Link to="/signup" className={buttonClass}>
-                  Sign Up
-                </Link>
-              </motion.div>
-            </>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Link to="/auth" className={buttonClass}>
+                Login
+              </Link>
+            </motion.div>
           ) : (
             <>
               <motion.div
@@ -199,23 +188,13 @@ const Navbar = () => {
               )}
 
               {!isAuthenticated ? (
-                <>
-                  <Link
-                    to="/login"
-                    className="w-full text-center py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
-
-                  <Link
-                    to="/signup"
-                    className="w-full text-center py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Sign Up
-                  </Link>
-                </>
+                <Link
+                  to="/auth"
+                  className="w-full text-center py-2.5 text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 ease-in-out"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Login
+                </Link>
               ) : (
                 <>
                   <Link
