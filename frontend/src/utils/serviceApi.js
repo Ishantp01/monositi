@@ -312,4 +312,57 @@ export const serviceApi = {
       return { success: false, message: "Failed to toggle service status" };
     }
   },
+
+  // Get bookings for service provider
+  getProviderBookings: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/services/provider/bookings`, {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching provider bookings:", error);
+      return {
+        success: false,
+        message: "Failed to fetch bookings",
+        data: []
+      };
+    }
+  },
+
+  // Update booking status
+  updateBookingStatus: async (bookingId, status) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/services/bookings/${bookingId}/status`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+      return {
+        success: false,
+        message: "Failed to update booking status"
+      };
+    }
+  },
+
+  // Book service (simplified version)
+  bookService: async (bookingData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/services/book`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(bookingData),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Error booking service:", error);
+      return { success: false, message: "Failed to book service" };
+    }
+  },
 };

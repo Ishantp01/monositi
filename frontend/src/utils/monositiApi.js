@@ -348,6 +348,32 @@ export const monositiApi = {
             };
         }
     },
+
+    /**
+     * Send enquiry about a listing (Public)
+     * @param {string} listingId - Listing ID
+     * @param {Object} enquiryData - { name, email, phone, message }
+     * @returns {Promise} API response
+     */
+    sendEnquiry: async (listingId, enquiryData) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/monositi/public/listings/${listingId}/enquiry`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(enquiryData),
+            });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error sending enquiry:", error);
+            return {
+                success: false,
+                message: "Failed to send enquiry",
+            };
+        }
+    },
 };
 
 export default monositiApi;
