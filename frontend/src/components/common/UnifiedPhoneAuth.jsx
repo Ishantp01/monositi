@@ -19,10 +19,22 @@ export default function UnifiedPhoneAuth() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+
+        // Special handling for phone number - only allow digits
+        if (name === 'phone') {
+            const numericValue = value.replace(/\D/g, ''); // Remove all non-digits
+            if (numericValue.length <= 10) { // Limit to 10 digits
+                setFormData(prev => ({
+                    ...prev,
+                    [name]: numericValue
+                }));
+            }
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
         setError(""); // Clear error when user types
     };
 
@@ -38,6 +50,13 @@ export default function UnifiedPhoneAuth() {
         e.preventDefault();
         setLoading(true);
         setError("");
+
+        // Validate phone number
+        if (!/^[0-9]{10}$/.test(formData.phone)) {
+            setError("Please enter a valid 10-digit phone number");
+            setLoading(false);
+            return;
+        }
 
         try {
             const formattedPhone = formatPhoneNumber(formData.phone);
@@ -229,9 +248,17 @@ export default function UnifiedPhoneAuth() {
                                     <input
                                         type="tel"
                                         name="phone"
-                                        placeholder="Enter your phone number"
+                                        placeholder="Enter 10-digit phone number"
                                         value={formData.phone}
                                         onChange={handleInputChange}
+                                        onKeyPress={(e) => {
+                                            // Only allow digits
+                                            if (!/[0-9]/.test(e.key)) {
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                        pattern="[0-9]{10}"
+                                        maxLength="10"
                                         required
                                         className="w-full border border-gray-300 rounded-lg pl-12 pr-4 py-2 text-sm focus:outline-none focus:border-red-500"
                                     />
@@ -242,11 +269,41 @@ export default function UnifiedPhoneAuth() {
                                     New users will be registered automatically as tenants.
                                 </div>
 
+                                {/* Terms and Conditions */}
+                                <div className="flex items-start space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        id="terms"
+                                        checked={formData.acceptTerms || false}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, acceptTerms: e.target.checked }))}
+                                        className="mt-1 w-4 h-4 text-[#f73c56] border-gray-300 rounded focus:ring-[#f73c56]"
+                                        required
+                                    />
+                                    <label htmlFor="terms" className="text-xs text-gray-600">
+                                        I agree to the{" "}
+                                        <a
+                                            href="/terms-conditions"
+                                            target="_blank"
+                                            className="text-[#f73c56] hover:underline"
+                                        >
+                                            Terms & Conditions
+                                        </a>{" "}
+                                        and{" "}
+                                        <a
+                                            href="/privacy-policy"
+                                            target="_blank"
+                                            className="text-[#f73c56] hover:underline"
+                                        >
+                                            Privacy Policy
+                                        </a>
+                                    </label>
+                                </div>
+
                                 {error && <p className="text-center text-sm text-red-500">{error}</p>}
 
                                 <button
                                     type="submit"
-                                    disabled={loading}
+                                    disabled={loading || !formData.acceptTerms}
                                     className="w-full bg-[#f73c56] hover:bg-[#e9334e] text-white font-semibold py-2 rounded-lg transition disabled:opacity-60"
                                 >
                                     {loading ? "Sending OTP..." : "Send OTP"}
