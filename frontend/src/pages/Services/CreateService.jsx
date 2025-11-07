@@ -183,9 +183,8 @@ const CreateService = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const address = `${data.locality || ""}, ${data.city || ""}, ${
-          data.principalSubdivision || ""
-        }`.replace(/^,\s*|,\s*$/g, "");
+        const address = `${data.locality || ""}, ${data.city || ""}, ${data.principalSubdivision || ""
+          }`.replace(/^,\s*|,\s*$/g, "");
 
         // Update the location field with a readable address while keeping coordinates
         setFormData((prev) => ({
@@ -330,11 +329,10 @@ const CreateService = () => {
               <nav className="flex space-x-8 px-6">
                 <button
                   onClick={() => setActiveTab("basic")}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === "basic"
+                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${activeTab === "basic"
                       ? "border-[#f73c56] text-[#f73c56]"
                       : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center space-x-2">
                     <Settings className="w-4 h-4" />
@@ -343,11 +341,10 @@ const CreateService = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("pricing")}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === "pricing"
+                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${activeTab === "pricing"
                       ? "border-[#f73c56] text-[#f73c56]"
                       : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center space-x-2">
                     <DollarSign className="w-4 h-4" />
@@ -356,11 +353,10 @@ const CreateService = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("media")}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === "media"
+                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${activeTab === "media"
                       ? "border-[#f73c56] text-[#f73c56]"
                       : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center space-x-2">
                     <Camera className="w-4 h-4" />
@@ -721,29 +717,31 @@ const CreateService = () => {
                 </motion.div>
               )}
 
-              {/* Submit Button */}
-              <div className="flex justify-between pt-6 border-t border-gray-200">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("pricing")}
-                  className="flex items-center space-x-2 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                  <span>Back</span>
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex items-center space-x-2 px-8 py-3 bg-[#f73c56] text-white rounded-lg hover:bg-[#e9334e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Plus className="w-5 h-5" />
-                  )}
-                  <span>{loading ? "Creating..." : "Create Service"}</span>
-                </button>
-              </div>
+              {/* Submit Button - Only show on media tab */}
+              {activeTab === "media" && (
+                <div className="flex justify-between pt-6 border-t border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("pricing")}
+                    className="flex items-center space-x-2 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                    <span>Back</span>
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex items-center space-x-2 px-8 py-3 bg-[#f73c56] text-white rounded-lg hover:bg-[#e9334e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Plus className="w-5 h-5" />
+                    )}
+                    <span>{loading ? "Creating..." : "Create Service"}</span>
+                  </button>
+                </div>
+              )}
             </form>
           </motion.div>
         </div>

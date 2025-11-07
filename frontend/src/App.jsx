@@ -29,6 +29,7 @@ import RentDetails from "./pages/Rent/RentDetails";
 import ServiceBookingForm from "./components/Services/ServiceBookingForm";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import CreateService from "./pages/Services/CreateService";
+import ServiceProviderDashboard from "./pages/Services/ServiceProviderDashboard";
 import MonositiList from "./pages/Monositi/MonositiList";
 import MonositiDetails from "./pages/Monositi/MonositiDetails";
 import AdminMonositi from "./pages/Admin/AdminMonositi";
@@ -45,6 +46,7 @@ import ProjectDetail from "./pages/Projects/ProjectDetail";
 import ForSale from "./pages/RealEstate/ForSale";
 import ForRent from "./pages/RealEstate/ForRent";
 import TermsConditions from "./pages/TermsConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const AdminRedirect = () => {
   const navigate = useNavigate();
@@ -102,6 +104,7 @@ export default function App() {
         />
         <Route path="/service-request/new" element={<ServiceRequestForm />} />
         <Route path="/create-service" element={<CreateService />} />
+        <Route path="/service-provider/dashboard" element={<ServiceProviderDashboard />} />
 
         <Route path="/admin" element={<AdminDashboard />} />
         {/* <Route path="/buylist" element={<BuyList />} /> */}
@@ -140,6 +143,8 @@ export default function App() {
 
         {/* Legal Pages */}
         <Route path="/terms" element={<TermsConditions />} />
+        <Route path="/terms-conditions" element={<TermsConditions />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       </Routes>
     </BrowserRouter>
   );
