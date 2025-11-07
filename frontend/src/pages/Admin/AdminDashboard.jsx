@@ -285,8 +285,39 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleTogglePropertyVisibility = async (propertyId, currentVisibility) => {
+    console.log("Toggling property visibility:", { propertyId, currentVisibility });
+
+    try {
+      const newVisibility = !currentVisibility;
+      console.log("Setting visibility to:", newVisibility);
+
+      const response = await apiRequest(
+        `/admin/properties/${propertyId}/visibility`,
+        "PATCH",
+        { isVisible: newVisibility }
+      );
+
+      console.log("API Response:", response);
+
+      if (response.success) {
+        toast.success(`Property ${newVisibility ? 'shown' : 'hidden'} successfully`);
+        fetchProperties();
+      } else {
+        console.error("API Error:", response.message);
+        toast.error(response.message || "Failed to update property visibility");
+      }
+    } catch (error) {
+      console.error("Error toggling property visibility:", error);
+      toast.error("Failed to update property visibility");
+    }
+  };
+
   const handleToggleVisibility = async (propertyId, currentVisibility) => {
+    console.log("Toggling property visibility:", { propertyId, currentVisibility });
+
     const newVisibility = currentVisibility === "public" ? "private" : "public";
+    console.log("Setting visibility to:", newVisibility);
 
     try {
       const response = await apiRequest(
@@ -296,15 +327,19 @@ const AdminDashboard = () => {
           listing_visibility: newVisibility,
         }
       );
+
+      console.log("API Response:", response);
+
       if (response.success) {
         toast.success(`Property visibility changed to ${newVisibility}`);
         fetchProperties();
       } else {
+        console.error("API Error:", response.message);
         toast.error(response.message || "Failed to update visibility");
       }
     } catch (error) {
       console.error("Error updating visibility:", error);
-      toast.error("Error updating visibility");
+      toast.error("Error updating visibility: " + error.message);
     }
   };
 
@@ -315,18 +350,22 @@ const AdminDashboard = () => {
       return;
 
     try {
+      console.log(`Attempting to ${action} user:`, userId, 'Current status:', currentStatus);
       const response = await apiRequest(`/admin/users/${userId}/ban`, "PATCH", {
         is_active: !currentStatus,
       });
+      console.log('Ban user response:', response);
+
       if (response.success) {
         toast.success(`User ${action}ned successfully`);
         fetchUsers();
       } else {
+        console.error('Ban user failed:', response);
         toast.error(response.message || `Failed to ${action} user`);
       }
     } catch (error) {
       console.error(`Error ${action}ning user:`, error);
-      toast.error(`Error ${action}ning user`);
+      toast.error(`Error ${action}ning user: ${error.message}`);
     }
   };
 
@@ -586,11 +625,10 @@ const AdminDashboard = () => {
               <nav className="flex space-x-8 px-6 overflow-x-auto">
                 <button
                   onClick={() => setActiveTab("dashboard")}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                    activeTab === "dashboard"
-                      ? "border-[#f73c56] text-[#f73c56]"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === "dashboard"
+                    ? "border-[#f73c56] text-[#f73c56]"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   <div className="flex items-center space-x-2">
                     <BarChart3 className="w-4 h-4" />
@@ -599,11 +637,10 @@ const AdminDashboard = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("properties")}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                    activeTab === "properties"
-                      ? "border-[#f73c56] text-[#f73c56]"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === "properties"
+                    ? "border-[#f73c56] text-[#f73c56]"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   <div className="flex items-center space-x-2">
                     <Home className="w-4 h-4" />
@@ -612,11 +649,10 @@ const AdminDashboard = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("users")}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                    activeTab === "users"
-                      ? "border-[#f73c56] text-[#f73c56]"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === "users"
+                    ? "border-[#f73c56] text-[#f73c56]"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   <div className="flex items-center space-x-2">
                     <Users className="w-4 h-4" />
@@ -625,11 +661,10 @@ const AdminDashboard = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("analytics")}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                    activeTab === "analytics"
-                      ? "border-[#f73c56] text-[#f73c56]"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === "analytics"
+                    ? "border-[#f73c56] text-[#f73c56]"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   <div className="flex items-center space-x-2">
                     <TrendingUp className="w-4 h-4" />
@@ -638,11 +673,10 @@ const AdminDashboard = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("reports")}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                    activeTab === "reports"
-                      ? "border-[#f73c56] text-[#f73c56]"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === "reports"
+                    ? "border-[#f73c56] text-[#f73c56]"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   <div className="flex items-center space-x-2">
                     <FileText className="w-4 h-4" />
@@ -651,11 +685,10 @@ const AdminDashboard = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("services")}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                    activeTab === "services"
-                      ? "border-[#f73c56] text-[#f73c56]"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === "services"
+                    ? "border-[#f73c56] text-[#f73c56]"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   <div className="flex items-center space-x-2">
                     <Settings className="w-4 h-4" />
@@ -664,11 +697,10 @@ const AdminDashboard = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("monositi")}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                    activeTab === "monositi"
-                      ? "border-[#f73c56] text-[#f73c56]"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === "monositi"
+                    ? "border-[#f73c56] text-[#f73c56]"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   <div className="flex items-center space-x-2">
                     <Building className="w-4 h-4" />
@@ -677,11 +709,10 @@ const AdminDashboard = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("builders")}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                    activeTab === "builders"
-                      ? "border-[#f73c56] text-[#f73c56]"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === "builders"
+                    ? "border-[#f73c56] text-[#f73c56]"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   <div className="flex items-center space-x-2">
                     <Building2 className="w-4 h-4" />
@@ -794,10 +825,10 @@ const AdminDashboard = () => {
                               </span>
                             </div>
                           )) || (
-                          <p className="text-gray-500 text-sm">
-                            No recent requests
-                          </p>
-                        )}
+                            <p className="text-gray-500 text-sm">
+                              No recent requests
+                            </p>
+                          )}
                       </div>
                     </div>
 
@@ -835,10 +866,10 @@ const AdminDashboard = () => {
                               </span>
                             </div>
                           )) || (
-                          <p className="text-gray-500 text-sm">
-                            No recent bookings
-                          </p>
-                        )}
+                            <p className="text-gray-500 text-sm">
+                              No recent bookings
+                            </p>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -946,11 +977,10 @@ const AdminDashboard = () => {
                                     {property.verification_status}
                                   </span>
                                   <span
-                                    className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                                      property.listing_visibility === "public"
-                                        ? "text-green-600 bg-green-50 border-green-200"
-                                        : "text-gray-600 bg-gray-50 border-gray-200"
-                                    }`}
+                                    className={`px-3 py-1 rounded-full text-xs font-medium border ${property.listing_visibility === "public"
+                                      ? "text-green-600 bg-green-50 border-green-200"
+                                      : "text-gray-600 bg-gray-50 border-gray-200"
+                                      }`}
                                   >
                                     {property.listing_visibility}
                                   </span>
@@ -1139,11 +1169,10 @@ const AdminDashboard = () => {
                                     {user.verification_status}
                                   </span>
                                   <span
-                                    className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                                      user.is_active !== false
-                                        ? "text-green-600 bg-green-50 border-green-200"
-                                        : "text-red-600 bg-red-50 border-red-200"
-                                    }`}
+                                    className={`px-3 py-1 rounded-full text-xs font-medium border ${user.is_active !== false
+                                      ? "text-green-600 bg-green-50 border-green-200"
+                                      : "text-red-600 bg-red-50 border-red-200"
+                                      }`}
                                   >
                                     {user.is_active !== false
                                       ? "Active"
@@ -1215,11 +1244,10 @@ const AdminDashboard = () => {
                                     user.is_active !== false
                                   )
                                 }
-                                className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors text-sm ${
-                                  user.is_active !== false
-                                    ? "bg-red-500 text-white hover:bg-red-600"
-                                    : "bg-green-500 text-white hover:bg-green-600"
-                                }`}
+                                className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors text-sm ${user.is_active !== false
+                                  ? "bg-red-500 text-white hover:bg-red-600"
+                                  : "bg-green-500 text-white hover:bg-green-600"
+                                  }`}
                               >
                                 <Ban className="w-4 h-4" />
                                 <span>
@@ -1331,8 +1359,8 @@ const AdminDashboard = () => {
                             </div>
                           </div>
                         )) || (
-                          <p className="text-gray-500">No data available</p>
-                        )}
+                            <p className="text-gray-500">No data available</p>
+                          )}
                       </div>
                     </div>
 
@@ -1364,8 +1392,8 @@ const AdminDashboard = () => {
                             </div>
                           </div>
                         )) || (
-                          <p className="text-gray-500">No data available</p>
-                        )}
+                            <p className="text-gray-500">No data available</p>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -1402,11 +1430,10 @@ const AdminDashboard = () => {
                           <div className="flex items-start justify-between">
                             <div className="flex items-start space-x-4">
                               <div
-                                className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                                  report.type === "flagged"
-                                    ? "bg-red-100"
-                                    : "bg-yellow-100"
-                                }`}
+                                className={`w-10 h-10 rounded-full flex items-center justify-center ${report.type === "flagged"
+                                  ? "bg-red-100"
+                                  : "bg-yellow-100"
+                                  }`}
                               >
                                 {report.type === "flagged" ? (
                                   <AlertTriangle className="w-5 h-5 text-red-600" />
@@ -1538,22 +1565,20 @@ const AdminDashboard = () => {
                                 </div>
                                 <div className="flex items-center space-x-2">
                                   <span
-                                    className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                                      service.monositi_verified
-                                        ? "text-green-600 bg-green-50 border-green-200"
-                                        : "text-yellow-600 bg-yellow-50 border-yellow-200"
-                                    }`}
+                                    className={`px-3 py-1 rounded-full text-xs font-medium border ${service.monositi_verified
+                                      ? "text-green-600 bg-green-50 border-green-200"
+                                      : "text-yellow-600 bg-yellow-50 border-yellow-200"
+                                      }`}
                                   >
                                     {service.monositi_verified
                                       ? "Verified"
                                       : "Pending"}
                                   </span>
                                   <span
-                                    className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                                      service.active_status
-                                        ? "text-green-600 bg-green-50 border-green-200"
-                                        : "text-red-600 bg-red-50 border-red-200"
-                                    }`}
+                                    className={`px-3 py-1 rounded-full text-xs font-medium border ${service.active_status
+                                      ? "text-green-600 bg-green-50 border-green-200"
+                                      : "text-red-600 bg-red-50 border-red-200"
+                                      }`}
                                   >
                                     {service.active_status
                                       ? "Active"
@@ -1771,15 +1796,14 @@ const AdminDashboard = () => {
                                 </td>
                                 <td className="px-4 py-3">
                                   <span
-                                    className={`px-2 py-1 text-xs font-medium rounded ${
-                                      project.status === "upcoming"
-                                        ? "bg-amber-100 text-amber-800"
-                                        : project.status === "ongoing"
+                                    className={`px-2 py-1 text-xs font-medium rounded ${project.status === "upcoming"
+                                      ? "bg-amber-100 text-amber-800"
+                                      : project.status === "ongoing"
                                         ? "bg-blue-100 text-blue-800"
                                         : project.status === "completed"
-                                        ? "bg-green-100 text-green-800"
-                                        : "bg-gray-100 text-gray-800"
-                                    }`}
+                                          ? "bg-green-100 text-green-800"
+                                          : "bg-gray-100 text-gray-800"
+                                      }`}
                                   >
                                     {project.status}
                                   </span>
