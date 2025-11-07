@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { X, Calendar, MapPin, DollarSign, FileText, Camera, Navigation, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { serviceApi } from "../../utils/serviceApi";
-import { useAuth } from "../../context/AuthContext";
+import { useSelector } from "react-redux";
 
 const ServiceBookingForm = ({ isOpen, onClose, service }) => {
-    const { user } = useAuth();
+    const { user } = useSelector((state) => state.auth);
     const [formData, setFormData] = useState({
         scheduled_for: "",
         total_amount: "",
